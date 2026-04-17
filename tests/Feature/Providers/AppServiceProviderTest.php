@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Providers\AppServiceProvider;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Console\Migrations\FreshCommand;
