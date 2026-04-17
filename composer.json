@@ -30,7 +30,8 @@
         "pestphp/pest-plugin-livewire": "^4.1",
         "pestphp/pest-plugin-profanity": "^4.2",
         "pestphp/pest-plugin-type-coverage": "^4.0",
-        "phpunit/phpunit": "^12.5.12"
+        "phpunit/phpunit": "^12.5.12",
+        "rector/rector": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -59,8 +60,16 @@
         ],
         "lint": "@php vendor/bin/pint",
         "lint:test": "@php vendor/bin/pint --test",
+        "refactor": "@php vendor/bin/rector --dry-run",
+        "refactor:apply": "@php vendor/bin/rector",
         "types": "@php vendor/bin/phpstan analyse --memory-limit=512M",
         "test": "@php artisan test --compact",
+        "check-all": [
+            "@lint:test",
+            "@refactor",
+            "@types",
+            "@test"
+        ],
         "test:coverage": "@php artisan test --coverage --min=100",
         "test:types": "@php artisan test --type-coverage --min=100",
         "test:pao": "CLAUDECODE=1 php artisan test --compact",
