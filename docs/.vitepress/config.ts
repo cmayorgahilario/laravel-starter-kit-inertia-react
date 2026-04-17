@@ -26,6 +26,7 @@ export default defineConfig({
           { text: 'Architecture', link: '/architecture' },
           { text: 'Testing', link: '/testing' },
           { text: 'Static Analysis', link: '/static-analysis' },
+          { text: 'MCP Servers', link: '/mcp-servers' },
         ],
       },
       {

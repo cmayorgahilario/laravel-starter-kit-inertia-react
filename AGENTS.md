@@ -1,18 +1,44 @@
 # Project Context
 
-## Laravel Boost MCP Tools
+## MCP Servers
+
+Servers declared in `.mcp.json`: `laravel-boost`, `context7`, `tavily`, `jina`. Only `laravel-boost` is guaranteed to be available in every session — the other three require API keys exported in the user's shell and may be disconnected.
+
+**Usage rule:** Before calling any external MCP tool (`context7`, `tavily`, `jina`), confirm the server is connected. If a call fails with a connection, auth, or `tool not found` error, do not retry the same server — fall back per the priority table in `docs/mcp-servers.md`. If no fallback produces equivalent output (scholarly search, screenshots, PDF extraction, site crawling), surface the limitation to the user rather than silently degrading.
+
+**Priority when choosing an MCP:**
+
+1. **This app's runtime state or Laravel-ecosystem docs** → `laravel-boost` first, always.
+2. **Third-party library / framework API docs** → `context7` first, then `tavily`/`jina` against the official docs site.
+3. **General web search** → `tavily` first, `jina/search_web` as fallback.
+4. **Read a specific URL** → `jina/read_url` first, `tavily/tavily_extract` as fallback.
+5. **Scholarly / PDF / screenshots / image work** → `jina` only (no fallback).
+6. **Site crawl / sitemap** → `tavily` only (no fallback).
+
+See `docs/mcp-servers.md` for the full decision matrix, combined-usage patterns, and quota-exhaustion fallback order.
+
+### Laravel Boost Tools (always available when Sail is up)
 
 MCP server command (`.mcp.json`): `vendor/bin/sail artisan boost:mcp`
 
-Available tools — use these over manual alternatives:
+Use these over manual alternatives:
 
 - **`search-docs`** — Search version-specific Laravel docs before making code changes. Pass a `packages` array to scope results. Use multiple broad queries; package names are already scoped automatically.
 - **`database-query`** — Run read-only SQL against the live database instead of tinker.
 - **`database-schema`** — Inspect table structure before writing migrations or models.
 - **`get-absolute-url`** — Resolve the correct scheme, domain, and port for project URLs. Always call before sharing a URL with the user.
 - **`browser-logs`** — Read recent browser console logs, JS errors, and exceptions.
+- **`last-error`** — Fetch the most recent backend exception and stack trace.
+- **`read-log-entries`** — Read surrounding context from `storage/logs/laravel.log`.
+- **`application-info`** — PHP / Laravel version and installed package versions for this project.
 
-**CRITICAL: Always use `search-docs` before writing or modifying code. Never rely on training data for Laravel APIs — query the docs first.**
+**CRITICAL: Always use `search-docs` before writing or modifying Laravel code. Never rely on training data for Laravel APIs — query the docs first.**
+
+### Optional MCPs (only if connected)
+
+- **`context7`** — Version-pinned library docs. Flow: `resolve-library-id` → `query-docs`. Use for anything *not* covered by `laravel-boost/search-docs` (React, Vue, Next.js, cloud SDKs, etc.).
+- **`tavily`** — Web search and content tooling: `tavily_search`, `tavily_extract`, `tavily_crawl`, `tavily_map`, `tavily_research`. Prefer for current-events queries (`time_range` controls freshness).
+- **`jina`** — Broad web access: `search_web`, `read_url`, `parallel_read_url`, `capture_screenshot_url`, `extract_pdf`, `search_arxiv`, `search_ssrn`, `search_bibtex`, `classify_text`, `sort_by_relevance`, `deduplicate_strings`. Only source for scholarly, PDF, image, and screenshot work.
 
 Skills published by Boost (`boost.json`): `laravel-best-practices`, `tailwindcss-development`. Activate the relevant skill whenever working in those domains.
 
