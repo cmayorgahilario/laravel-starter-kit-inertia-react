@@ -74,3 +74,6 @@ Thumbs.db
 # ── MCP config (local-only, contains personal paths) ──
 .mcp.json
 !.mcp.json.example
+
+
+tests/Browser/Screenshots
