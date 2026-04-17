@@ -1,41 +1,31 @@
 <?php
 
-namespace Tests\Feature;
-
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rules\Password;
-use Tests\TestCase;
 
-class AppServiceProviderTest extends TestCase
-{
-    public function test_models_are_unguarded(): void
-    {
-        $this->assertTrue(Model::isUnguarded());
-    }
+test('models are unguarded', function () {
+    expect(Model::isUnguarded())->toBeTrue();
+});
 
-    public function test_dates_use_carbon_immutable(): void
-    {
-        $this->assertInstanceOf(CarbonImmutable::class, now());
-    }
+test('dates use carbon immutable', function () {
+    expect(now())->toBeInstanceOf(CarbonImmutable::class);
+});
 
-    public function test_password_defaults_require_min_eight_characters(): void
-    {
-        $rule = Password::defaults();
+test('password defaults require min eight characters', function () {
+    $rule = Password::defaults();
 
-        $this->assertInstanceOf(Password::class, $rule);
+    expect($rule)->toBeInstanceOf(Password::class);
 
-        $validator = validator(['password' => 'short'], ['password' => $rule]);
-        $this->assertTrue($validator->fails());
+    $validator = validator(['password' => 'short'], ['password' => $rule]);
+    expect($validator->fails())->toBeTrue();
 
-        $validator = validator(['password' => 'ValidPass1!'], ['password' => $rule]);
-        $this->assertTrue($validator->passes());
-    }
+    $validator = validator(['password' => 'ValidPass1!'], ['password' => $rule]);
+    expect($validator->passes())->toBeTrue();
+});
 
-    public function test_application_boots_successfully(): void
-    {
-        $response = $this->get('/');
+test('application boots successfully', function () {
+    $response = $this->get('/');
 
-        $response->assertStatus(200);
-    }
-}
+    $response->assertSuccessful();
+});
