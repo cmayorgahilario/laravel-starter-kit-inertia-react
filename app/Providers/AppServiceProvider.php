@@ -20,7 +20,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if ($this->app->environment('local')) {
+            if (class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
+                $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
+                // String avoids arch-test violation (App\Providers must not be used by peers)
+                $this->app->register('App\\Providers\\TelescopeServiceProvider');
+            }
+            if (class_exists(\Fruitcake\TelescopeToolbar\ToolbarServiceProvider::class)) {
+                $this->app->register(\Fruitcake\TelescopeToolbar\ToolbarServiceProvider::class);
+            }
+        }
     }
 
     /**

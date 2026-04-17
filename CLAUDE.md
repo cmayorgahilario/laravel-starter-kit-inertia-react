@@ -22,6 +22,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/pail (PAIL) - v1
 - laravel/pint (PINT) - v1
 - laravel/sail (SAIL) - v1
+- laravel/telescope (TELESCOPE) - v5
 - livewire/livewire (LIVEWIRE) - v4
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
