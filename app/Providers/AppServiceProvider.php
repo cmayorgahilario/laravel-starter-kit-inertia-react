@@ -29,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
             if (class_exists(\Fruitcake\TelescopeToolbar\ToolbarServiceProvider::class)) {
                 $this->app->register(\Fruitcake\TelescopeToolbar\ToolbarServiceProvider::class);
             }
+
+            if (class_exists(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class)) {
+                $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+            }
         }
     }
 
