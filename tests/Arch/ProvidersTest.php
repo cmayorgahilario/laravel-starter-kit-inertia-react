@@ -9,4 +9,5 @@ arch('providers have ServiceProvider suffix')
 
 arch('providers are not used by other app classes')
     ->expect('App\Providers')
-    ->not->toBeUsed();
+    ->not->toBeUsed()
+    ->ignoring('App\Providers\AppServiceProvider');

@@ -22,6 +22,10 @@
         <include>
             <directory>app</directory>
         </include>
+        <exclude>
+            <!-- Published vendor stub — filter/gate logic is owned by the Telescope package -->
+            <file>app/Providers/TelescopeServiceProvider.php</file>
+        </exclude>
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
