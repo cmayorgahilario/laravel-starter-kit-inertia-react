@@ -22,6 +22,7 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/' },
           { text: 'Getting Started', link: '/getting-started' },
+          { text: 'App Configuration', link: '/app-configuration' },
           { text: 'Architecture', link: '/architecture' },
         ],
       },
