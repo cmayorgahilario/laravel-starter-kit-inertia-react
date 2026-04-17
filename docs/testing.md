@@ -35,13 +35,24 @@ vendor/bin/sail artisan test --compact --filter=homepage
 
 ```
 tests/
-├── Arch/           # Architecture rules (no debug calls, naming conventions, presets)
-├── Browser/        # End-to-end browser tests via Playwright + Chromium
-├── Feature/        # HTTP-level integration tests against the full app stack
-├── Unit/           # Pure unit tests with no framework bootstrapping
-├── Pest.php        # Layered bindings: TestCase + RefreshDatabase wiring
-└── TestCase.php    # Base test case extending Laravel's TestCase
+├── Arch/                       # Architecture rules — one file per domain
+│   ├── GlobalTest.php          # Debug/sleep bans, PHP and security presets
+│   ├── HttpTest.php            # Controller naming and dependency boundaries
+│   ├── ModelsTest.php          # Model inheritance, casts, and usage boundaries
+│   └── ProvidersTest.php       # Provider inheritance and dependency boundaries
+├── Browser/                    # End-to-end browser tests via Playwright + Chromium
+│   └── HomepageTest.php
+├── Feature/                    # HTTP-level integration tests against the full app stack
+│   ├── Models/                 # Model cast, attribute, and relationship tests
+│   │   └── UserTest.php
+│   └── Providers/              # Service provider boot behavior tests
+│       └── AppServiceProviderTest.php
+├── Unit/                       # Pure unit tests with no framework bootstrapping
+├── Pest.php                    # Layered bindings: TestCase + RefreshDatabase wiring
+└── TestCase.php                # Base test case extending Laravel's TestCase
 ```
+
+Feature tests mirror the `app/` directory structure — a test for `app/Models/User.php` lives at `tests/Feature/Models/UserTest.php`. Follow this convention when adding new tests.
 
 ## Test Configuration (Pest.php)
 
@@ -121,16 +132,39 @@ test('homepage title contains app name', function () {
 
 ## Architecture Tests
 
-`tests/Arch/AppArchTest.php` enforces six rules that catch structural regressions automatically:
+Architecture tests live in `tests/Arch/`, split into one file per domain following the [Pinkary convention](https://github.com/pinkary-project/pinkary.com/tree/main/tests/Arch). Each file targets a specific `App\` namespace or global concern.
+
+### GlobalTest.php — Language-level rules
 
 | Rule | What it checks |
 |---|---|
-| Models extend Eloquent model | Every class in `App\Models` extends `Illuminate\Database\Eloquent\Model` |
-| No debug functions | `dd`, `dump`, and `ray` must not appear in production code |
-| Controller suffix | Every class in `App\Http\Controllers` ends with `Controller` |
-| ServiceProvider suffix | Every class in `App\Providers` ends with `ServiceProvider` |
+| No debug functions | `dd`, `dump`, `ray`, `die`, `var_dump` must not appear in production code |
+| No sleep functions | `sleep`, `usleep` must not appear in production code |
 | PHP preset | Enforces common PHP best-practice rules from Pest's built-in preset |
 | Security preset | Enforces security rules from Pest's built-in security preset |
+
+### ModelsTest.php — Eloquent layer
+
+| Rule | What it checks |
+|---|---|
+| Models extend Eloquent model | Every class in `App\Models` extends `Illuminate\Database\Eloquent\Model` and defines `casts()` |
+| Models used in expected namespaces | `App\Models` is only referenced by controllers, providers, factories, and seeders |
+
+### HttpTest.php — HTTP layer
+
+| Rule | What it checks |
+|---|---|
+| Controller suffix | Every class in `App\Http\Controllers` ends with `Controller` and extends nothing |
+| Controllers not used directly | No app class imports a controller — only the framework wires them |
+
+### ProvidersTest.php — Service providers
+
+| Rule | What it checks |
+|---|---|
+| ServiceProvider suffix | Every class in `App\Providers` ends with `ServiceProvider` and extends the base class |
+| Providers not used directly | No app class imports a provider — only the framework wires them |
+
+When adding a new `App\` namespace (e.g. `App\Jobs`, `App\Mail`), create a matching `tests/Arch/{Layer}Test.php` file with inheritance, suffix, and boundary rules.
 
 Run only the architecture suite when iterating on structural rules:
 
