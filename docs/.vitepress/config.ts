@@ -25,6 +25,7 @@ export default defineConfig({
           { text: 'App Configuration', link: '/app-configuration' },
           { text: 'Architecture', link: '/architecture' },
           { text: 'Testing', link: '/testing' },
+          { text: 'Static Analysis', link: '/static-analysis' },
         ],
       },
       {
