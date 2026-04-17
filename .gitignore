@@ -30,6 +30,10 @@ target/
 tmp/
 coverage/
 
+# ── VitePress ──
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
 # ── Storage & secrets ──
 /storage/*.key
 

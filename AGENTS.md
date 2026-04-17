@@ -25,7 +25,7 @@ Skills published by Boost (`boost.json`): `laravel-best-practices`, `tailwindcss
 | Service    | Image                          | Default Port(s)       | Purpose                         |
 |------------|--------------------------------|-----------------------|---------------------------------|
 | pgsql      | postgres:18-alpine             | 5432                  | Primary database                |
-| redis      | redis:alpine                   | 6379                  | Available (not default cache)   |
+| redis      | redis:alpine                   | 6379                  | Sessions, queues (phpredis)     |
 | typesense  | typesense/typesense:27.1       | 8108                  | Full-text search (Scout driver) |
 | rustfs     | rustfs/rustfs:latest           | 9000 (API), 9001 (UI) | S3-compatible object storage    |
 | mailpit    | axllent/mailpit:latest         | 1025 (SMTP), 8025 (UI)| Local mail capture              |
@@ -35,8 +35,8 @@ Skills published by Boost (`boost.json`): `laravel-best-practices`, `tailwindcss
 
 - `DB_CONNECTION=pgsql` — PostgreSQL 18
 - `CACHE_STORE=database` — Cache stored in DB, not Redis
-- `QUEUE_CONNECTION=database` — Jobs run from DB queue
-- `SESSION_DRIVER=database` — Sessions in DB
+- `QUEUE_CONNECTION=redis` — Jobs run from Redis queue
+- `SESSION_DRIVER=redis` — Sessions in Redis
 - `FILESYSTEM_DISK=s3` → rustfs via `AWS_ENDPOINT=http://rustfs:9000`
 - `BROADCAST_CONNECTION=log` — Broadcasting is log-only by default
 - `SCOUT_DRIVER=typesense` — Full-text search via Typesense
