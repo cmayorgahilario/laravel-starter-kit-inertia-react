@@ -59,6 +59,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                             const active = isCurrentOrParentUrl(item.href);
                             return (
                                 <Link
+                                    prefetch="hover"
+                                    cacheFor="30s"
                                     key={`${toUrl(item.href)}-${index}`}
                                     href={item.href}
                                     className={cn(

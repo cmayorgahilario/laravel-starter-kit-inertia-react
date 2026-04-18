@@ -18,8 +18,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { logout } from "@/routes"
 import { edit as editProfile } from "@/routes/settings/profile"
-import { Link } from "@inertiajs/react"
+import { Link, router } from "@inertiajs/react"
 import { ChevronsUpDownIcon, SparklesIcon, UserRoundCogIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
 
 export function NavUser({
@@ -32,6 +33,12 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+
+  const handleLogout = () => {
+    router.flushAll()
+    router.post(logout().url)
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -98,9 +105,11 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOutIcon
-              />
+            <DropdownMenuItem
+              onClick={handleLogout}
+              data-test="logout-button"
+            >
+              <LogOutIcon />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
