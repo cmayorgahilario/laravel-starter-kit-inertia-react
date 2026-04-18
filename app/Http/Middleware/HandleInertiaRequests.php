@@ -44,6 +44,7 @@ class HandleInertiaRequests extends Middleware
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
                     'email_verified_at' => $request->user()->email_verified_at?->toISOString(),
+                    'two_factor_confirmed_at' => $request->user()->two_factor_confirmed_at?->toISOString(),
                 ] : null,
             ],
             'app' => fn () => [

@@ -45,6 +45,7 @@ class FortifyServiceProvider extends ServiceProvider
         ]));
         Fortify::verifyEmailView(fn () => Inertia::render('auth/verify-email'));
         Fortify::confirmPasswordView(fn () => Inertia::render('auth/confirm-password'));
+        Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/two-factor-challenge'));
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
