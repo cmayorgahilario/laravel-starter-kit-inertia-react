@@ -1,6 +1,6 @@
 import type { PageProps } from '@inertiajs/core';
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { FormEvent } from 'react';
+import { SubmitEvent } from 'react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,7 @@ export default function Notifications() {
         } as Record<string, boolean>,
     });
 
-    function submit(e: FormEvent) {
+    function submit(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         patch('/settings/notifications', { preserveScroll: true });
     }

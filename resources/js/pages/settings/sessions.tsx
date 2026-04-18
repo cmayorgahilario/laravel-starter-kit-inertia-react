@@ -1,6 +1,6 @@
 import type { PageProps } from '@inertiajs/core';
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { FormEvent, useState } from 'react';
+import { SubmitEvent, useState } from 'react';
 import Heading from '@/components/heading';
 import { index as sessionsIndex } from '@/routes/settings/sessions';
 
@@ -26,7 +26,7 @@ export default function Sessions() {
         password: '',
     });
 
-    function submit(e: FormEvent) {
+    function submit(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         destroy('/settings/sessions', {
             onSuccess: () => {
