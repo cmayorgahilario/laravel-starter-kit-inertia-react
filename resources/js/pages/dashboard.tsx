@@ -1,4 +1,4 @@
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 
 export default function Dashboard() {
     const { auth, app } = usePage().props;
@@ -16,6 +16,12 @@ export default function Dashboard() {
                         <h1 className="text-xl font-semibold text-gray-900 dark:text-white">{app.name}</h1>
                         <div className="flex items-center gap-4">
                             <span className="text-sm text-gray-600 dark:text-gray-400">{auth.user?.name}</span>
+                            <Link
+                                href="/settings/profile"
+                                className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                            >
+                                Settings
+                            </Link>
                             <button
                                 type="button"
                                 onClick={logout}
@@ -33,6 +39,14 @@ export default function Dashboard() {
                         <p className="mt-2 text-gray-600 dark:text-gray-400">
                             Welcome back, <strong className="text-gray-800 dark:text-gray-200">{auth.user?.name}</strong>!
                         </p>
+                        <div className="mt-6 flex gap-3">
+                            <Link
+                                href="/settings/profile"
+                                className="inline-flex items-center rounded-md bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50"
+                            >
+                                Go to Settings →
+                            </Link>
+                        </div>
                     </div>
                 </main>
             </div>

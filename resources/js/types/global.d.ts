@@ -1,3 +1,16 @@
+export interface SessionData {
+    id: string;
+    ip_address: string;
+    user_agent: string;
+    last_activity: string;
+    is_current: boolean;
+}
+
+export interface NotificationPreferences {
+    email: boolean;
+    [key: string]: boolean;
+}
+
 declare module '@inertiajs/core' {
     interface PageProps {
         auth: {

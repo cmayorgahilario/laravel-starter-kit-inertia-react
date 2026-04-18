@@ -1,34 +1,6 @@
 import { Head, usePage } from '@inertiajs/react';
 import { ReactNode, useEffect, useState } from 'react';
-
-type Appearance = 'light' | 'dark' | 'system' | '';
-
-function applyTheme(appearance: Appearance) {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDark = appearance === 'dark' || (appearance !== 'light' && appearance !== '' && prefersDark) || (appearance === '' && prefersDark);
-    document.documentElement.classList.toggle('dark', isDark);
-}
-
-function cycleAppearance(current: Appearance): Appearance {
-    if (current === '' || current === 'system') return 'light';
-    if (current === 'light') return 'dark';
-    return 'system';
-}
-
-function setAppearanceCookie(value: Appearance) {
-    if (value === 'system' || value === '') {
-        document.cookie = 'appearance=; path=/; max-age=0; SameSite=Lax';
-    } else {
-        document.cookie = `appearance=${value}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
-    }
-}
-
-const APPEARANCE_ICONS: Record<string, string> = {
-    light: '☀️',
-    dark: '🌙',
-    system: '💻',
-    '': '💻',
-};
+import { APPEARANCE_ICONS, Appearance, applyTheme, cycleAppearance, setAppearanceCookie } from '../lib/appearance';
 
 interface AuthLayoutProps {
     title: string;
