@@ -81,7 +81,7 @@ Thumbs.db
 .claude/settings.local.json
 
 
-tests/Browser/Screenshots
+tests/Browser/Screenshots/
 bootstrap/ssr/
 
 resources/js/actions/

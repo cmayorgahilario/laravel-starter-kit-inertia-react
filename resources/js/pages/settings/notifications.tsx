@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { edit as editNotifications } from '@/routes/settings/notifications';
+import type { NotificationPreferences } from '@/types/notifications';
 
 interface NotificationsPageProps extends PageProps {
-    preferences: Record<string, boolean>;
+    preferences: NotificationPreferences;
     status?: string;
 }
 
@@ -20,7 +21,7 @@ export default function Notifications() {
     const { data, setData, patch, processing, errors } = useForm({
         preferences: {
             email: preferences.email ?? true,
-        } as Record<string, boolean>,
+        } as NotificationPreferences,
     });
 
     function submit(e: SubmitEvent<HTMLFormElement>) {

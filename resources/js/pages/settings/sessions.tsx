@@ -3,14 +3,7 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { SubmitEvent, useState } from 'react';
 import Heading from '@/components/heading';
 import { index as sessionsIndex } from '@/routes/settings/sessions';
-
-interface SessionData {
-    id: string;
-    ip_address: string;
-    user_agent: string;
-    last_activity: string;
-    is_current: boolean;
-}
+import type { SessionData } from '@/types/session';
 
 interface SessionsPageProps extends PageProps {
     sessions: SessionData[];
