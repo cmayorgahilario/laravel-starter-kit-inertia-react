@@ -68,12 +68,6 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                             : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground',
                                     )}
                                 >
-                                    {active && (
-                                        <span
-                                            aria-hidden
-                                            className="absolute top-1/2 left-0 h-4 w-0.5 -translate-y-1/2 rounded-full bg-foreground"
-                                        />
-                                    )}
                                     {item.icon && (
                                         <item.icon className="mr-2 size-4" />
                                     )}

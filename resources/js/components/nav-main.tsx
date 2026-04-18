@@ -1,42 +1,135 @@
-import { Link } from '@inertiajs/react';
 import {
-    SidebarGroup,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { useCurrentUrl } from '@/hooks/use-current-url';
-import type { NavItem } from '@/types';
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from "@/components/ui/sidebar"
+import { ChevronRightIcon } from "lucide-react"
+import React from "react"
 
-export function NavMain({ items = [] }: { items: NavItem[] }) {
-    const { isCurrentUrl } = useCurrentUrl();
+type NavSubItem = {
+  title: string
+  url: string
+  isActive?: boolean
+}
 
+type NavLeafItem = {
+  title: string
+  url: string
+  icon?: React.ReactNode
+  isActive?: boolean
+  items?: NavSubItem[]
+}
+
+export type NavMainItem =
+  | ({ type: "single" } & NavLeafItem)
+  | { type: "group"; title: string; items: NavLeafItem[] }
+
+function NavLeaf({ item }: { item: NavLeafItem }) {
+  if (item.items && item.items.length > 0) {
     return (
-        <SidebarGroup className="px-2 py-2">
-            <SidebarGroupLabel className="px-2 text-[11px] font-medium tracking-[0.08em] text-sidebar-foreground/60 uppercase">
-                Platform
-            </SidebarGroupLabel>
-            <SidebarMenu className="gap-0.5">
-                {items.map((item) => {
-                    const active = isCurrentUrl(item.href);
-                    return (
-                        <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton
-                                isActive={active}
-                                tooltip={{ children: item.title }}
-                                className="relative font-medium transition-colors duration-150 data-[active=true]:font-semibold data-[active=true]:before:absolute data-[active=true]:before:top-1/2 data-[active=true]:before:left-0 data-[active=true]:before:h-5 data-[active=true]:before:w-0.5 data-[active=true]:before:-translate-y-1/2 data-[active=true]:before:rounded-full data-[active=true]:before:bg-sidebar-primary"
-                                render={
-                                    <Link href={item.href} prefetch>
-                                        {item.icon && <item.icon />}
-                                        <span>{item.title}</span>
-                                    </Link>
-                                }
-                            />
-                        </SidebarMenuItem>
-                    );
-                })}
-            </SidebarMenu>
-        </SidebarGroup>
-    );
+      <Collapsible
+        defaultOpen={item.isActive}
+        className="group/collapsible"
+        render={<SidebarMenuItem />}
+      >
+        <CollapsibleTrigger
+          render={
+            <SidebarMenuButton
+              tooltip={item.title}
+              isActive={item.isActive}
+            />
+          }
+        >
+          {item.icon}
+          <span>{item.title}</span>
+          <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {item.items.map((subItem) => (
+              <SidebarMenuSubItem key={subItem.title}>
+                <SidebarMenuSubButton
+                  isActive={subItem.isActive}
+                  render={<a href={subItem.url} />}
+                >
+                  <span>{subItem.title}</span>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </Collapsible>
+    )
+  }
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        tooltip={item.title}
+        isActive={item.isActive}
+        render={<a href={item.url} />}
+      >
+        {item.icon}
+        <span>{item.title}</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  )
+}
+
+export function NavMain({ items }: { items: NavMainItem[] }) {
+  const blocks: React.ReactNode[] = []
+  let singleChunk: Array<{ item: NavLeafItem; key: string }> = []
+
+  const flushSingles = (key: string) => {
+    if (singleChunk.length === 0) return
+    blocks.push(
+      <SidebarGroup key={key}>
+        <SidebarMenu>
+          {singleChunk.map(({ item, key: itemKey }) => (
+            <NavLeaf key={itemKey} item={item} />
+          ))}
+        </SidebarMenu>
+      </SidebarGroup>,
+    )
+    singleChunk = []
+  }
+
+  items.forEach((item, index) => {
+    if (item.type === "single") {
+      const { type: _type, ...leaf } = item
+      singleChunk.push({
+        item: leaf,
+        key: `single-${leaf.title}-${index}`,
+      })
+      return
+    }
+
+    flushSingles(`singles-${index}`)
+    blocks.push(
+      <SidebarGroup key={`group-${item.title}-${index}`}>
+        <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+        <SidebarMenu>
+          {item.items.map((child, childIndex) => (
+            <NavLeaf
+              key={`${item.title}-${child.title}-${childIndex}`}
+              item={child}
+            />
+          ))}
+        </SidebarMenu>
+      </SidebarGroup>,
+    )
+  })
+  flushSingles("singles-tail")
+
+  return <>{blocks}</>
 }

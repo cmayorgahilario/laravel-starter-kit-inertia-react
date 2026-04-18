@@ -19,13 +19,13 @@ void createInertiaApp({
             case name.startsWith('settings/'):
                 return [AppLayout, SettingsLayout];
             default:
-                return AppLayout;
+                return null;
         }
     },
     strictMode: true,
     withApp(app) {
         return (
-            <TooltipProvider delayDuration={0}>
+            <TooltipProvider delay={0}>
                 {app}
                 <Toaster />
             </TooltipProvider>
