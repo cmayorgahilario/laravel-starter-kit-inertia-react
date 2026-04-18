@@ -46,7 +46,6 @@ const data = {
       title: "Dashboard",
       url: dashboard.url(),
       icon: <LayoutDashboardIcon />,
-      isActive: true,
     },
     // Second flat single — demonstrates that consecutive singles share one
     // anonymous group (no label, no extra vertical gap between them).

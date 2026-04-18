@@ -13,6 +13,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import { useCurrentUrl, type IsCurrentUrlFn } from "@/hooks/use-current-url"
 import { ChevronRightIcon } from "lucide-react"
 import React from "react"
 
@@ -34,11 +35,35 @@ export type NavMainItem =
   | ({ type: "single" } & NavLeafItem)
   | { type: "group"; title: string; items: NavLeafItem[] }
 
-function NavLeaf({ item }: { item: NavLeafItem }) {
+function resolveActive(
+  url: string,
+  explicit: boolean | undefined,
+  isCurrentUrl: IsCurrentUrlFn,
+): boolean {
+  if (explicit !== undefined) return explicit
+  if (url === "#") return false
+  return isCurrentUrl(url)
+}
+
+function NavLeaf({
+  item,
+  isCurrentUrl,
+}: {
+  item: NavLeafItem
+  isCurrentUrl: IsCurrentUrlFn
+}) {
   if (item.items && item.items.length > 0) {
+    const subItemsWithActive = item.items.map((subItem) => ({
+      ...subItem,
+      isActive: resolveActive(subItem.url, subItem.isActive, isCurrentUrl),
+    }))
+    const anySubActive = subItemsWithActive.some((sub) => sub.isActive)
+    const parentActive =
+      resolveActive(item.url, item.isActive, isCurrentUrl) || anySubActive
+
     return (
       <Collapsible
-        defaultOpen={item.isActive}
+        defaultOpen={parentActive}
         className="group/collapsible"
         render={<SidebarMenuItem />}
       >
@@ -46,7 +71,7 @@ function NavLeaf({ item }: { item: NavLeafItem }) {
           render={
             <SidebarMenuButton
               tooltip={item.title}
-              isActive={item.isActive}
+              isActive={parentActive}
             />
           }
         >
@@ -56,7 +81,7 @@ function NavLeaf({ item }: { item: NavLeafItem }) {
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
-            {item.items.map((subItem) => (
+            {subItemsWithActive.map((subItem) => (
               <SidebarMenuSubItem key={subItem.title}>
                 <SidebarMenuSubButton
                   isActive={subItem.isActive}
@@ -76,7 +101,7 @@ function NavLeaf({ item }: { item: NavLeafItem }) {
     <SidebarMenuItem>
       <SidebarMenuButton
         tooltip={item.title}
-        isActive={item.isActive}
+        isActive={resolveActive(item.url, item.isActive, isCurrentUrl)}
         render={<a href={item.url} />}
       >
         {item.icon}
@@ -87,6 +112,7 @@ function NavLeaf({ item }: { item: NavLeafItem }) {
 }
 
 export function NavMain({ items }: { items: NavMainItem[] }) {
+  const { isCurrentUrl } = useCurrentUrl()
   const blocks: React.ReactNode[] = []
   let singleChunk: Array<{ item: NavLeafItem; key: string }> = []
 
@@ -96,7 +122,11 @@ export function NavMain({ items }: { items: NavMainItem[] }) {
       <SidebarGroup key={key}>
         <SidebarMenu>
           {singleChunk.map(({ item, key: itemKey }) => (
-            <NavLeaf key={itemKey} item={item} />
+            <NavLeaf
+              key={itemKey}
+              item={item}
+              isCurrentUrl={isCurrentUrl}
+            />
           ))}
         </SidebarMenu>
       </SidebarGroup>,
@@ -123,6 +153,7 @@ export function NavMain({ items }: { items: NavMainItem[] }) {
             <NavLeaf
               key={`${item.title}-${child.title}-${childIndex}`}
               item={child}
+              isCurrentUrl={isCurrentUrl}
             />
           ))}
         </SidebarMenu>
