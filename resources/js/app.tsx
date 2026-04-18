@@ -1,8 +1,9 @@
 import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
+import React from "react";
 
-createInertiaApp({
+void createInertiaApp({
     resolve: (name: string) => {
         const pages = import.meta.glob('./pages/**/*.tsx', { eager: true }) as Record<
             string,
