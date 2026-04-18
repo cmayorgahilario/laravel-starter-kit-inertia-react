@@ -11,6 +11,7 @@ arch('models extend eloquent model')
 arch('models are only used in expected namespaces')
     ->expect('App\Models')
     ->toOnlyBeUsedIn([
+        'App\Actions',
         'App\Http\Controllers',
         'App\Providers',
         'Database\Factories',

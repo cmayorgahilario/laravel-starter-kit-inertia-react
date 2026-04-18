@@ -43,10 +43,14 @@ class HandleInertiaRequests extends Middleware
                     'id' => $request->user()->id,
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
+                    'email_verified_at' => $request->user()->email_verified_at?->toISOString(),
                 ] : null,
             ],
             'app' => fn () => [
                 'name' => config('app.name'),
+            ],
+            'flash' => fn () => [
+                'status' => $request->session()->get('status'),
             ],
         ]);
     }
