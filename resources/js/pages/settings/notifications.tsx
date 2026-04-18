@@ -6,7 +6,6 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { edit as editNotifications } from '@/routes/settings/notifications';
 import type { NotificationPreferences } from '@/types/notifications';
 
 interface NotificationsPageProps extends PageProps {
@@ -102,12 +101,3 @@ export default function Notifications() {
         </>
     );
 }
-
-Notifications.layout = {
-    breadcrumbs: [
-        {
-            title: 'Notification settings',
-            href: editNotifications(),
-        },
-    ],
-};

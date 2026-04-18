@@ -2,7 +2,6 @@ import type { PageProps } from '@inertiajs/core';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { SubmitEvent, useState } from 'react';
 import Heading from '@/components/heading';
-import { index as sessionsIndex } from '@/routes/settings/sessions';
 import type { SessionData } from '@/types/session';
 
 interface SessionsPageProps extends PageProps {
@@ -143,12 +142,3 @@ export default function Sessions() {
         </>
     );
 }
-
-Sessions.layout = {
-    breadcrumbs: [
-        {
-            title: 'Session settings',
-            href: sessionsIndex(),
-        },
-    ],
-};

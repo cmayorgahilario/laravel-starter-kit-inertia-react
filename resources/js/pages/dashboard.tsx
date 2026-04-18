@@ -1,12 +1,6 @@
-import { Head, setLayoutProps } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 
 export default function Dashboard() {
-    setLayoutProps({
-        breadcrumbs: [
-            { title: 'Build Your Application', href: '#' },
-            { title: 'Data Fetching', href: '#' },
-        ],
-    });
 
     return (
         <>
