@@ -46,13 +46,13 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <SidebarMenuButton
                             size="lg"
-                            asChild
                             className="gap-3 hover:bg-transparent active:bg-transparent"
-                        >
-                            <Link href={dashboard()} prefetch>
-                                <AppLogo />
-                            </Link>
-                        </SidebarMenuButton>
+                            render={
+                                <Link href={dashboard()} prefetch>
+                                    <AppLogo />
+                                </Link>
+                            }
+                        />
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>

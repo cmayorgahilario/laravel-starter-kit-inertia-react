@@ -29,21 +29,21 @@ export function NavFooter({
                     {items.map((item) => (
                         <SidebarMenuItem key={item.title}>
                             <SidebarMenuButton
-                                asChild
                                 size="sm"
                                 className="text-sidebar-foreground/70 transition-colors duration-150 hover:text-sidebar-foreground"
-                            >
-                                <a
-                                    href={toUrl(item.href)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    {item.icon && (
-                                        <item.icon className="size-4" />
-                                    )}
-                                    <span>{item.title}</span>
-                                </a>
-                            </SidebarMenuButton>
+                                render={
+                                    <a
+                                        href={toUrl(item.href)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {item.icon && (
+                                            <item.icon className="size-4" />
+                                        )}
+                                        <span>{item.title}</span>
+                                    </a>
+                                }
+                            />
                         </SidebarMenuItem>
                     ))}
                 </SidebarMenu>

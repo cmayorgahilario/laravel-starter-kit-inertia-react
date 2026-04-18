@@ -23,16 +23,16 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                     return (
                         <SidebarMenuItem key={item.title}>
                             <SidebarMenuButton
-                                asChild
                                 isActive={active}
                                 tooltip={{ children: item.title }}
                                 className="relative font-medium transition-colors duration-150 data-[active=true]:font-semibold data-[active=true]:before:absolute data-[active=true]:before:top-1/2 data-[active=true]:before:left-0 data-[active=true]:before:h-5 data-[active=true]:before:w-0.5 data-[active=true]:before:-translate-y-1/2 data-[active=true]:before:rounded-full data-[active=true]:before:bg-sidebar-primary"
-                            >
-                                <Link href={item.href} prefetch>
-                                    {item.icon && <item.icon />}
-                                    <span>{item.title}</span>
-                                </Link>
-                            </SidebarMenuButton>
+                                render={
+                                    <Link href={item.href} prefetch>
+                                        {item.icon && <item.icon />}
+                                        <span>{item.title}</span>
+                                    </Link>
+                                }
+                            />
                         </SidebarMenuItem>
                     );
                 })}

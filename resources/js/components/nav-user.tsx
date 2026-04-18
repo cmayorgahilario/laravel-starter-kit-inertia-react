@@ -28,16 +28,18 @@ export function NavUser() {
         <SidebarMenu>
             <SidebarMenuItem>
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <SidebarMenuButton
-                            size="lg"
-                            className="group gap-3 rounded-lg border border-transparent text-sidebar-accent-foreground transition-colors duration-150 hover:border-sidebar-border hover:bg-sidebar-accent data-[state=open]:border-sidebar-border data-[state=open]:bg-sidebar-accent"
-                            data-test="sidebar-menu-button"
-                        >
-                            <UserInfo user={auth.user} />
-                            <ChevronsUpDown className="ml-auto size-4 text-sidebar-foreground/60 transition-transform duration-150 group-data-[state=open]:rotate-180" />
-                        </SidebarMenuButton>
-                    </DropdownMenuTrigger>
+                    <DropdownMenuTrigger
+                        render={
+                            <SidebarMenuButton
+                                size="lg"
+                                className="group gap-3 rounded-lg border border-transparent text-sidebar-accent-foreground transition-colors duration-150 hover:border-sidebar-border hover:bg-sidebar-accent data-[state=open]:border-sidebar-border data-[state=open]:bg-sidebar-accent"
+                                data-test="sidebar-menu-button"
+                            >
+                                <UserInfo user={auth.user} />
+                                <ChevronsUpDown className="ml-auto size-4 text-sidebar-foreground/60 transition-transform duration-150 group-data-[state=open]:rotate-180" />
+                            </SidebarMenuButton>
+                        }
+                    />
                     <DropdownMenuContent
                         className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
                         align="end"

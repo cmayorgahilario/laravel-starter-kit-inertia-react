@@ -75,15 +75,17 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                     {/* Mobile Menu */}
                     <div className="lg:hidden">
                         <Sheet>
-                            <SheetTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="-ml-1 size-9"
-                                >
-                                    <Menu className="size-5" />
-                                </Button>
-                            </SheetTrigger>
+                            <SheetTrigger
+                                render={
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="-ml-1 size-9"
+                                    >
+                                        <Menu className="size-5" />
+                                    </Button>
+                                }
+                            />
                             <SheetContent
                                 side="left"
                                 className="flex h-full w-72 flex-col items-stretch justify-between gap-0 bg-sidebar p-0"
@@ -191,21 +193,23 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                         <div className="hidden items-center gap-0.5 lg:flex">
                             {rightNavItems.map((item) => (
                                 <Tooltip key={item.title}>
-                                    <TooltipTrigger asChild>
-                                        <a
-                                            href={toUrl(item.href)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-                                        >
-                                            <span className="sr-only">
-                                                {item.title}
-                                            </span>
-                                            {item.icon && (
-                                                <item.icon className="size-5" />
-                                            )}
-                                        </a>
-                                    </TooltipTrigger>
+                                    <TooltipTrigger
+                                        render={
+                                            <a
+                                                href={toUrl(item.href)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+                                            >
+                                                <span className="sr-only">
+                                                    {item.title}
+                                                </span>
+                                                {item.icon && (
+                                                    <item.icon className="size-5" />
+                                                )}
+                                            </a>
+                                        }
+                                    />
                                     <TooltipContent>
                                         <p>{item.title}</p>
                                     </TooltipContent>
@@ -214,22 +218,29 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                         </div>
                         <div className="mx-1 hidden h-6 w-px bg-border lg:block" />
                         <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    className="size-9 rounded-full p-0.5 transition-colors hover:bg-accent data-[state=open]:bg-accent"
-                                >
-                                    <Avatar className="size-8 overflow-hidden rounded-full ring-1 ring-border">
-                                        <AvatarImage
-                                            src={auth.user?.avatar ?? undefined}
-                                            alt={auth.user?.name}
-                                        />
-                                        <AvatarFallback className="rounded-full bg-muted text-[11px] font-semibold text-foreground">
-                                            {getInitials(auth.user?.name ?? '')}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </Button>
-                            </DropdownMenuTrigger>
+                            <DropdownMenuTrigger
+                                render={
+                                    <Button
+                                        variant="ghost"
+                                        className="size-9 rounded-full p-0.5 transition-colors hover:bg-accent data-[state=open]:bg-accent"
+                                    >
+                                        <Avatar className="size-8 overflow-hidden rounded-full ring-1 ring-border">
+                                            <AvatarImage
+                                                src={
+                                                    auth.user?.avatar ??
+                                                    undefined
+                                                }
+                                                alt={auth.user?.name}
+                                            />
+                                            <AvatarFallback className="rounded-full bg-muted text-[11px] font-semibold text-foreground">
+                                                {getInitials(
+                                                    auth.user?.name ?? '',
+                                                )}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </Button>
+                                }
+                            />
                             <DropdownMenuContent className="w-56" align="end">
                                 {auth.user && (
                                     <UserMenuContent user={auth.user} />
