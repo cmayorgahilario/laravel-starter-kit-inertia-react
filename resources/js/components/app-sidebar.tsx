@@ -12,6 +12,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
@@ -40,10 +41,14 @@ const footerNavItems: NavItem[] = [
 export function AppSidebar() {
     return (
         <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
+            <SidebarHeader className="gap-0 p-2">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
+                        <SidebarMenuButton
+                            size="lg"
+                            asChild
+                            className="gap-3 hover:bg-transparent active:bg-transparent"
+                        >
                             <Link href={dashboard()} prefetch>
                                 <AppLogo />
                             </Link>
@@ -52,12 +57,15 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
+            <SidebarSeparator className="mx-2 bg-sidebar-border/60" />
+
             <SidebarContent>
                 <NavMain items={mainNavItems} />
             </SidebarContent>
 
-            <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+            <SidebarFooter className="gap-1 p-2">
+                <NavFooter items={footerNavItems} className="mt-auto px-0" />
+                <SidebarSeparator className="mx-0 bg-sidebar-border/60 group-data-[collapsible=icon]:hidden" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

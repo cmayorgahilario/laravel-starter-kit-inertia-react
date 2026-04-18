@@ -9,23 +9,29 @@ export default function AuthSimpleLayout({
     description,
 }: AuthLayoutProps) {
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
+        <div className="relative flex min-h-svh flex-col items-center justify-center bg-background p-6 md:p-10">
+            <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-[radial-gradient(ellipse_at_top,theme(colors.foreground/8%),transparent_60%)]"
+            />
             <div className="w-full max-w-sm">
                 <div className="flex flex-col gap-8">
-                    <div className="flex flex-col items-center gap-4">
+                    <div className="flex flex-col items-center gap-5">
                         <Link
                             href={home()}
-                            className="flex flex-col items-center gap-2 font-medium"
+                            className="flex items-center justify-center rounded-xl ring-1 ring-border/70 ring-offset-2 ring-offset-background transition-colors hover:ring-border"
                         >
-                            <div className="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
-                                <AppLogoIcon className="size-9 fill-current text-[var(--foreground)] dark:text-white" />
+                            <div className="flex size-12 items-center justify-center rounded-xl bg-foreground text-background">
+                                <AppLogoIcon className="size-6 fill-current" />
                             </div>
                             <span className="sr-only">{title}</span>
                         </Link>
 
-                        <div className="space-y-2 text-center">
-                            <h1 className="text-xl font-medium">{title}</h1>
-                            <p className="text-center text-sm text-muted-foreground">
+                        <div className="space-y-1.5 text-center">
+                            <h1 className="text-xl font-semibold tracking-tight">
+                                {title}
+                            </h1>
+                            <p className="text-sm text-balance text-muted-foreground">
                                 {description}
                             </p>
                         </div>

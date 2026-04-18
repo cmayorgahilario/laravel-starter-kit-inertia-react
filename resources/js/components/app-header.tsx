@@ -60,8 +60,7 @@ const rightNavItems: NavItem[] = [
     },
 ];
 
-const activeItemStyles =
-    'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
+const activeItemStyles = 'text-foreground';
 
 export function AppHeader({ breadcrumbs = [] }: Props) {
     const page = usePage();
@@ -71,8 +70,8 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
 
     return (
         <>
-            <div className="border-b border-sidebar-border/80">
-                <div className="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
+            <div className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur-md backdrop-saturate-150">
+                <div className="mx-auto flex h-16 items-center gap-3 px-4 md:max-w-7xl md:gap-4 md:px-6">
                     {/* Mobile Menu */}
                     <div className="lg:hidden">
                         <Sheet>
@@ -80,54 +79,55 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="mr-2 h-[34px] w-[34px]"
+                                    className="-ml-1 size-9"
                                 >
-                                    <Menu className="h-5 w-5" />
+                                    <Menu className="size-5" />
                                 </Button>
                             </SheetTrigger>
                             <SheetContent
                                 side="left"
-                                className="flex h-full w-64 flex-col items-stretch justify-between bg-sidebar"
+                                className="flex h-full w-72 flex-col items-stretch justify-between gap-0 bg-sidebar p-0"
                             >
                                 <SheetTitle className="sr-only">
                                     Navigation menu
                                 </SheetTitle>
-                                <SheetHeader className="flex justify-start text-left">
-                                    <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
+                                <SheetHeader className="flex h-14 flex-row items-center justify-start border-b border-sidebar-border/60 px-5 text-left">
+                                    <AppLogoIcon className="size-6 fill-current text-sidebar-foreground" />
                                 </SheetHeader>
-                                <div className="flex h-full flex-1 flex-col space-y-4 p-4">
-                                    <div className="flex h-full flex-col justify-between text-sm">
-                                        <div className="flex flex-col space-y-4">
-                                            {mainNavItems.map((item) => (
-                                                <Link
-                                                    key={item.title}
-                                                    href={item.href}
-                                                    className="flex items-center space-x-2 font-medium"
-                                                >
-                                                    {item.icon && (
-                                                        <item.icon className="h-5 w-5" />
-                                                    )}
-                                                    <span>{item.title}</span>
-                                                </Link>
-                                            ))}
-                                        </div>
+                                <div className="flex flex-1 flex-col justify-between p-3 text-sm">
+                                    <div className="flex flex-col gap-1">
+                                        <p className="px-3 py-2 text-[11px] font-medium tracking-[0.08em] text-sidebar-foreground/60 uppercase">
+                                            Platform
+                                        </p>
+                                        {mainNavItems.map((item) => (
+                                            <Link
+                                                key={item.title}
+                                                href={item.href}
+                                                className="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                                            >
+                                                {item.icon && (
+                                                    <item.icon className="size-4" />
+                                                )}
+                                                <span>{item.title}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
 
-                                        <div className="flex flex-col space-y-4">
-                                            {rightNavItems.map((item) => (
-                                                <a
-                                                    key={item.title}
-                                                    href={toUrl(item.href)}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center space-x-2 font-medium"
-                                                >
-                                                    {item.icon && (
-                                                        <item.icon className="h-5 w-5" />
-                                                    )}
-                                                    <span>{item.title}</span>
-                                                </a>
-                                            ))}
-                                        </div>
+                                    <div className="flex flex-col gap-1 border-t border-sidebar-border/60 pt-3">
+                                        {rightNavItems.map((item) => (
+                                            <a
+                                                key={item.title}
+                                                href={toUrl(item.href)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                                            >
+                                                {item.icon && (
+                                                    <item.icon className="size-4" />
+                                                )}
+                                                <span>{item.title}</span>
+                                            </a>
+                                        ))}
                                     </div>
                                 </div>
                             </SheetContent>
@@ -137,15 +137,15 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                     <Link
                         href={dashboard()}
                         prefetch
-                        className="flex items-center space-x-2"
+                        className="flex items-center gap-2"
                     >
                         <AppLogo />
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="ml-6 hidden h-full items-center space-x-6 lg:flex">
+                    <div className="ml-6 hidden h-full items-center gap-1 lg:flex">
                         <NavigationMenu className="flex h-full items-stretch">
-                            <NavigationMenuList className="flex h-full items-stretch space-x-2">
+                            <NavigationMenuList className="flex h-full items-stretch gap-1">
                                 {mainNavItems.map((item, index) => (
                                     <NavigationMenuItem
                                         key={index}
@@ -155,20 +155,23 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                             href={item.href}
                                             className={cn(
                                                 navigationMenuTriggerStyle(),
+                                                'h-9 cursor-pointer bg-transparent px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground',
                                                 whenCurrentUrl(
                                                     item.href,
                                                     activeItemStyles,
                                                 ),
-                                                'h-9 cursor-pointer px-3',
                                             )}
                                         >
                                             {item.icon && (
-                                                <item.icon className="mr-2 h-4 w-4" />
+                                                <item.icon className="mr-2 size-4" />
                                             )}
                                             {item.title}
                                         </Link>
                                         {isCurrentUrl(item.href) && (
-                                            <div className="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
+                                            <span
+                                                aria-hidden
+                                                className="absolute -bottom-px left-2 right-2 h-0.5 rounded-full bg-foreground"
+                                            />
                                         )}
                                     </NavigationMenuItem>
                                 ))}
@@ -176,52 +179,52 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                         </NavigationMenu>
                     </div>
 
-                    <div className="ml-auto flex items-center space-x-2">
-                        <div className="relative flex items-center space-x-1">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="group h-9 w-9 cursor-pointer"
-                            >
-                                <Search className="!size-5 opacity-80 group-hover:opacity-100" />
-                            </Button>
-                            <div className="ml-1 hidden gap-1 lg:flex">
-                                {rightNavItems.map((item) => (
-                                    <Tooltip key={item.title}>
-                                        <TooltipTrigger>
-                                            <a
-                                                href={toUrl(item.href)}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="group inline-flex h-9 w-9 items-center justify-center rounded-md bg-transparent p-0 text-sm font-medium text-accent-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-                                            >
-                                                <span className="sr-only">
-                                                    {item.title}
-                                                </span>
-                                                {item.icon && (
-                                                    <item.icon className="size-5 opacity-80 group-hover:opacity-100" />
-                                                )}
-                                            </a>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>{item.title}</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                ))}
-                            </div>
+                    <div className="ml-auto flex items-center gap-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-9 text-muted-foreground hover:text-foreground"
+                        >
+                            <Search className="!size-5" />
+                            <span className="sr-only">Search</span>
+                        </Button>
+                        <div className="hidden items-center gap-0.5 lg:flex">
+                            {rightNavItems.map((item) => (
+                                <Tooltip key={item.title}>
+                                    <TooltipTrigger asChild>
+                                        <a
+                                            href={toUrl(item.href)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+                                        >
+                                            <span className="sr-only">
+                                                {item.title}
+                                            </span>
+                                            {item.icon && (
+                                                <item.icon className="size-5" />
+                                            )}
+                                        </a>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{item.title}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            ))}
                         </div>
+                        <div className="mx-1 hidden h-6 w-px bg-border lg:block" />
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="ghost"
-                                    className="size-10 rounded-full p-1"
+                                    className="size-9 rounded-full p-0.5 transition-colors hover:bg-accent data-[state=open]:bg-accent"
                                 >
-                                    <Avatar className="size-8 overflow-hidden rounded-full">
+                                    <Avatar className="size-8 overflow-hidden rounded-full ring-1 ring-border">
                                         <AvatarImage
                                             src={auth.user?.avatar}
                                             alt={auth.user?.name}
                                         />
-                                        <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                        <AvatarFallback className="rounded-full bg-muted text-[11px] font-semibold text-foreground">
                                             {getInitials(auth.user?.name ?? '')}
                                         </AvatarFallback>
                                     </Avatar>
@@ -237,8 +240,8 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                 </div>
             </div>
             {breadcrumbs.length > 1 && (
-                <div className="flex w-full border-b border-sidebar-border/70">
-                    <div className="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl">
+                <div className="w-full border-b border-border/60 bg-background">
+                    <div className="mx-auto flex h-11 w-full items-center px-4 md:max-w-7xl md:px-6">
                         <Breadcrumbs breadcrumbs={breadcrumbs} />
                     </div>
                 </div>
