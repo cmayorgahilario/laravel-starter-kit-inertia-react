@@ -39,7 +39,7 @@ export function Breadcrumbs({
                                         ) : (
                                             <BreadcrumbLink
                                                 render={
-                                                    <Link href={item.href}>
+                                                    <Link href={item.url}>
                                                         {item.title}
                                                     </Link>
                                                 }
