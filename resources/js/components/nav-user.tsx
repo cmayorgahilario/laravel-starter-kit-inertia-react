@@ -18,7 +18,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { ChevronsUpDownIcon, SparklesIcon, BadgeCheckIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
+import { edit as editProfile } from "@/routes/settings/profile"
+import { Link } from "@inertiajs/react"
+import { ChevronsUpDownIcon, SparklesIcon, UserRoundCogIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
 
 export function NavUser({
   user,
@@ -79,10 +81,10 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheckIcon
+              <DropdownMenuItem render={<Link href={editProfile()} />}>
+                <UserRoundCogIcon
                 />
-                Account
+                Settings
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCardIcon
