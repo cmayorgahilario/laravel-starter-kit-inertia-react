@@ -25,7 +25,13 @@ export function Breadcrumbs({
 
                             return (
                                 <Fragment key={index}>
-                                    <BreadcrumbItem>
+                                    <BreadcrumbItem
+                                        className={
+                                            isLast
+                                                ? undefined
+                                                : 'hidden md:block'
+                                        }
+                                    >
                                         {isLast ? (
                                             <BreadcrumbPage>
                                                 {item.title}
@@ -40,7 +46,9 @@ export function Breadcrumbs({
                                             />
                                         )}
                                     </BreadcrumbItem>
-                                    {!isLast && <BreadcrumbSeparator />}
+                                    {!isLast && (
+                                        <BreadcrumbSeparator className="hidden md:block" />
+                                    )}
                                 </Fragment>
                             );
                         })}

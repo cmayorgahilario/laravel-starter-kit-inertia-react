@@ -9,13 +9,13 @@ export function AppSidebarHeader({
     breadcrumbs?: BreadcrumbItemType[];
 }) {
     return (
-        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border/60 bg-background/80 px-4 backdrop-blur-md backdrop-saturate-150 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-6">
-            <SidebarTrigger className="-ml-1 size-8 text-muted-foreground hover:text-foreground" />
-            <Separator
-                orientation="vertical"
-                className="mr-1 data-[orientation=vertical]:h-5"
-            />
-            <div className="flex min-w-0 flex-1 items-center">
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+            <div className="flex items-center gap-2 px-4">
+                <SidebarTrigger className="-ml-1" />
+                <Separator
+                    orientation="vertical"
+                    className="mr-2 data-vertical:h-4 data-vertical:self-auto"
+                />
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
             </div>
         </header>
