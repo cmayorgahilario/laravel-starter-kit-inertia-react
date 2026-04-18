@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Models\User;
+use App\Models\Security\User;
 use Carbon\CarbonImmutable;
 
 test('user password is cast to hashed', function () {
