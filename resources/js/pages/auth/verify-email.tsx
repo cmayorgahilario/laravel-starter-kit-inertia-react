@@ -1,49 +1,46 @@
-import { Link, useForm, usePage } from '@inertiajs/react';
-import { FormEvent } from 'react';
-import AuthLayout from '../../layouts/auth-layout';
+// Components
+import { Form, Head } from '@inertiajs/react';
+import TextLink from '@/components/text-link';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+import { logout } from '@/routes';
+import { send } from '@/routes/verification';
 
-export default function VerifyEmail() {
-    const { flash, auth } = usePage().props;
-    const { post, processing } = useForm({});
-
-    function resend(e: FormEvent) {
-        e.preventDefault();
-        post('/email/verification-notification');
-    }
-
+export default function VerifyEmail({ status }: { status?: string }) {
     return (
-        <AuthLayout title="Verify your email">
-            <p className="mb-5 text-sm text-gray-600 dark:text-gray-400">
-                Thanks for signing up! Before getting started, please verify your email address by clicking the link we
-                just sent to <strong className="text-gray-800 dark:text-gray-200">{auth.user?.email}</strong>.
-            </p>
+        <>
+            <Head title="Email verification" />
 
-            {flash.status === 'verification-link-sent' && (
-                <div className="mb-4 rounded-md bg-green-50 px-4 py-3 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                    A new verification link has been sent to your email address.
+            {status === 'verification-link-sent' && (
+                <div className="mb-4 text-center text-sm font-medium text-green-600">
+                    A new verification link has been sent to the email address
+                    you provided during registration.
                 </div>
             )}
 
-            <form onSubmit={resend}>
-                <button
-                    type="submit"
-                    disabled={processing}
-                    className="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-400"
-                >
-                    {processing ? 'Sending…' : 'Resend verification email'}
-                </button>
-            </form>
+            <Form {...send.form()} className="space-y-6 text-center">
+                {({ processing }) => (
+                    <>
+                        <Button disabled={processing} variant="secondary">
+                            {processing && <Spinner />}
+                            Resend verification email
+                        </Button>
 
-            <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-                <Link
-                    href="/logout"
-                    method="post"
-                    as="button"
-                    className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
-                >
-                    Log out
-                </Link>
-            </p>
-        </AuthLayout>
+                        <TextLink
+                            href={logout()}
+                            className="mx-auto block text-sm"
+                        >
+                            Log out
+                        </TextLink>
+                    </>
+                )}
+            </Form>
+        </>
     );
 }
+
+VerifyEmail.layout = {
+    title: 'Verify email',
+    description:
+        'Please verify your email address by clicking on the link we just emailed to you.',
+};

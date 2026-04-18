@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(awk -F= '{key=$1; val=$2; gsub\\(/\"/,\"\",val\\); print key, \"len=\"length\\(val\\), \"prefix=\"substr\\(val,1,10\\)\"...\"}')",
-      "Bash(bash -ic 'echo CONTEXT7_LEN=${#CONTEXT7_API_KEY}')"
+      "Bash(bash -ic 'echo CONTEXT7_LEN=${#CONTEXT7_API_KEY}')",
+      "Bash(vendor/bin/sail bun *)",
+      "Bash(vendor/bin/sail artisan *)",
+      "Bash(grep -iE \"\\(home|dashboard|/$\\)\")",
+      "mcp__context7__query-docs",
+      "Bash(vendor/bin/sail bin *)",
+      "Bash(gh api *)"
     ]
   }
 }

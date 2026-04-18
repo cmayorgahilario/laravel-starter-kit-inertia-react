@@ -1,105 +1,114 @@
-import { Link, useForm } from '@inertiajs/react';
-import { FormEvent } from 'react';
-import AuthLayout from '../../layouts/auth-layout';
+import { Form, Head } from '@inertiajs/react';
+import InputError from '@/components/input-error';
+import PasswordInput from '@/components/password-input';
+import TextLink from '@/components/text-link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import { login } from '@/routes';
+import { store } from '@/routes/register';
 
 export default function Register() {
-    const { data, setData, post, processing, errors } = useForm({
-        name: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
-    });
-
-    function submit(e: FormEvent) {
-        e.preventDefault();
-        post('/register');
-    }
-
     return (
-        <AuthLayout title="Create an account">
-            <form onSubmit={submit} className="space-y-5">
-                <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Name
-                    </label>
-                    <input
-                        id="name"
-                        type="text"
-                        value={data.name}
-                        onChange={e => setData('name', e.target.value)}
-                        required
-                        autoComplete="name"
-                        autoFocus
-                        className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500"
-                    />
-                    {errors.name && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.name}</p>}
-                </div>
+        <>
+            <Head title="Register" />
+            <Form
+                {...store.form()}
+                resetOnSuccess={['password', 'password_confirmation']}
+                disableWhileProcessing
+                className="flex flex-col gap-6"
+            >
+                {({ processing, errors }) => (
+                    <>
+                        <div className="grid gap-6">
+                            <div className="grid gap-2">
+                                <Label htmlFor="name">Name</Label>
+                                <Input
+                                    id="name"
+                                    type="text"
+                                    required
+                                    autoFocus
+                                    tabIndex={1}
+                                    autoComplete="name"
+                                    name="name"
+                                    placeholder="Full name"
+                                />
+                                <InputError
+                                    message={errors.name}
+                                    className="mt-2"
+                                />
+                            </div>
 
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Email
-                    </label>
-                    <input
-                        id="email"
-                        type="email"
-                        value={data.email}
-                        onChange={e => setData('email', e.target.value)}
-                        required
-                        autoComplete="email"
-                        className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500"
-                    />
-                    {errors.email && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.email}</p>}
-                </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="email">Email address</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    required
+                                    tabIndex={2}
+                                    autoComplete="email"
+                                    name="email"
+                                    placeholder="email@example.com"
+                                />
+                                <InputError message={errors.email} />
+                            </div>
 
-                <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Password
-                    </label>
-                    <input
-                        id="password"
-                        type="password"
-                        value={data.password}
-                        onChange={e => setData('password', e.target.value)}
-                        required
-                        autoComplete="new-password"
-                        className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500"
-                    />
-                    {errors.password && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.password}</p>}
-                </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="password">Password</Label>
+                                <PasswordInput
+                                    id="password"
+                                    required
+                                    tabIndex={3}
+                                    autoComplete="new-password"
+                                    name="password"
+                                    placeholder="Password"
+                                />
+                                <InputError message={errors.password} />
+                            </div>
 
-                <div>
-                    <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Confirm password
-                    </label>
-                    <input
-                        id="password_confirmation"
-                        type="password"
-                        value={data.password_confirmation}
-                        onChange={e => setData('password_confirmation', e.target.value)}
-                        required
-                        autoComplete="new-password"
-                        className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500"
-                    />
-                    {errors.password_confirmation && (
-                        <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.password_confirmation}</p>
-                    )}
-                </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="password_confirmation">
+                                    Confirm password
+                                </Label>
+                                <PasswordInput
+                                    id="password_confirmation"
+                                    required
+                                    tabIndex={4}
+                                    autoComplete="new-password"
+                                    name="password_confirmation"
+                                    placeholder="Confirm password"
+                                />
+                                <InputError
+                                    message={errors.password_confirmation}
+                                />
+                            </div>
 
-                <button
-                    type="submit"
-                    disabled={processing}
-                    className="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-indigo-500 dark:hover:bg-indigo-400"
-                >
-                    {processing ? 'Creating account…' : 'Create account'}
-                </button>
-            </form>
+                            <Button
+                                type="submit"
+                                className="mt-2 w-full"
+                                tabIndex={5}
+                                data-test="register-user-button"
+                            >
+                                {processing && <Spinner />}
+                                Create account
+                            </Button>
+                        </div>
 
-            <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-                Already have an account?{' '}
-                <Link href="/login" className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-                    Sign in
-                </Link>
-            </p>
-        </AuthLayout>
+                        <div className="text-center text-sm text-muted-foreground">
+                            Already have an account?{' '}
+                            <TextLink href={login()} tabIndex={6}>
+                                Log in
+                            </TextLink>
+                        </div>
+                    </>
+                )}
+            </Form>
+        </>
     );
 }
+
+Register.layout = {
+    title: 'Create an account',
+    description: 'Enter your details below to create your account',
+};
