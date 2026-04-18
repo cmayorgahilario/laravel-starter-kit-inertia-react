@@ -24,6 +24,7 @@ export default defineConfig({
           { text: 'Getting Started', link: '/getting-started' },
           { text: 'App Configuration', link: '/app-configuration' },
           { text: 'Architecture', link: '/architecture' },
+          { text: 'Domain Namespaces', link: '/domain-namespaces' },
           { text: 'Testing', link: '/testing' },
           { text: 'Static Analysis', link: '/static-analysis' },
           { text: 'MCP Servers', link: '/mcp-servers' },
