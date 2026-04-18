@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk -F= '{key=$1; val=$2; gsub\\(/\"/,\"\",val\\); print key, \"len=\"length\\(val\\), \"prefix=\"substr\\(val,1,10\\)\"...\"}')",
+      "Bash(bash -ic 'echo CONTEXT7_LEN=${#CONTEXT7_API_KEY}')"
+    ]
+  }
+}
