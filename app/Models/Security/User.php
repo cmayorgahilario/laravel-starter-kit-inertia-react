@@ -23,6 +23,16 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $table = 'security_users';
 
     /**
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'notification_preferences',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -32,6 +42,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'notification_preferences' => 'array',
         ];
     }
 
