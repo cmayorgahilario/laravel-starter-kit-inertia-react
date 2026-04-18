@@ -1,7 +1,5 @@
-import type { PageProps as InertiaPageProps } from '@inertiajs/react';
-
-declare module '@inertiajs/react' {
-    interface PageProps extends InertiaPageProps {
+declare module '@inertiajs/core' {
+    interface PageProps {
         auth: {
             user: {
                 id: number;

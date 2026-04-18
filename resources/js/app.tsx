@@ -1,16 +1,16 @@
 import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/react';
-import { hydrateRoot } from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 
 createInertiaApp({
-    resolve: (name) => {
+    resolve: (name: string) => {
         const pages = import.meta.glob('./pages/**/*.tsx', { eager: true }) as Record<
             string,
             { default: React.ComponentType }
         >;
         return pages[`./pages/${name}.tsx`];
     },
-    setup({ el, App, props }) {
-        hydrateRoot(el, <App {...props} />);
+    setup({ el, App, props }: { el: HTMLElement; App: React.FC<Record<string, unknown>>; props: Record<string, unknown> }) {
+        createRoot(el).render(<App {...props} />);
     },
 });
