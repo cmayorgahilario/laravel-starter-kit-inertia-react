@@ -24,4 +24,16 @@ export default defineConfig({
             ignored: ['**/storage/framework/views/**'],
         },
     },
+    lint: {
+        plugins: ['typescript', 'react', 'unicorn', 'import'],
+    },
+    fmt: {
+        singleQuote: true,
+        tabWidth: 4,
+        sortImports: true,
+        sortTailwindcss: {
+            functions: ['cn', 'cva'],
+        },
+        ignorePatterns: ['resources/js/components/ui/**'],
+    },
 });
