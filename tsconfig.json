@@ -1,6 +1,8 @@
 {
     "compilerOptions": {
         "strict": true,
+        "noImplicitAny": true,
+        "forceConsistentCasingInFileNames": true,
         "allowJs": true,
         "target": "ESNext",
         "module": "ESNext",
@@ -12,13 +14,11 @@
         "skipLibCheck": true,
         "noEmit": true,
         "esModuleInterop": true,
-        "isolatedModules": true,
-        "resolveJsonModule": true,
-        "types": ["vite/client", "node"]
+        "isolatedModules": true
     },
     "include": [
         "resources/js/**/*.ts",
         "resources/js/**/*.tsx",
-        "vite.config.ts"
+        "resources/js/**/*.d.ts"
     ]
 }

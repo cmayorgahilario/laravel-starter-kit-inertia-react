@@ -3,9 +3,12 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
-        "build:ssr": "vite build && vite build --ssr",
-        "dev": "vite"
+        "build": "vp build",
+        "build:ssr": "vp build && vp build --ssr",
+        "dev": "vp dev"
+    },
+    "overrides": {
+        "vite": "npm:@voidzero-dev/vite-plus-core@latest"
     },
     "dependencies": {
         "@base-ui/react": "^1.4.0",
@@ -35,15 +38,17 @@
         "@inertiajs/vite": "^3.0.0",
         "@laravel/vite-plugin-wayfinder": "^0.1.7",
         "@tailwindcss/vite": "^4.0.0",
-        "@types/node": "^22.0.0",
+        "@types/node": "25",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
         "@vitejs/plugin-react": "^6.0.1",
+        "@voidzero-dev/vite-plus-core": "^0.1.18",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^3.0.0",
         "playwright": "^1.59.1",
         "tailwindcss": "^4.0.0",
-        "typescript": "^5.0.0",
-        "vite": "^8.0.0"
+        "typescript": "^6.0.0-dev.20260416",
+        "vite": "^8.0.0",
+        "vite-plus": "^0.1.18"
     }
 }

@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vite-plus';
 import laravel from 'laravel-vite-plugin';
 import inertia from '@inertiajs/vite';
 import react from '@vitejs/plugin-react';
