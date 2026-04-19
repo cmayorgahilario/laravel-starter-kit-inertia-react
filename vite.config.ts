@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite-plus';
-import laravel from 'laravel-vite-plugin';
 import inertia from '@inertiajs/vite';
-import react, { reactCompilerPreset } from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
 import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import babel from '@rolldown/plugin-babel';
+import tailwindcss from '@tailwindcss/vite';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+import laravel from 'laravel-vite-plugin';
+import { defineConfig } from 'vite-plus';
 
 export default defineConfig({
     plugins: [

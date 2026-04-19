@@ -1,6 +1,7 @@
 import type { PageProps } from '@inertiajs/core';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { SubmitEvent, useState } from 'react';
+
 import Heading from '@/components/heading';
 import type { SessionData } from '@/types/session';
 
@@ -14,7 +15,14 @@ export default function Sessions() {
     const { sessions, status } = usePage<SessionsPageProps>().props;
     const [showConfirm, setShowConfirm] = useState(false);
 
-    const { data, setData, delete: destroy, processing, errors, reset } = useForm({
+    const {
+        data,
+        setData,
+        delete: destroy,
+        processing,
+        errors,
+        reset,
+    } = useForm({
         password: '',
     });
 
@@ -56,7 +64,7 @@ export default function Sessions() {
                 )}
 
                 <div className="space-y-3">
-                    {sessions.map(session => (
+                    {sessions.map((session) => (
                         <div
                             key={session.id}
                             className="flex items-start justify-between rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-700"
@@ -80,7 +88,9 @@ export default function Sessions() {
                     ))}
 
                     {sessions.length === 0 && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">No active sessions found.</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                            No active sessions found.
+                        </p>
                     )}
                 </div>
 
@@ -99,28 +109,33 @@ export default function Sessions() {
                                 Enter your password to log out all other sessions.
                             </p>
                             <div>
-                                <label htmlFor="session-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label
+                                    htmlFor="session-password"
+                                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
                                     Password
                                 </label>
                                 <input
                                     id="session-password"
                                     type="password"
                                     value={data.password}
-                                    onChange={e => setData('password', e.target.value)}
+                                    onChange={(e) => setData('password', e.target.value)}
                                     required
                                     autoComplete="current-password"
                                     autoFocus
-                                    className="mt-1 block w-full max-w-sm rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500"
+                                    className="mt-1 block w-full max-w-sm rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500"
                                 />
                                 {errors.password && (
-                                    <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.password}</p>
+                                    <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+                                        {errors.password}
+                                    </p>
                                 )}
                             </div>
                             <div className="flex items-center gap-3">
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50"
+                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
                                 >
                                     {processing ? 'Logging out…' : 'Log out other sessions'}
                                 </button>

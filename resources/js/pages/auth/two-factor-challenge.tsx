@@ -1,14 +1,11 @@
 import { Form, Head, setLayoutProps } from '@inertiajs/react';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { useMemo, useState } from 'react';
+
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-    InputOTP,
-    InputOTPGroup,
-    InputOTPSlot,
-} from '@/components/ui/input-otp';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { OTP_MAX_LENGTH } from '@/hooks/use-two-factor-auth';
 import { store } from '@/routes/two-factor/login';
 
@@ -71,9 +68,7 @@ export default function TwoFactorChallenge() {
                                         autoFocus={showRecoveryInput}
                                         required
                                     />
-                                    <InputError
-                                        message={errors.recovery_code}
-                                    />
+                                    <InputError message={errors.recovery_code} />
                                 </>
                             ) : (
                                 <div className="flex flex-col items-center justify-center space-y-3 text-center">
@@ -90,10 +85,7 @@ export default function TwoFactorChallenge() {
                                                 {Array.from(
                                                     { length: OTP_MAX_LENGTH },
                                                     (_, index) => (
-                                                        <InputOTPSlot
-                                                            key={index}
-                                                            index={index}
-                                                        />
+                                                        <InputOTPSlot key={index} index={index} />
                                                     ),
                                                 )}
                                             </InputOTPGroup>
@@ -103,22 +95,16 @@ export default function TwoFactorChallenge() {
                                 </div>
                             )}
 
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={processing}
-                            >
+                            <Button type="submit" className="w-full" disabled={processing}>
                                 Continue
                             </Button>
 
-                            <div className="text-center text-sm text-muted-foreground">
+                            <div className="text-muted-foreground text-center text-sm">
                                 <span>or you can </span>
                                 <button
                                     type="button"
-                                    className="cursor-pointer text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                                    onClick={() =>
-                                        toggleRecoveryMode(clearErrors)
-                                    }
+                                    className="text-foreground cursor-pointer underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                    onClick={() => toggleRecoveryMode(clearErrors)}
                                 >
                                     {authConfigContent.toggleText}
                                 </button>

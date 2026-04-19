@@ -1,15 +1,10 @@
 import { Form } from '@inertiajs/react';
 import { Eye, EyeOff, LockKeyhole, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
 import AlertError from '@/components/alert-error';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { regenerateRecoveryCodes } from '@/routes/two-factor';
 
 type Props = {
@@ -60,8 +55,8 @@ export default function TwoFactorRecoveryCodes({
                     2FA recovery codes
                 </CardTitle>
                 <CardDescription>
-                    Recovery codes let you regain access if you lose your 2FA
-                    device. Store them in a secure password manager.
+                    Recovery codes let you regain access if you lose your 2FA device. Store them in
+                    a secure password manager.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -72,10 +67,7 @@ export default function TwoFactorRecoveryCodes({
                         aria-expanded={codesAreVisible}
                         aria-controls="recovery-codes-section"
                     >
-                        <RecoveryCodeIconComponent
-                            className="size-4"
-                            aria-hidden="true"
-                        />
+                        <RecoveryCodeIconComponent className="size-4" aria-hidden="true" />
                         {codesAreVisible ? 'Hide' : 'View'} recovery codes
                     </Button>
 
@@ -110,7 +102,7 @@ export default function TwoFactorRecoveryCodes({
                             <>
                                 <div
                                     ref={codesSectionRef}
-                                    className="grid gap-1 rounded-lg bg-muted p-4 font-mono text-sm"
+                                    className="bg-muted grid gap-1 rounded-lg p-4 font-mono text-sm"
                                     role="list"
                                     aria-label="Recovery codes"
                                 >
@@ -129,29 +121,22 @@ export default function TwoFactorRecoveryCodes({
                                             className="space-y-2"
                                             aria-label="Loading recovery codes"
                                         >
-                                            {Array.from(
-                                                { length: 8 },
-                                                (_, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="h-4 animate-pulse rounded bg-muted-foreground/20"
-                                                        aria-hidden="true"
-                                                    />
-                                                ),
-                                            )}
+                                            {Array.from({ length: 8 }, (_, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="bg-muted-foreground/20 h-4 animate-pulse rounded"
+                                                    aria-hidden="true"
+                                                />
+                                            ))}
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="text-xs text-muted-foreground select-none">
+                                <div className="text-muted-foreground text-xs select-none">
                                     <p id="regenerate-warning">
-                                        Each recovery code can be used once to
-                                        access your account and will be removed
-                                        after use. If you need more, click{' '}
-                                        <span className="font-bold">
-                                            Regenerate codes
-                                        </span>{' '}
-                                        above.
+                                        Each recovery code can be used once to access your account
+                                        and will be removed after use. If you need more, click{' '}
+                                        <span className="font-bold">Regenerate codes</span> above.
                                     </p>
                                 </div>
                             </>

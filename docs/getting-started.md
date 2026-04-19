@@ -73,15 +73,15 @@ vendor/bin/sail ps
 
 Spot-check individual services:
 
-| Service | Check |
-|---|---|
-| App | `curl http://localhost` |
+| Service    | Check                                                            |
+| ---------- | ---------------------------------------------------------------- |
+| App        | `curl http://localhost`                                          |
 | PostgreSQL | `vendor/bin/sail artisan config:show database.default` → `pgsql` |
-| Redis | `vendor/bin/sail exec redis redis-cli ping` → `PONG` |
-| Typesense | `curl http://localhost:8108/health` → `{"ok":true}` |
-| RustFS | `curl http://localhost:9000/health` |
-| Mailpit UI | Open `http://localhost:8025` in a browser |
-| Soketi | `curl http://localhost:9601/usage` |
+| Redis      | `vendor/bin/sail exec redis redis-cli ping` → `PONG`             |
+| Typesense  | `curl http://localhost:8108/health` → `{"ok":true}`              |
+| RustFS     | `curl http://localhost:9000/health`                              |
+| Mailpit UI | Open `http://localhost:8025` in a browser                        |
+| Soketi     | `curl http://localhost:9601/usage`                               |
 
 ## Run Tests
 

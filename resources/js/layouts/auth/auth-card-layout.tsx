@@ -1,13 +1,8 @@
 import { Link } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
+
 import AppLogoIcon from '@/components/app-logo-icon';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { home } from '@/routes';
 
 export default function AuthCardLayout({
@@ -20,22 +15,19 @@ export default function AuthCardLayout({
     description?: string;
 }>) {
     return (
-        <div className="relative flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+        <div className="bg-muted relative flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
             <div
                 aria-hidden
-                className="pointer-events-none absolute inset-0 -z-0 bg-[radial-gradient(ellipse_at_center,theme(colors.background/60%),transparent_70%)]"
+                className="bg-[radial-gradient(ellipse_at_center,theme(colors.background/60%),transparent_70%)] pointer-events-none absolute inset-0 -z-0"
             />
             <div className="relative z-10 flex w-full max-w-md flex-col gap-6">
-                <Link
-                    href={home()}
-                    className="flex items-center gap-2 self-center font-medium"
-                >
-                    <div className="flex size-11 items-center justify-center rounded-xl bg-foreground text-background shadow-sm">
+                <Link href={home()} className="flex items-center gap-2 self-center font-medium">
+                    <div className="bg-foreground text-background flex size-11 items-center justify-center rounded-xl shadow-sm">
                         <AppLogoIcon className="size-6 fill-current" />
                     </div>
                 </Link>
 
-                <Card className="rounded-xl border-border/60 shadow-xs">
+                <Card className="border-border/60 rounded-xl shadow-xs">
                     <CardHeader className="space-y-1.5 px-8 pt-8 pb-0 text-center">
                         <CardTitle className="text-xl font-semibold tracking-tight">
                             {title}

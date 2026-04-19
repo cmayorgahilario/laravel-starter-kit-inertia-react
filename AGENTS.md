@@ -36,7 +36,7 @@ Use these over manual alternatives:
 
 ### Optional MCPs (only if connected)
 
-- **`context7`** — Version-pinned library docs. Flow: `resolve-library-id` → `query-docs`. Use for anything *not* covered by `laravel-boost/search-docs` (React, Vue, Next.js, cloud SDKs, etc.).
+- **`context7`** — Version-pinned library docs. Flow: `resolve-library-id` → `query-docs`. Use for anything _not_ covered by `laravel-boost/search-docs` (React, Vue, Next.js, cloud SDKs, etc.).
 - **`tavily`** — Web search and content tooling: `tavily_search`, `tavily_extract`, `tavily_crawl`, `tavily_map`, `tavily_research`. Prefer for current-events queries (`time_range` controls freshness).
 - **`jina`** — Broad web access: `search_web`, `read_url`, `parallel_read_url`, `capture_screenshot_url`, `extract_pdf`, `search_arxiv`, `search_ssrn`, `search_bibtex`, `classify_text`, `sort_by_relevance`, `deduplicate_strings`. Only source for scholarly, PDF, image, and screenshot work.
 
@@ -48,14 +48,14 @@ Skills published by Boost (`boost.json`): `laravel-best-practices`, `tailwindcss
 
 **Docker services** (`compose.yaml`):
 
-| Service    | Image                          | Default Port(s)       | Purpose                         |
-|------------|--------------------------------|-----------------------|---------------------------------|
-| pgsql      | postgres:18-alpine             | 5432                  | Primary database                |
-| redis      | redis:alpine                   | 6379                  | Sessions, queues (phpredis)     |
-| typesense  | typesense/typesense:27.1       | 8108                  | Full-text search (Scout driver) |
-| rustfs     | rustfs/rustfs:latest           | 9000 (API), 9001 (UI) | S3-compatible object storage    |
-| mailpit    | axllent/mailpit:latest         | 1025 (SMTP), 8025 (UI)| Local mail capture              |
-| soketi     | quay.io/soketi/soketi:latest   | 6001 (WS), 9601 (metrics) | WebSocket server (Pusher-compatible) |
+| Service   | Image                        | Default Port(s)           | Purpose                              |
+| --------- | ---------------------------- | ------------------------- | ------------------------------------ |
+| pgsql     | postgres:18-alpine           | 5432                      | Primary database                     |
+| redis     | redis:alpine                 | 6379                      | Sessions, queues (phpredis)          |
+| typesense | typesense/typesense:27.1     | 8108                      | Full-text search (Scout driver)      |
+| rustfs    | rustfs/rustfs:latest         | 9000 (API), 9001 (UI)     | S3-compatible object storage         |
+| mailpit   | axllent/mailpit:latest       | 1025 (SMTP), 8025 (UI)    | Local mail capture                   |
+| soketi    | quay.io/soketi/soketi:latest | 6001 (WS), 9601 (metrics) | WebSocket server (Pusher-compatible) |
 
 **Environment** (`.env`):
 

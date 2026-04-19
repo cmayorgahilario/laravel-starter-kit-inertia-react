@@ -9,14 +9,14 @@ description: Component library setup, installed components, usage patterns, and 
 
 This project uses [shadcn/ui](https://ui.shadcn.com) as its component library. shadcn/ui is not a traditional npm package — it copies component source files directly into your repository, giving you full ownership of the code. All 55 components ship pre-installed at `resources/js/components/ui/`.
 
-| Setting | Value |
-|---|---|
-| Style preset | `base-nova` |
-| Icon library | Lucide (`lucide-react`) |
-| TypeScript | Yes (`tsx: true`) |
-| CSS variables | Yes |
-| Tailwind base color | `neutral` |
-| CSS entry | `resources/css/app.css` |
+| Setting             | Value                   |
+| ------------------- | ----------------------- |
+| Style preset        | `base-nova`             |
+| Icon library        | Lucide (`lucide-react`) |
+| TypeScript          | Yes (`tsx: true`)       |
+| CSS variables       | Yes                     |
+| Tailwind base color | `neutral`               |
+| CSS entry           | `resources/css/app.css` |
 
 ## Installed Components
 
@@ -29,10 +29,10 @@ All 55 components are located in `resources/js/components/ui/`:
 Import from the `@/components/ui/*` alias, which maps to `resources/js/components/ui/`:
 
 ```tsx
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export function LoginForm() {
     return (
@@ -45,10 +45,12 @@ export function LoginForm() {
                     <Label htmlFor="email">Email</Label>
                     <Input id="email" type="email" />
                 </div>
-                <Button type="submit" className="w-full">Sign in</Button>
+                <Button type="submit" className="w-full">
+                    Sign in
+                </Button>
             </CardContent>
         </Card>
-    )
+    );
 }
 ```
 
@@ -91,38 +93,38 @@ To update an existing component to its latest registry version, run the same `ad
 
 ```json
 {
-  "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "base-nova",
-  "rsc": false,
-  "tsx": true,
-  "tailwind": {
-    "config": "",
-    "css": "resources/css/app.css",
-    "baseColor": "neutral",
-    "cssVariables": true,
-    "prefix": ""
-  },
-  "iconLibrary": "lucide",
-  "aliases": {
-    "components": "@/components",
-    "utils": "@/lib/utils",
-    "ui": "@/components/ui",
-    "lib": "@/lib",
-    "hooks": "@/hooks"
-  }
+    "$schema": "https://ui.shadcn.com/schema.json",
+    "style": "base-nova",
+    "rsc": false,
+    "tsx": true,
+    "tailwind": {
+        "config": "",
+        "css": "resources/css/app.css",
+        "baseColor": "neutral",
+        "cssVariables": true,
+        "prefix": ""
+    },
+    "iconLibrary": "lucide",
+    "aliases": {
+        "components": "@/components",
+        "utils": "@/lib/utils",
+        "ui": "@/components/ui",
+        "lib": "@/lib",
+        "hooks": "@/hooks"
+    }
 }
 ```
 
-| Field | Value | Meaning |
-|---|---|---|
-| `style` | `base-nova` | Nova preset — modern rounded aesthetic with neutral base |
-| `rsc` | `false` | No React Server Components (Inertia SPA model) |
-| `tsx` | `true` | Components use `.tsx` extension |
-| `tailwind.css` | `resources/css/app.css` | Tailwind v4 CSS-first entry point |
-| `tailwind.cssVariables` | `true` | Colors and radius use CSS custom properties |
-| `iconLibrary` | `lucide` | `lucide-react` for all icon usage |
-| `aliases.ui` | `@/components/ui` | Short import path for components |
-| `aliases.utils` | `@/lib/utils` | Location of `cn()` helper |
+| Field                   | Value                   | Meaning                                                  |
+| ----------------------- | ----------------------- | -------------------------------------------------------- |
+| `style`                 | `base-nova`             | Nova preset — modern rounded aesthetic with neutral base |
+| `rsc`                   | `false`                 | No React Server Components (Inertia SPA model)           |
+| `tsx`                   | `true`                  | Components use `.tsx` extension                          |
+| `tailwind.css`          | `resources/css/app.css` | Tailwind v4 CSS-first entry point                        |
+| `tailwind.cssVariables` | `true`                  | Colors and radius use CSS custom properties              |
+| `iconLibrary`           | `lucide`                | `lucide-react` for all icon usage                        |
+| `aliases.ui`            | `@/components/ui`       | Short import path for components                         |
+| `aliases.utils`         | `@/lib/utils`           | Location of `cn()` helper                                |
 
 ## Official Documentation
 

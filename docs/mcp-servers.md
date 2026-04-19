@@ -11,12 +11,12 @@ This project ships with several Model Context Protocol (MCP) servers declared in
 
 ## Server Inventory
 
-| Server          | Transport    | Command / URL                                              | Needs API key?          | Quota model                        |
-|-----------------|--------------|-------------------------------------------------------------|-------------------------|------------------------------------|
-| `laravel-boost` | stdio (sail) | `vendor/bin/sail artisan boost:mcp`                         | No                      | None — runs locally               |
-| `context7`      | stdio (npx)  | `npx -y @upstash/context7-mcp`                              | Yes — `CONTEXT7_API_KEY`| Free tier: monthly request cap     |
-| `tavily`        | stdio (npx)  | `npx -y tavily-mcp@latest`                                  | Yes — `TAVILY_API_KEY`  | Free tier: monthly credit balance  |
-| `jina`          | http         | `https://mcp.jina.ai/v1`                                    | Yes — `JINA_API_KEY`    | Free tier: monthly token allowance |
+| Server          | Transport    | Command / URL                       | Needs API key?           | Quota model                        |
+| --------------- | ------------ | ----------------------------------- | ------------------------ | ---------------------------------- |
+| `laravel-boost` | stdio (sail) | `vendor/bin/sail artisan boost:mcp` | No                       | None — runs locally                |
+| `context7`      | stdio (npx)  | `npx -y @upstash/context7-mcp`      | Yes — `CONTEXT7_API_KEY` | Free tier: monthly request cap     |
+| `tavily`        | stdio (npx)  | `npx -y tavily-mcp@latest`          | Yes — `TAVILY_API_KEY`   | Free tier: monthly credit balance  |
+| `jina`          | http         | `https://mcp.jina.ai/v1`            | Yes — `JINA_API_KEY`     | Free tier: monthly token allowance |
 
 ### What Each One Provides
 
@@ -31,27 +31,27 @@ Pick the MCP whose scope best matches the task. The default order for any given 
 
 ### Task → Primary MCP
 
-| Task                                               | Primary                          | Why                                                       |
-|----------------------------------------------------|----------------------------------|-----------------------------------------------------------|
-| Laravel / Livewire / Pest / Tailwind / Inertia docs| `laravel-boost/search-docs`      | Version-pinned to this project's installed packages       |
-| Inspect DB tables, columns, foreign keys           | `laravel-boost/database-schema`  | Live schema, no guessing                                  |
-| Read DB rows (read-only queries)                   | `laravel-boost/database-query`   | Safer than tinker, scoped to read                         |
-| Backend exception / stack trace                    | `laravel-boost/last-error`       | Direct access to the framework's last thrown exception    |
-| Browser console / JS errors                        | `laravel-boost/browser-logs`     | Reads recent entries from the app's browser log pipeline  |
-| Correct project URL (scheme, host, port)           | `laravel-boost/get-absolute-url` | Respects Sail config; avoids hardcoded localhost guesses  |
-| Non-Laravel library docs (React, Next, Prisma, etc.)| `context7/query-docs`           | Version-pinned, curated, higher signal than generic search|
-| General web search                                 | `tavily/tavily_search`           | Clean LLM-friendly snippets                              |
-| Current events, news, time-sensitive queries       | `tavily/tavily_search`           | Freshness controls (`time_range`, `start_date`/`end_date`)|
-| Read a specific URL → clean text                   | `jina/read_url`                  | Fast, reader-oriented extraction                          |
-| Read many URLs in parallel                         | `jina/parallel_read_url`         | Batches fan-out reads in a single call                    |
-| Screenshot a webpage                               | `jina/capture_screenshot_url`    | Only MCP that returns a rendered image                    |
-| Extract figures/tables/equations from PDF          | `jina/extract_pdf`               | PDF-aware extraction, no text-only fallback needed        |
-| arXiv / SSRN academic paper search                 | `jina/search_arxiv`, `search_ssrn` | Dedicated scholarly endpoints                           |
-| BibTeX citation lookup                             | `jina/search_bibtex`             | LaTeX-ready output                                        |
-| Crawl a site from a seed URL                       | `tavily/tavily_crawl`            | Designed for multi-page traversal                         |
-| Discover site structure / sitemap                  | `tavily/tavily_map`              | Returns link graph, not page content                      |
-| Multi-step deep research report                    | `tavily/tavily_research`         | Orchestrates search + read + synthesis server-side        |
-| Classify / rerank / deduplicate text or images     | `jina/classify_text`, `sort_by_relevance`, `deduplicate_strings`, `deduplicate_images` | Jina is the only MCP with these |
+| Task                                                 | Primary                                                                                | Why                                                        |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Laravel / Livewire / Pest / Tailwind / Inertia docs  | `laravel-boost/search-docs`                                                            | Version-pinned to this project's installed packages        |
+| Inspect DB tables, columns, foreign keys             | `laravel-boost/database-schema`                                                        | Live schema, no guessing                                   |
+| Read DB rows (read-only queries)                     | `laravel-boost/database-query`                                                         | Safer than tinker, scoped to read                          |
+| Backend exception / stack trace                      | `laravel-boost/last-error`                                                             | Direct access to the framework's last thrown exception     |
+| Browser console / JS errors                          | `laravel-boost/browser-logs`                                                           | Reads recent entries from the app's browser log pipeline   |
+| Correct project URL (scheme, host, port)             | `laravel-boost/get-absolute-url`                                                       | Respects Sail config; avoids hardcoded localhost guesses   |
+| Non-Laravel library docs (React, Next, Prisma, etc.) | `context7/query-docs`                                                                  | Version-pinned, curated, higher signal than generic search |
+| General web search                                   | `tavily/tavily_search`                                                                 | Clean LLM-friendly snippets                                |
+| Current events, news, time-sensitive queries         | `tavily/tavily_search`                                                                 | Freshness controls (`time_range`, `start_date`/`end_date`) |
+| Read a specific URL → clean text                     | `jina/read_url`                                                                        | Fast, reader-oriented extraction                           |
+| Read many URLs in parallel                           | `jina/parallel_read_url`                                                               | Batches fan-out reads in a single call                     |
+| Screenshot a webpage                                 | `jina/capture_screenshot_url`                                                          | Only MCP that returns a rendered image                     |
+| Extract figures/tables/equations from PDF            | `jina/extract_pdf`                                                                     | PDF-aware extraction, no text-only fallback needed         |
+| arXiv / SSRN academic paper search                   | `jina/search_arxiv`, `search_ssrn`                                                     | Dedicated scholarly endpoints                              |
+| BibTeX citation lookup                               | `jina/search_bibtex`                                                                   | LaTeX-ready output                                         |
+| Crawl a site from a seed URL                         | `tavily/tavily_crawl`                                                                  | Designed for multi-page traversal                          |
+| Discover site structure / sitemap                    | `tavily/tavily_map`                                                                    | Returns link graph, not page content                       |
+| Multi-step deep research report                      | `tavily/tavily_research`                                                               | Orchestrates search + read + synthesis server-side         |
+| Classify / rerank / deduplicate text or images       | `jina/classify_text`, `sort_by_relevance`, `deduplicate_strings`, `deduplicate_images` | Jina is the only MCP with these                            |
 
 ### Rule of Thumb
 
@@ -248,12 +248,12 @@ For `laravel-boost` specifically, Sail must be running (`vendor/bin/sail up -d`)
 
 ## Troubleshooting
 
-| Symptom                                        | Likely cause                                                | Fix                                                           |
-|------------------------------------------------|-------------------------------------------------------------|---------------------------------------------------------------|
-| `context7` / `tavily` / `jina` fails to start  | Env var not exported in the shell that launched Claude Code | `source ~/.bashrc`, then restart Claude Code                  |
-| `context7` connects but returns auth errors    | Key revoked or typoed                                       | Regenerate in the Context7 dashboard, update `~/.bashrc`      |
-| `laravel-boost` fails                          | Sail containers not running                                 | `vendor/bin/sail up -d`                                       |
-| `jina` HTTP 401                                | `JINA_API_KEY` empty or malformed                           | Check `printenv JINA_API_KEY`; regenerate if needed           |
-| Keys visible in `printenv` but not to MCP      | Claude Code started from a shell that didn't source rc file | Start a fresh terminal, confirm vars, then launch Claude Code |
-| 429 / rate-limit on `tavily` or `jina`         | Monthly free-tier quota exhausted                           | Fall back per the priority table above; upgrade plan if recurring |
-| `context7` returns empty results               | Library not yet indexed, or wrong `libraryName` casing      | Re-query with the official product name (e.g. `Next.js`, not `nextjs`) |
+| Symptom                                       | Likely cause                                                | Fix                                                                    |
+| --------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `context7` / `tavily` / `jina` fails to start | Env var not exported in the shell that launched Claude Code | `source ~/.bashrc`, then restart Claude Code                           |
+| `context7` connects but returns auth errors   | Key revoked or typoed                                       | Regenerate in the Context7 dashboard, update `~/.bashrc`               |
+| `laravel-boost` fails                         | Sail containers not running                                 | `vendor/bin/sail up -d`                                                |
+| `jina` HTTP 401                               | `JINA_API_KEY` empty or malformed                           | Check `printenv JINA_API_KEY`; regenerate if needed                    |
+| Keys visible in `printenv` but not to MCP     | Claude Code started from a shell that didn't source rc file | Start a fresh terminal, confirm vars, then launch Claude Code          |
+| 429 / rate-limit on `tavily` or `jina`        | Monthly free-tier quota exhausted                           | Fall back per the priority table above; upgrade plan if recurring      |
+| `context7` returns empty results              | Library not yet indexed, or wrong `libraryName` casing      | Re-query with the official product name (e.g. `Next.js`, not `nextjs`) |

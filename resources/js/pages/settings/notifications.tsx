@@ -1,6 +1,7 @@
 import type { PageProps } from '@inertiajs/core';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { SubmitEvent } from 'react';
+
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -33,8 +34,7 @@ export default function Notifications() {
     }
 
     const showStatus =
-        flash.status === 'notifications-updated' ||
-        status === 'notifications-updated';
+        flash.status === 'notifications-updated' || status === 'notifications-updated';
 
     return (
         <>
@@ -57,13 +57,13 @@ export default function Notifications() {
 
                 <form onSubmit={submit} className="space-y-6">
                     <div className="space-y-4">
-                        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        <Label className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                             Email notifications
                         </Label>
 
                         <Label
                             htmlFor="notifications-email"
-                            className="flex cursor-pointer items-start gap-4 rounded-lg border border-border p-4 hover:bg-muted/50"
+                            className="border-border hover:bg-muted/50 flex cursor-pointer items-start gap-4 rounded-lg border p-4"
                         >
                             <Checkbox
                                 id="notifications-email"
@@ -74,12 +74,11 @@ export default function Notifications() {
                                 className="mt-0.5"
                             />
                             <div className="flex-1 space-y-1 leading-tight">
-                                <p className="text-sm font-medium text-foreground">
+                                <p className="text-foreground text-sm font-medium">
                                     Email notifications
                                 </p>
-                                <p className="text-xs text-muted-foreground">
-                                    Receive important account updates and
-                                    security alerts via email.
+                                <p className="text-muted-foreground text-xs">
+                                    Receive important account updates and security alerts via email.
                                 </p>
                             </div>
                         </Label>

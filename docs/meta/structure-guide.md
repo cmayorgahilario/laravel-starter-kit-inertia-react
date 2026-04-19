@@ -97,7 +97,7 @@ All shell commands that interact with the application must use the `vendor/bin/s
 
 ### Rule 5: Contributor tone
 
-Write as if you are explaining to a colleague who is smart but new to this specific project. Explain *why* a configuration exists, not just *what* it is. "Sessions use Redis because the database driver does not support concurrent session reads under high load" is more useful than "Sessions use Redis." Acknowledge that the reader will adapt the pattern to their own context.
+Write as if you are explaining to a colleague who is smart but new to this specific project. Explain _why_ a configuration exists, not just _what_ it is. "Sessions use Redis because the database driver does not support concurrent session reads under high load" is more useful than "Sessions use Redis." Acknowledge that the reader will adapt the pattern to their own context.
 
 ### Rule 6: Update docs with the code
 

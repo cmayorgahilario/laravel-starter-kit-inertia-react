@@ -27,26 +27,26 @@ TELESCOPE_ENABLED=true   # default — set to false to pause recording without r
 
 Telescope records data through individual watchers. All 18 watchers are enabled by default:
 
-| Watcher           | What it records                                          |
-|-------------------|----------------------------------------------------------|
-| `Batch`           | Queued batch job dispatches and status                   |
-| `Cache`           | Cache hits, misses, writes, and forgets                  |
-| `ClientRequest`   | Outgoing HTTP requests via Laravel's HTTP client         |
-| `Command`         | Artisan commands and their exit codes                    |
-| `Dump`            | `dump()` / `dd()` calls                                  |
-| `Event`           | Dispatched events and their listeners                    |
-| `Exception`       | Unhandled exceptions and stack traces                    |
-| `Gate`            | Policy and Gate authorization checks                     |
-| `Job`             | Queued jobs, attempts, and failures                      |
-| `Log`             | Log entries at all severity levels                       |
-| `Mail`            | Outgoing mail with headers and rendered content          |
-| `Model`           | Eloquent model events (created, updated, deleted)        |
-| `Notification`    | Sent notifications                                       |
-| `Query`           | SQL queries, bindings, and execution time                |
-| `Redis`           | Redis commands                                           |
-| `Request`         | Incoming HTTP requests with headers and response payload |
-| `Schedule`        | Scheduled command runs                                   |
-| `View`            | Rendered Blade views                                     |
+| Watcher         | What it records                                          |
+| --------------- | -------------------------------------------------------- |
+| `Batch`         | Queued batch job dispatches and status                   |
+| `Cache`         | Cache hits, misses, writes, and forgets                  |
+| `ClientRequest` | Outgoing HTTP requests via Laravel's HTTP client         |
+| `Command`       | Artisan commands and their exit codes                    |
+| `Dump`          | `dump()` / `dd()` calls                                  |
+| `Event`         | Dispatched events and their listeners                    |
+| `Exception`     | Unhandled exceptions and stack traces                    |
+| `Gate`          | Policy and Gate authorization checks                     |
+| `Job`           | Queued jobs, attempts, and failures                      |
+| `Log`           | Log entries at all severity levels                       |
+| `Mail`          | Outgoing mail with headers and rendered content          |
+| `Model`         | Eloquent model events (created, updated, deleted)        |
+| `Notification`  | Sent notifications                                       |
+| `Query`         | SQL queries, bindings, and execution time                |
+| `Redis`         | Redis commands                                           |
+| `Request`       | Incoming HTTP requests with headers and response payload |
+| `Schedule`      | Scheduled command runs                                   |
+| `View`          | Rendered Blade views                                     |
 
 Each watcher can be individually disabled via its own env var (e.g., `TELESCOPE_QUERY_WATCHER=false`).
 
@@ -85,11 +85,11 @@ Telescope is disabled in production by design. The provider registration is wrap
 
 The package produces three files, all of which are gitignored:
 
-| File                    | Purpose                                                                 |
-|-------------------------|-------------------------------------------------------------------------|
-| `_ide_helper.php`       | Facade method stubs — maps `Auth::user()` to the real return type, etc. |
-| `_ide_helper_models.php`| PHPDoc blocks for Eloquent model attributes and relationships            |
-| `.phpstorm.meta.php`    | PhpStorm meta file for container resolution type hints                  |
+| File                     | Purpose                                                                 |
+| ------------------------ | ----------------------------------------------------------------------- |
+| `_ide_helper.php`        | Facade method stubs — maps `Auth::user()` to the real return type, etc. |
+| `_ide_helper_models.php` | PHPDoc blocks for Eloquent model attributes and relationships           |
+| `.phpstorm.meta.php`     | PhpStorm meta file for container resolution type hints                  |
 
 ### Manual Commands
 

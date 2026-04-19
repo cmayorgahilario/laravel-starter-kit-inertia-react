@@ -9,13 +9,13 @@ description: Vite 8 build toolchain, Inertia v3 setup, TypeScript strict configu
 
 The frontend is a React 19 single-page application driven by Inertia v3. Inertia handles routing on the server — Laravel returns an Inertia response instead of a full HTML page, and the client re-renders the matching React page component without a full reload. TypeScript strict mode is enabled throughout. The SSR entry point is wired up but CSR (client-side rendering) is the default; SSR requires an active Node.js server running the `bootstrap/ssr/ssr.js` output.
 
-| Technology | Version | Role |
-|---|---|---|
-| React | 19 | UI rendering |
-| Inertia | v3 (`@inertiajs/react ^3.0.0`) | Server-driven SPA adapter |
-| TypeScript | 5 (`strict: true`) | Type safety |
-| Vite | 8 | Dev server and production bundler |
-| Tailwind CSS | v4 | Utility-first CSS via `@tailwindcss/vite` |
+| Technology   | Version                        | Role                                      |
+| ------------ | ------------------------------ | ----------------------------------------- |
+| React        | 19                             | UI rendering                              |
+| Inertia      | v3 (`@inertiajs/react ^3.0.0`) | Server-driven SPA adapter                 |
+| TypeScript   | 5 (`strict: true`)             | Type safety                               |
+| Vite         | 8                              | Dev server and production bundler         |
+| Tailwind CSS | v4                             | Utility-first CSS via `@tailwindcss/vite` |
 
 ## Build Toolchain
 
@@ -27,15 +27,15 @@ plugins: [
     inertia(),
     react(),
     tailwindcss(),
-]
+];
 ```
 
-| Position | Plugin | Package | Purpose |
-|---|---|---|---|
-| 1 | `laravel()` | `laravel-vite-plugin` | Sets public/build as output, injects asset manifest, enables HMR over the Sail port |
-| 2 | `inertia()` | `@inertiajs/vite` | Registers Inertia's SSR Vite plugin; handles the `--ssr` build flag |
-| 3 | `react()` | `@vitejs/plugin-react` | JSX transform and React Fast Refresh |
-| 4 | `tailwindcss()` | `@tailwindcss/vite` | CSS-first Tailwind — scans all project files automatically |
+| Position | Plugin          | Package                | Purpose                                                                             |
+| -------- | --------------- | ---------------------- | ----------------------------------------------------------------------------------- |
+| 1        | `laravel()`     | `laravel-vite-plugin`  | Sets public/build as output, injects asset manifest, enables HMR over the Sail port |
+| 2        | `inertia()`     | `@inertiajs/vite`      | Registers Inertia's SSR Vite plugin; handles the `--ssr` build flag                 |
+| 3        | `react()`       | `@vitejs/plugin-react` | JSX transform and React Fast Refresh                                                |
+| 4        | `tailwindcss()` | `@tailwindcss/vite`    | CSS-first Tailwind — scans all project files automatically                          |
 
 `@tailwindcss/vite` uses CSS-first mode: `resources/css/app.css` contains `@import 'tailwindcss'` and no configuration file is needed. The plugin resolves content paths automatically from the project root.
 
@@ -48,8 +48,10 @@ plugins: [
 `resources/views/app.blade.php` uses the Inertia v3 Blade component syntax (D039 — verified available in `inertiajs/inertia-laravel` v3):
 
 ```html
-<x-inertia::head />   <!-- renders page <title> and <meta> tags -->
-<x-inertia::app />    <!-- renders the Inertia root div with page data -->
+<x-inertia::head />
+<!-- renders page <title> and <meta> tags -->
+<x-inertia::app />
+<!-- renders the Inertia root div with page data -->
 ```
 
 These replace the older `@inertia` / `@inertiaHead` directive syntax. Both ship with the same package; component syntax is preferred in v3.
@@ -93,28 +95,28 @@ return pages[`./pages/${name}.tsx`];
 
 ```json
 {
-  "compilerOptions": {
-    "strict": true,
-    "allowJs": true,
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "jsx": "react-jsx",
-    "paths": {
-      "@/*": ["./resources/js/*"]
-    },
-    "noEmit": true
-  }
+    "compilerOptions": {
+        "strict": true,
+        "allowJs": true,
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "jsx": "react-jsx",
+        "paths": {
+            "@/*": ["./resources/js/*"]
+        },
+        "noEmit": true
+    }
 }
 ```
 
-| Option | Value | Reason |
-|---|---|---|
-| `strict` | `true` | Full strict-mode checks — no implicit `any`, strict null checks, etc. |
-| `allowJs` | `true` | Gradual migration — `.js` files are accepted alongside `.ts`/`.tsx` |
-| `moduleResolution` | `bundler` | Matches Vite's module resolution; avoids `node` resolution quirks with ESM |
-| `noEmit` | `true` | TypeScript is type-checker only; Vite handles transpilation |
-| `paths` | `@/* → ./resources/js/*` | Short import alias for application code |
+| Option             | Value                    | Reason                                                                     |
+| ------------------ | ------------------------ | -------------------------------------------------------------------------- |
+| `strict`           | `true`                   | Full strict-mode checks — no implicit `any`, strict null checks, etc.      |
+| `allowJs`          | `true`                   | Gradual migration — `.js` files are accepted alongside `.ts`/`.tsx`        |
+| `moduleResolution` | `bundler`                | Matches Vite's module resolution; avoids `node` resolution quirks with ESM |
+| `noEmit`           | `true`                   | TypeScript is type-checker only; Vite handles transpilation                |
+| `paths`            | `@/* → ./resources/js/*` | Short import alias for application code                                    |
 
 **Type definitions (D041):** React 19's npm package ships no `.d.ts` files. `@types/react@19` and `@types/react-dom@19` must be installed explicitly in `devDependencies`. Without them, `tsc --noEmit` fails even with `skipLibCheck: true`.
 
@@ -155,22 +157,22 @@ createServer((page) =>
 
 ### Build outputs
 
-| Script | Command | Output |
-|---|---|---|
-| Client build | `vite build` | `public/build/` |
-| SSR build | `vite build --ssr` | `bootstrap/ssr/ssr.js` |
+| Script       | Command            | Output                 |
+| ------------ | ------------------ | ---------------------- |
+| Client build | `vite build`       | `public/build/`        |
+| SSR build    | `vite build --ssr` | `bootstrap/ssr/ssr.js` |
 
 ## Development Commands
 
 All commands must be prefixed with `vendor/bin/sail` when running inside the Docker environment.
 
-| Command | Full form | Purpose |
-|---|---|---|
-| `bun run dev` | `vendor/bin/sail bun run dev` | Start Vite dev server with HMR on port 5173 |
-| `bun run build` | `vendor/bin/sail bun run build` | Production client build to `public/build/` |
-| `bun run build:ssr` | `vendor/bin/sail bun run build:ssr` | SSR build to `bootstrap/ssr/ssr.js` |
-| `bunx tsc --noEmit` | `vendor/bin/sail bunx tsc --noEmit` | Type-check without emitting files |
-| `composer run dev` | `vendor/bin/sail composer run dev` | Start server, queue, Pail, and Vite concurrently |
+| Command             | Full form                           | Purpose                                          |
+| ------------------- | ----------------------------------- | ------------------------------------------------ |
+| `bun run dev`       | `vendor/bin/sail bun run dev`       | Start Vite dev server with HMR on port 5173      |
+| `bun run build`     | `vendor/bin/sail bun run build`     | Production client build to `public/build/`       |
+| `bun run build:ssr` | `vendor/bin/sail bun run build:ssr` | SSR build to `bootstrap/ssr/ssr.js`              |
+| `bunx tsc --noEmit` | `vendor/bin/sail bunx tsc --noEmit` | Type-check without emitting files                |
+| `composer run dev`  | `vendor/bin/sail composer run dev`  | Start server, queue, Pail, and Vite concurrently |
 
 To start a full development environment in one command:
 

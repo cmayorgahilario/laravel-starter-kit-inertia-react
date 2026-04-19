@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
+
 import Heading from '@/components/heading';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
@@ -44,17 +45,11 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
     return (
         <div className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6 md:py-10">
-            <Heading
-                title="Settings"
-                description="Manage your profile and account settings"
-            />
+            <Heading title="Settings" description="Manage your profile and account settings" />
 
             <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
                 <aside className="w-full lg:w-56 lg:shrink-0">
-                    <nav
-                        className="flex flex-col gap-0.5"
-                        aria-label="Settings"
-                    >
+                    <nav className="flex flex-col gap-0.5" aria-label="Settings">
                         {sidebarNavItems.map((item, index) => {
                             const active = isCurrentOrParentUrl(item.href);
                             return (
@@ -70,9 +65,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                             : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground',
                                     )}
                                 >
-                                    {item.icon && (
-                                        <item.icon className="mr-2 size-4" />
-                                    )}
+                                    {item.icon && <item.icon className="mr-2 size-4" />}
                                     {item.title}
                                 </Link>
                             );

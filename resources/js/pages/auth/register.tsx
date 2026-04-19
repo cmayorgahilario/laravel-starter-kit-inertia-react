@@ -1,4 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
+
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -34,10 +35,7 @@ export default function Register() {
                                     name="name"
                                     placeholder="Full name"
                                 />
-                                <InputError
-                                    message={errors.name}
-                                    className="mt-2"
-                                />
+                                <InputError message={errors.name} className="mt-2" />
                             </div>
 
                             <div className="grid gap-2">
@@ -68,9 +66,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password_confirmation">
-                                    Confirm password
-                                </Label>
+                                <Label htmlFor="password_confirmation">Confirm password</Label>
                                 <PasswordInput
                                     id="password_confirmation"
                                     required
@@ -79,9 +75,7 @@ export default function Register() {
                                     name="password_confirmation"
                                     placeholder="Confirm password"
                                 />
-                                <InputError
-                                    message={errors.password_confirmation}
-                                />
+                                <InputError message={errors.password_confirmation} />
                             </div>
 
                             <Button
@@ -95,7 +89,7 @@ export default function Register() {
                             </Button>
                         </div>
 
-                        <div className="text-center text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-center text-sm">
                             Already have an account?{' '}
                             <TextLink href={login()} tabIndex={6}>
                                 Log in

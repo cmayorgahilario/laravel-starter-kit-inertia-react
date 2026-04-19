@@ -9,29 +9,29 @@ description: Docker service topology, environment drivers, and directory layout 
 
 All services are defined in `compose.yaml` and started via `vendor/bin/sail up -d`.
 
-| Service | Image | Port(s) | Purpose |
-|---|---|---|---|
-| `laravel.test` | `sail-8.5/app` | 80, 5173 | PHP 8.5 app + Vite dev server |
-| `pgsql` | `postgres:18-alpine` | 5432 | Primary database |
-| `redis` | `redis:alpine` | 6379 | Sessions and queues |
-| `typesense` | `typesense/typesense:27.1` | 8108 | Full-text search (Scout driver) |
-| `rustfs` | `rustfs/rustfs:latest` | 9000 (API), 9001 (console) | S3-compatible object storage |
-| `mailpit` | `axllent/mailpit:latest` | 1025 (SMTP), 8025 (UI) | Local mail capture |
-| `soketi` | `quay.io/soketi/soketi:latest-16-alpine` | 6001 (WS), 9601 (metrics) | WebSocket server (Pusher-compatible) |
+| Service        | Image                                    | Port(s)                    | Purpose                              |
+| -------------- | ---------------------------------------- | -------------------------- | ------------------------------------ |
+| `laravel.test` | `sail-8.5/app`                           | 80, 5173                   | PHP 8.5 app + Vite dev server        |
+| `pgsql`        | `postgres:18-alpine`                     | 5432                       | Primary database                     |
+| `redis`        | `redis:alpine`                           | 6379                       | Sessions and queues                  |
+| `typesense`    | `typesense/typesense:27.1`               | 8108                       | Full-text search (Scout driver)      |
+| `rustfs`       | `rustfs/rustfs:latest`                   | 9000 (API), 9001 (console) | S3-compatible object storage         |
+| `mailpit`      | `axllent/mailpit:latest`                 | 1025 (SMTP), 8025 (UI)     | Local mail capture                   |
+| `soketi`       | `quay.io/soketi/soketi:latest-16-alpine` | 6001 (WS), 9601 (metrics)  | WebSocket server (Pusher-compatible) |
 
 ## Environment Drivers
 
 Configured in `.env.example`:
 
-| Driver | Value | Notes |
-|---|---|---|
-| `DB_CONNECTION` | `pgsql` | PostgreSQL 18 via `pgsql` container |
-| `SESSION_DRIVER` | `redis` | Sessions stored in Redis |
-| `QUEUE_CONNECTION` | `redis` | Jobs dispatched from Redis queue |
-| `CACHE_STORE` | `database` | Cache stored in PostgreSQL |
-| `FILESYSTEM_DISK` | `s3` | Routes to RustFS via `AWS_ENDPOINT=http://rustfs:9000` |
-| `SCOUT_DRIVER` | `typesense` | Full-text search via Typesense 27.1 |
-| `BROADCAST_CONNECTION` | `log` | Broadcasting is log-only by default |
+| Driver                 | Value       | Notes                                                  |
+| ---------------------- | ----------- | ------------------------------------------------------ |
+| `DB_CONNECTION`        | `pgsql`     | PostgreSQL 18 via `pgsql` container                    |
+| `SESSION_DRIVER`       | `redis`     | Sessions stored in Redis                               |
+| `QUEUE_CONNECTION`     | `redis`     | Jobs dispatched from Redis queue                       |
+| `CACHE_STORE`          | `database`  | Cache stored in PostgreSQL                             |
+| `FILESYSTEM_DISK`      | `s3`        | Routes to RustFS via `AWS_ENDPOINT=http://rustfs:9000` |
+| `SCOUT_DRIVER`         | `typesense` | Full-text search via Typesense 27.1                    |
+| `BROADCAST_CONNECTION` | `log`       | Broadcasting is log-only by default                    |
 
 ## Service Topology
 

@@ -11,12 +11,12 @@ This project uses [Pest 4](https://pestphp.com/) as its test runner. Pest replac
 
 All test commands run through `vendor/bin/sail` so they execute inside the Docker container where the database and other services are available.
 
-| Command | What it does |
-|---|---|
-| `vendor/bin/sail composer test` | Runs the full suite with compact output |
+| Command                                  | What it does                                                 |
+| ---------------------------------------- | ------------------------------------------------------------ |
+| `vendor/bin/sail composer test`          | Runs the full suite with compact output                      |
 | `vendor/bin/sail composer test:coverage` | Runs the suite and enforces 100% code coverage (`--min=100`) |
-| `vendor/bin/sail composer test:types` | Runs the suite and enforces 100% type coverage (`--min=100`) |
-| `vendor/bin/sail composer test:pao` | Runs the suite with the PAO printer (agent-friendly output) |
+| `vendor/bin/sail composer test:types`    | Runs the suite and enforces 100% type coverage (`--min=100`) |
+| `vendor/bin/sail composer test:pao`      | Runs the suite with the PAO printer (agent-friendly output)  |
 
 You can also call Artisan directly when you want finer control:
 
@@ -121,14 +121,14 @@ test('homepage title contains app name', function () {
 
 ## Plugins
 
-| Package | Version | Purpose |
-|---|---|---|
-| `pestphp/pest-plugin-laravel` | 4.1.0 | `$this->get()`, `RefreshDatabase`, and other Laravel helpers |
-| `pestphp/pest-plugin-browser` | 4.3.1 | `$this->visit()` and Playwright-backed browser assertions |
-| `pestphp/pest-plugin-livewire` | 4.1.0 | `livewire()` helper for testing Livewire components |
-| `pestphp/pest-plugin-type-coverage` | 4.0.4 | `--type-coverage --min=100` enforcement |
-| `pestphp/pest-plugin-profanity` | 4.2.1 | Blocks profane strings from appearing in test output |
-| `nunomaduro/pao` | 0.1.8 | PAO printer — structured output readable by AI agents (activated via `CLAUDECODE=1`) |
+| Package                             | Version | Purpose                                                                              |
+| ----------------------------------- | ------- | ------------------------------------------------------------------------------------ |
+| `pestphp/pest-plugin-laravel`       | 4.1.0   | `$this->get()`, `RefreshDatabase`, and other Laravel helpers                         |
+| `pestphp/pest-plugin-browser`       | 4.3.1   | `$this->visit()` and Playwright-backed browser assertions                            |
+| `pestphp/pest-plugin-livewire`      | 4.1.0   | `livewire()` helper for testing Livewire components                                  |
+| `pestphp/pest-plugin-type-coverage` | 4.0.4   | `--type-coverage --min=100` enforcement                                              |
+| `pestphp/pest-plugin-profanity`     | 4.2.1   | Blocks profane strings from appearing in test output                                 |
+| `nunomaduro/pao`                    | 0.1.8   | PAO printer — structured output readable by AI agents (activated via `CLAUDECODE=1`) |
 
 ## Architecture Tests
 
@@ -136,33 +136,33 @@ Architecture tests live in `tests/Arch/`, split into one file per domain followi
 
 ### GlobalTest.php — Language-level rules
 
-| Rule | What it checks |
-|---|---|
+| Rule               | What it checks                                                            |
+| ------------------ | ------------------------------------------------------------------------- |
 | No debug functions | `dd`, `dump`, `ray`, `die`, `var_dump` must not appear in production code |
-| No sleep functions | `sleep`, `usleep` must not appear in production code |
-| PHP preset | Enforces common PHP best-practice rules from Pest's built-in preset |
-| Security preset | Enforces security rules from Pest's built-in security preset |
+| No sleep functions | `sleep`, `usleep` must not appear in production code                      |
+| PHP preset         | Enforces common PHP best-practice rules from Pest's built-in preset       |
+| Security preset    | Enforces security rules from Pest's built-in security preset              |
 
 ### ModelsTest.php — Eloquent layer
 
-| Rule | What it checks |
-|---|---|
-| Models extend Eloquent model | Every class in `App\Models` extends `Illuminate\Database\Eloquent\Model` and defines `casts()` |
-| Models used in expected namespaces | `App\Models` is only referenced by controllers, providers, factories, and seeders |
+| Rule                               | What it checks                                                                                 |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Models extend Eloquent model       | Every class in `App\Models` extends `Illuminate\Database\Eloquent\Model` and defines `casts()` |
+| Models used in expected namespaces | `App\Models` is only referenced by controllers, providers, factories, and seeders              |
 
 ### HttpTest.php — HTTP layer
 
-| Rule | What it checks |
-|---|---|
-| Controller suffix | Every class in `App\Http\Controllers` ends with `Controller` and extends nothing |
-| Controllers not used directly | No app class imports a controller — only the framework wires them |
+| Rule                          | What it checks                                                                   |
+| ----------------------------- | -------------------------------------------------------------------------------- |
+| Controller suffix             | Every class in `App\Http\Controllers` ends with `Controller` and extends nothing |
+| Controllers not used directly | No app class imports a controller — only the framework wires them                |
 
 ### ProvidersTest.php — Service providers
 
-| Rule | What it checks |
-|---|---|
-| ServiceProvider suffix | Every class in `App\Providers` ends with `ServiceProvider` and extends the base class |
-| Providers not used directly | No app class imports a provider — only the framework wires them |
+| Rule                        | What it checks                                                                        |
+| --------------------------- | ------------------------------------------------------------------------------------- |
+| ServiceProvider suffix      | Every class in `App\Providers` ends with `ServiceProvider` and extends the base class |
+| Providers not used directly | No app class imports a provider — only the framework wires them                       |
 
 When adding a new `App\` namespace (e.g. `App\Jobs`, `App\Mail`), create a matching `tests/Arch/{Layer}Test.php` file with inheritance, suffix, and boundary rules.
 
@@ -208,11 +208,11 @@ Browser tests live in `tests/Browser/` and are collected by the `Browser` testsu
 
 `phpunit.xml` defines four testsuites and sets the coverage source to `app/`:
 
-| Suite | Directory |
-|---|---|
-| Unit | `tests/Unit` |
+| Suite   | Directory       |
+| ------- | --------------- |
+| Unit    | `tests/Unit`    |
 | Feature | `tests/Feature` |
-| Arch | `tests/Arch` |
+| Arch    | `tests/Arch`    |
 | Browser | `tests/Browser` |
 
 Key environment overrides set in `phpunit.xml` for test runs:

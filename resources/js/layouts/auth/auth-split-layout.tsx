@@ -1,13 +1,10 @@
 import { Link, usePage } from '@inertiajs/react';
+
 import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
 
-export default function AuthSplitLayout({
-    children,
-    title,
-    description,
-}: AuthLayoutProps) {
+export default function AuthSplitLayout({ children, title, description }: AuthLayoutProps) {
     const { app } = usePage().props;
 
     return (
@@ -32,12 +29,10 @@ export default function AuthSplitLayout({
                 </Link>
                 <div className="relative z-20 mt-auto space-y-3">
                     <p className="text-lg leading-relaxed text-balance text-neutral-100/90">
-                        Ship faster with a refined Laravel + React foundation —
-                        authentication, settings and layouts, ready on day one.
+                        Ship faster with a refined Laravel + React foundation — authentication,
+                        settings and layouts, ready on day one.
                     </p>
-                    <p className="text-sm text-neutral-400">
-                        The {app.name} team
-                    </p>
+                    <p className="text-sm text-neutral-400">The {app.name} team</p>
                 </div>
             </div>
             <div className="w-full lg:p-10">
@@ -46,15 +41,11 @@ export default function AuthSplitLayout({
                         href={home()}
                         className="relative z-20 flex items-center justify-center lg:hidden"
                     >
-                        <AppLogoIcon className="h-10 fill-current text-foreground sm:h-12" />
+                        <AppLogoIcon className="text-foreground h-10 fill-current sm:h-12" />
                     </Link>
                     <div className="flex flex-col gap-1.5 text-left sm:items-center sm:text-center">
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            {title}
-                        </h1>
-                        <p className="text-sm text-balance text-muted-foreground">
-                            {description}
-                        </p>
+                        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+                        <p className="text-muted-foreground text-sm text-balance">{description}</p>
                     </div>
                     {children}
                 </div>

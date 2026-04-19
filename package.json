@@ -7,9 +7,6 @@
         "build:ssr": "vp build && vp build --ssr",
         "dev": "vp dev"
     },
-    "overrides": {
-        "vite": "npm:@voidzero-dev/vite-plus-core@latest"
-    },
     "dependencies": {
         "@base-ui/react": "^1.4.0",
         "@fontsource-variable/geist": "^5.2.8",
@@ -52,5 +49,8 @@
         "typescript": "^6.0.0-dev.20260416",
         "vite": "^8.0.0",
         "vite-plus": "^0.1.18"
+    },
+    "overrides": {
+        "vite": "npm:@voidzero-dev/vite-plus-core@latest"
     }
 }

@@ -9,11 +9,11 @@ This project runs three static analysis tools in a deliberate order: **Pint → 
 
 ## Tool Execution Order
 
-| Step | Tool | Purpose |
-|---|---|---|
-| 1 | **Pint** | Formats code style — enforces strict types, import order, class element order, and dozens of other syntactic rules |
-| 2 | **Larastan** | Runs PHPStan level 9 type analysis — requires fully-qualified imports and strict types to be present before analysis |
-| 3 | **Rector** | Applies automated refactors — works on already-formatted, already-typed code so its output remains clean |
+| Step | Tool         | Purpose                                                                                                              |
+| ---- | ------------ | -------------------------------------------------------------------------------------------------------------------- |
+| 1    | **Pint**     | Formats code style — enforces strict types, import order, class element order, and dozens of other syntactic rules   |
+| 2    | **Larastan** | Runs PHPStan level 9 type analysis — requires fully-qualified imports and strict types to be present before analysis |
+| 3    | **Rector**   | Applies automated refactors — works on already-formatted, already-typed code so its output remains clean             |
 
 Running tools out of order causes problems: Rector may introduce code that Pint would then reformat, requiring a second pass. Running Larastan before Pint may produce errors on code that Pint would have fixed anyway.
 
@@ -21,14 +21,14 @@ Running tools out of order causes problems: Rector may introduce code that Pint 
 
 All static analysis commands are exposed as Composer scripts so they work identically inside and outside Sail:
 
-| Command | Script | What it does |
-|---|---|---|
-| `composer lint` | `vendor/bin/pint` | Formats all PHP files in place |
-| `composer lint:test` | `vendor/bin/pint --test` | Checks formatting without writing changes (CI-safe) |
-| `composer refactor` | `vendor/bin/rector --dry-run` | Shows what Rector would change without applying |
-| `composer refactor:apply` | `vendor/bin/rector` | Applies Rector refactors in place |
-| `composer types` | `vendor/bin/phpstan analyse --memory-limit=512M` | Runs Larastan type analysis |
-| `composer check-all` | Chains four scripts | Runs the full pipeline in order |
+| Command                   | Script                                           | What it does                                        |
+| ------------------------- | ------------------------------------------------ | --------------------------------------------------- |
+| `composer lint`           | `vendor/bin/pint`                                | Formats all PHP files in place                      |
+| `composer lint:test`      | `vendor/bin/pint --test`                         | Checks formatting without writing changes (CI-safe) |
+| `composer refactor`       | `vendor/bin/rector --dry-run`                    | Shows what Rector would change without applying     |
+| `composer refactor:apply` | `vendor/bin/rector`                              | Applies Rector refactors in place                   |
+| `composer types`          | `vendor/bin/phpstan analyse --memory-limit=512M` | Runs Larastan type analysis                         |
+| `composer check-all`      | Chains four scripts                              | Runs the full pipeline in order                     |
 
 ### check-all Chain
 
@@ -58,25 +58,25 @@ The `laravel` preset enforces Laravel's official code style, including PSR-12 co
 
 ### Key Rules
 
-| Rule | Value | Purpose |
-|---|---|---|
-| `declare_strict_types` | `true` | Injects `declare(strict_types=1)` at the top of every PHP file |
-| `ordered_class_elements` | custom order | Enforces a consistent member ordering within classes |
-| `strict_comparison` | `true` | Replaces `==` with `===` throughout the codebase |
-| `fully_qualified_strict_types` | `true` | Ensures imported types use fully-qualified names where required |
-| `global_namespace_import` | classes + constants + functions | Adds `use` statements instead of inline FQCNs |
-| `mb_str_functions` | `true` | Replaces `str_*` with `mb_str_*` equivalents |
-| `modernize_types_casting` | `true` | Replaces `intval()`, `strval()` etc. with `(int)`, `(string)` casts |
-| `protected_to_private` | `true` | Narrows visibility from `protected` to `private` where possible |
+| Rule                           | Value                           | Purpose                                                             |
+| ------------------------------ | ------------------------------- | ------------------------------------------------------------------- |
+| `declare_strict_types`         | `true`                          | Injects `declare(strict_types=1)` at the top of every PHP file      |
+| `ordered_class_elements`       | custom order                    | Enforces a consistent member ordering within classes                |
+| `strict_comparison`            | `true`                          | Replaces `==` with `===` throughout the codebase                    |
+| `fully_qualified_strict_types` | `true`                          | Ensures imported types use fully-qualified names where required     |
+| `global_namespace_import`      | classes + constants + functions | Adds `use` statements instead of inline FQCNs                       |
+| `mb_str_functions`             | `true`                          | Replaces `str_*` with `mb_str_*` equivalents                        |
+| `modernize_types_casting`      | `true`                          | Replaces `intval()`, `strval()` etc. with `(int)`, `(string)` casts |
+| `protected_to_private`         | `true`                          | Narrows visibility from `protected` to `private` where possible     |
 
 ### Disabled Final Rules
 
 Three `final` rules from the Laravel preset are explicitly disabled:
 
-| Rule | Reason |
-|---|---|
-| `final_class` | Would make all classes final, breaking extensibility |
-| `final_internal_class` | Same — too aggressive for a starter kit |
+| Rule                                     | Reason                                                    |
+| ---------------------------------------- | --------------------------------------------------------- |
+| `final_class`                            | Would make all classes final, breaking extensibility      |
+| `final_internal_class`                   | Same — too aggressive for a starter kit                   |
 | `final_public_method_for_abstract_class` | Conflicts with test patterns that extend abstract classes |
 
 ### Excluded Path
@@ -88,9 +88,7 @@ Three `final` rules from the Laravel preset are explicitly disabled:
 ```json
 {
     "preset": "laravel",
-    "notPath": [
-        "tests/TestCase.php"
-    ],
+    "notPath": ["tests/TestCase.php"],
     "rules": {
         "array_push": true,
         "backtick_to_shell_exec": true,
@@ -162,13 +160,13 @@ The project runs at **level 9** — the maximum PHPStan strictness level. This m
 
 PHPStan analyses these five directories:
 
-| Path | Contents |
-|---|---|
-| `app` | All application code |
-| `config` | Configuration files |
-| `bootstrap` | Application bootstrap files |
-| `database/factories` | Eloquent model factories |
-| `routes` | Route definition files |
+| Path                 | Contents                    |
+| -------------------- | --------------------------- |
+| `app`                | All application code        |
+| `config`             | Configuration files         |
+| `bootstrap`          | Application bootstrap files |
+| `database/factories` | Eloquent model factories    |
+| `routes`             | Route definition files      |
 
 `tests/` is intentionally excluded — test files use dynamic patterns (closures passed to `test()`) that would generate many false positives.
 
@@ -176,10 +174,10 @@ PHPStan analyses these five directories:
 
 Two NEON files are included:
 
-| Include | Purpose |
-|---|---|
-| `vendor/larastan/larastan/extension.neon` | Adds Laravel-specific type stubs — teaches PHPStan about Eloquent relationships, facades, config helpers, etc. |
-| `vendor/phpstan/phpstan/conf/bleedingEdge.neon` | Opts into upcoming PHPStan rules before they become default — future-proofs type coverage |
+| Include                                         | Purpose                                                                                                        |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `vendor/larastan/larastan/extension.neon`       | Adds Laravel-specific type stubs — teaches PHPStan about Eloquent relationships, facades, config helpers, etc. |
+| `vendor/phpstan/phpstan/conf/bleedingEdge.neon` | Opts into upcoming PHPStan rules before they become default — future-proofs type coverage                      |
 
 ### Zero-Baseline Policy
 
@@ -215,25 +213,25 @@ Rector applies automated code refactors. Configuration lives in `rector.php` at 
 
 Rector processes these four paths:
 
-| Path | Contents |
-|---|---|
-| `app` | All application code |
-| `bootstrap/app.php` | Application bootstrap |
-| `database` | Migrations, factories, and seeders |
-| `public` | Public-facing entry points |
+| Path                | Contents                           |
+| ------------------- | ---------------------------------- |
+| `app`               | All application code               |
+| `bootstrap/app.php` | Application bootstrap              |
+| `database`          | Migrations, factories, and seeders |
+| `public`            | Public-facing entry points         |
 
 ### Prepared Sets
 
 Six prepared rule sets are enabled:
 
-| Set | What it enforces |
-|---|---|
-| `deadCode: true` | Removes unreachable code, unused variables, and dead assignments |
-| `codeQuality: true` | Simplifies conditions, removes redundant casts, and applies other quality improvements |
-| `codingStyle: true` | Normalizes code style patterns not covered by Pint |
-| `typeDeclarations: true` | Adds missing parameter and return type declarations |
-| `privatization: true` | Narrows class/property/method visibility where possible |
-| `earlyReturn: true` | Converts nested conditions to early-return patterns |
+| Set                      | What it enforces                                                                       |
+| ------------------------ | -------------------------------------------------------------------------------------- |
+| `deadCode: true`         | Removes unreachable code, unused variables, and dead assignments                       |
+| `codeQuality: true`      | Simplifies conditions, removes redundant casts, and applies other quality improvements |
+| `codingStyle: true`      | Normalizes code style patterns not covered by Pint                                     |
+| `typeDeclarations: true` | Adds missing parameter and return type declarations                                    |
+| `privatization: true`    | Narrows class/property/method visibility where possible                                |
+| `earlyReturn: true`      | Converts nested conditions to early-return patterns                                    |
 
 ### Skipped Rule
 
