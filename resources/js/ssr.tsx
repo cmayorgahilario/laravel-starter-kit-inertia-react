@@ -14,6 +14,6 @@ createServer((page) =>
             >;
             return pages[`./pages/${name}.tsx`];
         },
-        setup: ({ App, props }: { App: React.FC<Record<string, unknown>>; props: Record<string, unknown> }) => <App {...props} />,
+        setup: ({ App, props }) => <App {...props} />,
     }),
 );

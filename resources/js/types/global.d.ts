@@ -1,4 +1,5 @@
 import type { User } from './auth';
+import type { BreadcrumbItem } from './navigation';
 
 declare module '@inertiajs/core' {
     interface PageProps {
@@ -13,6 +14,7 @@ declare module '@inertiajs/core' {
             status?: string;
         };
         sidebarOpen: boolean;
+        breadcrumbs?: BreadcrumbItem[];
     }
 }
 
