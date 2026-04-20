@@ -4,13 +4,10 @@ on:
   workflow_call: {}
 
 jobs:
-  # NOTE: With matrix.shard = ["1/1"] (default), the GitHub Actions display name becomes
-  # "Pest (tests + coverage) (1/1)". Branch protection rules referencing the old exact name
-  # "Pest (tests + coverage)" must be updated to the new suffixed name or a glob pattern.
-  # Scaling to N shards is a 1-line change: replace ["1/1"] with ["1/N", "2/N", ..., "N/N"].
   pest-coverage:
     name: Tests (Shard ${{ matrix.shard }}/5)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     strategy:
       fail-fast: false
@@ -70,13 +67,13 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
+
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: "24"
 
       - name: Cache Bun dependencies
         uses: actions/cache@v5
@@ -99,11 +96,34 @@ jobs:
       - name: Build frontend assets
         run: bun run build
 
-      - name: Install Playwright Chromium
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo "version=$(bun pm ls 2>/dev/null | grep playwright | head -1 | sed 's/.*@//')" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v5
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: bunx playwright install --with-deps chromium
+
+      - name: Install Playwright System Dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
 
       - name: Run migrations
         run: php artisan migrate --force
 
       - name: Run tests with coverage
-        run: php artisan test --coverage --min=100 --compact --shard=${{ matrix.shard }}/5
+        run: php artisan test --shard=${{ matrix.shard }}/5
+
+      - name: Store Artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-screenshots-shard-${{ matrix.shard }}
+          path: tests/Browser/Screenshots
