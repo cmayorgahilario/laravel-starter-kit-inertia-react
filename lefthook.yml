@@ -1,0 +1,14 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      run: bun run test:lint
+    types:
+      run: bun run test:types
+    pint:
+      run: vendor/bin/sail bin pint --dirty --test
+
+commit-msg:
+  commands:
+    commitlint:
+      run: bun run commitlint --edit {1}
