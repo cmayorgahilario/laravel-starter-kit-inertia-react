@@ -21,10 +21,7 @@ jobs:
     uses: ./.github/workflows/js-quality.yml
     secrets: inherit
 
-  pest:
+  tests:
+    needs: [php-quality, js-quality]
     uses: ./.github/workflows/tests.yml
-    secrets: inherit
-
-  coverage:
-    uses: ./.github/workflows/coverage.yml
     secrets: inherit

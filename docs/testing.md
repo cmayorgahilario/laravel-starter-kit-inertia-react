@@ -190,7 +190,29 @@ CI is composed of one short orchestrator (`ci.yml`) that calls three reusable `w
 | `.github/workflows/ci.yml` | Orchestrator — delegates to reusables with `secrets: inherit` | `push` (all branches) + `pull_request` (main) | none (calls others) |
 | `.github/workflows/php-quality.yml` | PHP lint + static analysis | `workflow_call` | `Pint (code style)`, `Larastan (static analysis)` |
 | `.github/workflows/js-quality.yml` | JS lint + type check + build | `workflow_call` | `oxlint (JS lint)`, `tsc (type check)`, `build (Vite)` |
-| `.github/workflows/pest.yml` | Pest tests + coverage (sharded) | `workflow_call` | `Pest (tests + coverage)` (matrix) |
+| `.github/workflows/tests.yml` | Pest tests (sharded matrix, per-shard coverage) + merge job that enforces 100% line coverage | `workflow_call` | `Tests (Shard N/5)` (matrix of 5) + `Merge coverage & enforce 100%` |
+
+### Layered execution
+
+`ci.yml` gates the heavier workflows behind the lighter ones using `needs:` so CI minutes are not wasted re-running expensive work after an early failure:
+
+```
+Layer 1 (fast, parallel)        Layer 2 (tests + merged coverage)
+┌──────────────────────┐        ┌──────────────────────────────────────────────────┐
+│ php-quality          │        │ ┌──────────────────────┐  ┌────────────────────┐ │
+│ (pint, larastan)     │───┐    │ │ tests (5 shards,     │  │ merge-coverage     │ │
+├──────────────────────┤   ├───▶│ │ each writes .cov)    │─▶│ phpcov merge       │ │
+│ js-quality           │   │    │ │                      │  │ enforce --min=100  │ │
+│ (oxlint, tsc, build) │───┘    │ └──────────────────────┘  └────────────────────┘ │
+└──────────────────────┘        └──────────────────────────────────────────────────┘
+```
+
+Rationale for each gate:
+
+- **`tests` needs `[php-quality, js-quality]`** — no point burning five parallel shards when `pint --test` or `tsc` already proved the code is not ready. A dev who broke formatting is going to re-push regardless.
+- **`merge-coverage` needs `[tests (all shards)]`** — lives inside `tests.yml` and fans in after the matrix completes. Downloads every shard's `.cov` artifact, merges with `phpcov`, and enforces `--min=100` against the combined clover report. Each shard runs with `pcov` enabled and writes `coverage/shard-N.cov`; tests are never re-executed for coverage, so total wall-clock is `max(shard times) + ~1 min` regardless of suite size.
+
+Trade-off: pcov adds ~10–30% runtime to each shard. In return, coverage scales with `max(shard)` instead of the full suite runtime — critical as downstream projects grow.
 
 Design principles:
 
@@ -198,55 +220,61 @@ Design principles:
 - The orchestrator passes `secrets: inherit` so downstream workflows can access repo secrets without re-declaring them.
 - `js-quality.yml` runs a dual-runtime (PHP + Bun) chain in each job because Wayfinder generates TypeScript type files that are gitignored; they must be regenerated at CI time before linting, type-checking, or building.
 - Job display names (`Pint (code style)`, `Larastan (static analysis)`, etc.) are deliberately distinct to support exact-name branch-protection rules.
+- Within each layer, jobs run in parallel with `fail-fast: false` so all failures in that layer surface together in a single run.
+- Merged coverage is uploaded as the `coverage-report` artifact (clover XML + text summary) with 14-day retention for auditing.
 
 ## Test Sharding
 
 Pest supports splitting the test suite across parallel CI jobs via the `--shard=N/T` flag, where `N` is this shard's 1-based index and `T` is the total number of shards. Each shard runs an independent subset of tests so the full suite completes faster. See the [Pest sharding docs](https://pestphp.com/docs/continuous-integration#content-sharding-your-tests) for the full reference.
 
-The default matrix in `pest.yml` runs a single shard (equivalent to no sharding):
+Sharding and coverage are **intentionally separated** in CI:
+
+- `tests.yml` runs a 5-shard matrix **without coverage** — fastest feedback on failures
+- `coverage.yml` runs the full suite once with `--coverage --min=100` via pcov — enforces the 100% threshold against a complete, unsharded run
+
+This split avoids the partial-coverage problem (each shard only exercises 1/5 of the suite, so no single shard can meet a meaningful threshold) without paying the complexity cost of merging clover reports.
+
+### Sharded matrix
 
 ```yaml
 strategy:
   fail-fast: false
   matrix:
-    shard: ["1/1"]
+    shard: [1, 2, 3, 4, 5]
 ```
 
-The test step passes the shard value directly to the runner:
+The test step passes the shard value to Pest:
 
 ```yaml
-run: php artisan test --coverage --min=100 --compact --shard=${{ matrix.shard }}
+run: php artisan test --shard=${{ matrix.shard }}/5
 ```
 
-### When to scale
+`fail-fast: false` is set, so a failing shard does not cancel its siblings — all shards complete and failures are reported together.
 
-Add shards when:
+### Time-balanced sharding via shards.json
 
-- The Pest job exceeds ~5 minutes wall-clock time and CI feedback loops are blocking developer throughput.
-- The test suite grows large enough that a single runner is the bottleneck.
+Pest v4.6+ supports time-balanced distribution: when `tests/.pest/shards.json` exists, shards are split by recorded per-class execution time instead of file count, so each CI job takes roughly the same wall-clock duration. The file is tracked in git.
 
-### How to scale
-
-Expanding to five shards is a one-line matrix change:
-
-```yaml
-matrix:
-  shard: ["1/5","2/5","3/5","4/5","5/5"]
-```
-
-`fail-fast: false` is already set, so a failing shard does not cancel its siblings — all shards complete and failures are reported together.
-
-### Rebalancing shards with --update-shards
-
-Pest can emit time-balanced redistribution data to prevent hot-shard skew. Run `--update-shards` locally or in a scheduled job, then commit the updated distribution file so subsequent runs use the new boundaries:
+When the timing data drifts (tests added, removed, or their duration changes significantly), regenerate it locally:
 
 ```bash
-vendor/bin/sail artisan test --shard=1/5 --update-shards
+vendor/bin/sail bin pest --parallel --update-shards
 ```
+
+This runs the full suite, writes updated timings to `tests/.pest/shards.json`, and you commit the result. Pest emits a `WARN` in CI when the file is out of date; new test files are distributed evenly until you regenerate.
+
+No pre-commit/pre-push hook is wired for this — regenerating on every commit would run the full suite and the hook would need to self-stage the output file. Prefer an ad-hoc regeneration when CI shows balance drift, or a scheduled GitHub Actions workflow if the suite grows large enough to justify one.
 
 ### Branch protection caveat
 
-When the matrix expands, GitHub Actions appends the shard value to the job display name. With the default single shard the required status check is named `Pest (tests + coverage) (1/1)`. Expanding to five shards produces `Pest (tests + coverage) (1/5)` through `Pest (tests + coverage) (5/5)`. Branch-protection rules that require the exact job name must be updated to match the new suffixed names, or switched to a glob or regex pattern that covers all shards.
+GitHub Actions appends the matrix value to the sharded job display name. The required status checks are:
+
+- `Pest (sharded tests) / Tests (Shard 1/5)` … `Tests (Shard 5/5)` (five checks)
+- `Pest (coverage) / Coverage (full suite, min 100%)` (one check)
+- `PHP Quality / Pint (code style)`, `PHP Quality / Larastan (static analysis)`
+- `JS Quality / oxlint (JS lint)`, `JS Quality / tsc (type check)`, `JS Quality / build (Vite)`
+
+Branch-protection rules that require the exact job name must list all five shards explicitly, or use a pattern that matches the `Tests (Shard N/5)` suffix.
 
 ## Browser Testing
 
@@ -269,7 +297,7 @@ test('homepage title contains app name', function () {
 });
 ```
 
-Browser tests live in `tests/Browser/` and are collected by the `Browser` testsuite defined in `phpunit.xml`. They do not reset the database between tests (no `RefreshDatabase`) so they can run against the full live stack.
+Browser tests live in `tests/Browser/` and are collected by the `Browser` testsuite defined in `phpunit.xml`. They use `RefreshDatabase` (wired in `tests/Pest.php` via `pest()->use(RefreshDatabase::class)->in('Browser')`), so each test starts against a freshly migrated database. Feature tests use `LazilyRefreshDatabase` instead; Unit and Arch tests do not touch the database.
 
 ## PHPUnit XML Configuration
 

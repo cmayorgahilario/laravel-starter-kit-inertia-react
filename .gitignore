@@ -29,6 +29,7 @@ target/
 .cache/
 tmp/
 coverage/
+coverage-report/
 
 # ── VitePress ──
 docs/.vitepress/dist/

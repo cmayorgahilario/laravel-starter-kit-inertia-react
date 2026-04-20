@@ -1,10 +1,10 @@
-name: Pest (sharded tests)
+name: Pest (tests + merged coverage)
 
 on:
   workflow_call: {}
 
 jobs:
-  pest:
+  tests:
     name: Tests (Shard ${{ matrix.shard }}/5)
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -54,8 +54,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.5"
-          extensions: mbstring, dom, fileinfo, pgsql, pdo_pgsql, redis, intl, bcmath, gd
-          coverage: none
+          extensions: mbstring, dom, fileinfo, pgsql, pdo_pgsql, redis, intl, bcmath, gd, pcov
+          coverage: pcov
 
       - name: Cache Composer dependencies
         uses: actions/cache@v5
@@ -118,12 +118,88 @@ jobs:
       - name: Run migrations
         run: php artisan migrate --force
 
-      - name: Run tests
-        run: php artisan test --shard=${{ matrix.shard }}/5
+      - name: Run tests with per-shard coverage
+        run: |
+          mkdir -p coverage
+          php artisan test --shard=${{ matrix.shard }}/5 --coverage-php=coverage/shard-${{ matrix.shard }}.cov
 
-      - name: Store Artifacts
+      - name: Upload shard coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-shard-${{ matrix.shard }}
+          path: coverage/shard-${{ matrix.shard }}.cov
+          retention-days: 1
+
+      - name: Upload browser screenshots on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: browser-screenshots-shard-${{ matrix.shard }}
           path: tests/Browser/Screenshots
+
+  merge-coverage:
+    name: Merge coverage & enforce 100%
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: tests
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: mbstring, dom, fileinfo, intl
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Download all shard coverage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: coverage
+          pattern: coverage-shard-*
+          merge-multiple: true
+
+      - name: Merge coverage reports
+        run: |
+          mkdir -p coverage-report
+          vendor/bin/phpcov merge \
+            --clover coverage-report/clover.xml \
+            --text coverage-report/summary.txt \
+            coverage/
+          cat coverage-report/summary.txt
+
+      - name: Enforce minimum 100% line coverage
+        run: |
+          php -r '
+            $xml = new SimpleXMLElement(file_get_contents("coverage-report/clover.xml"));
+            $metrics = $xml->project->metrics;
+            $statements = (int) $metrics["statements"];
+            $covered = (int) $metrics["coveredstatements"];
+            $percent = $statements > 0 ? ($covered / $statements) * 100 : 0;
+            printf("Line coverage: %.2f%% (%d/%d statements)\n", $percent, $covered, $statements);
+            if ($percent < 100) {
+                fwrite(STDERR, "FAIL: line coverage below 100%\n");
+                exit(1);
+            }
+            echo "OK: 100% line coverage\n";
+          '
+
+      - name: Upload merged coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report/
+          retention-days: 14
