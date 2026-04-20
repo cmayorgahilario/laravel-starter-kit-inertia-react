@@ -227,12 +227,7 @@ Design principles:
 
 Pest supports splitting the test suite across parallel CI jobs via the `--shard=N/T` flag, where `N` is this shard's 1-based index and `T` is the total number of shards. Each shard runs an independent subset of tests so the full suite completes faster. See the [Pest sharding docs](https://pestphp.com/docs/continuous-integration#content-sharding-your-tests) for the full reference.
 
-Sharding and coverage are **intentionally separated** in CI:
-
-- `tests.yml` runs a 5-shard matrix **without coverage** — fastest feedback on failures
-- `coverage.yml` runs the full suite once with `--coverage --min=100` via pcov — enforces the 100% threshold against a complete, unsharded run
-
-This split avoids the partial-coverage problem (each shard only exercises 1/5 of the suite, so no single shard can meet a meaningful threshold) without paying the complexity cost of merging clover reports.
+In CI, each shard writes its own coverage file and a merge job combines them after the matrix fans in. This keeps wall-clock time bounded by the slowest shard (plus a small merge cost) instead of requiring a separate full-suite run.
 
 ### Sharded matrix
 
@@ -243,13 +238,28 @@ strategy:
     shard: [1, 2, 3, 4, 5]
 ```
 
-The test step passes the shard value to Pest:
+Each shard writes serialized coverage data to a per-shard file:
 
 ```yaml
-run: php artisan test --shard=${{ matrix.shard }}/5
+run: |
+  mkdir -p coverage
+  php artisan test --shard=${{ matrix.shard }}/5 --coverage-php=coverage/shard-${{ matrix.shard }}.cov
 ```
 
+The `.cov` file is uploaded as an artifact (`coverage-shard-N`) with 1-day retention.
+
 `fail-fast: false` is set, so a failing shard does not cancel its siblings — all shards complete and failures are reported together.
+
+### Merge and threshold enforcement
+
+After every shard finishes, the `merge-coverage` job:
+
+1. Downloads all `coverage-shard-*` artifacts into a single `coverage/` directory.
+2. Runs `vendor/bin/phpcov merge --clover coverage-report/clover.xml --text coverage-report/summary.txt coverage/` to produce a combined Clover XML plus a human-readable summary.
+3. Parses the clover XML inline with PHP and fails the job if line coverage (`statements` vs `coveredstatements`) falls below 100%.
+4. Uploads the merged report as the `coverage-report` artifact for download and review.
+
+Because the merge step is pure XML parsing it finishes in well under a minute regardless of suite size. Total CI wall-clock for coverage is `max(shard time) + merge time`, not `Σ(shard times)`.
 
 ### Time-balanced sharding via shards.json
 
@@ -269,8 +279,8 @@ No pre-commit/pre-push hook is wired for this — regenerating on every commit w
 
 GitHub Actions appends the matrix value to the sharded job display name. The required status checks are:
 
-- `Pest (sharded tests) / Tests (Shard 1/5)` … `Tests (Shard 5/5)` (five checks)
-- `Pest (coverage) / Coverage (full suite, min 100%)` (one check)
+- `Pest (tests + merged coverage) / Tests (Shard 1/5)` … `Tests (Shard 5/5)` (five checks)
+- `Pest (tests + merged coverage) / Merge coverage & enforce 100%` (one check)
 - `PHP Quality / Pint (code style)`, `PHP Quality / Larastan (static analysis)`
 - `JS Quality / oxlint (JS lint)`, `JS Quality / tsc (type check)`, `JS Quality / build (Vite)`
 
