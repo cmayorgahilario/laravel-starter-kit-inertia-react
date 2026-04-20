@@ -26,6 +26,7 @@ export default defineConfig({
                     { text: 'Architecture', link: '/architecture' },
                     { text: 'Frontend Pipeline', link: '/frontend-pipeline' },
                     { text: 'shadcn/ui', link: '/shadcn' },
+                    { text: 'Theming', link: '/theming' },
                     { text: 'Domain Namespaces', link: '/domain-namespaces' },
                     { text: 'Testing', link: '/testing' },
                     { text: 'Static Analysis', link: '/static-analysis' },
