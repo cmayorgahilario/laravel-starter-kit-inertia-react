@@ -6,7 +6,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "06:00"
-      timezone: "America/Mexico_City"
+      timezone: "UTC"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(deps)"
@@ -22,7 +22,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "06:00"
-      timezone: "America/Mexico_City"
+      timezone: "UTC"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(deps)"
@@ -38,7 +38,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "06:00"
-      timezone: "America/Mexico_City"
+      timezone: "UTC"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(deps)"
