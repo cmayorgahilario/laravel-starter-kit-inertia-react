@@ -1,0 +1,28 @@
+{
+    "timings": {
+        "Tests\\Arch\\GlobalTest": 0.2742,
+        "Tests\\Arch\\HttpTest": 0.0421,
+        "Tests\\Arch\\ModelsTest": 0.0329,
+        "Tests\\Arch\\ProvidersTest": 0.0413,
+        "Tests\\Browser\\HomepageTest": 0.7243,
+        "Tests\\Feature\\Auth\\AuthenticationTest": 0.7117,
+        "Tests\\Feature\\Auth\\EmailVerificationTest": 0.2981,
+        "Tests\\Feature\\Auth\\HandleAppearanceTest": 0.2217,
+        "Tests\\Feature\\Auth\\PasswordResetTest": 1.4177,
+        "Tests\\Feature\\Auth\\RegistrationTest": 0.4568,
+        "Tests\\Feature\\Auth\\TwoFactorAuthenticationTest": 0.9183,
+        "Tests\\Feature\\Breadcrumbs\\BreadcrumbTest": 0.3305,
+        "Tests\\Feature\\IdeHelperTest": 1.0429,
+        "Tests\\Feature\\InertiaWelcomeTest": 0.2217,
+        "Tests\\Feature\\Models\\UserTest": 0.0905,
+        "Tests\\Feature\\Providers\\AppServiceProviderTest": 0.448,
+        "Tests\\Feature\\Settings\\AppearanceTest": 0.0927,
+        "Tests\\Feature\\Settings\\NotificationTest": 0.2123,
+        "Tests\\Feature\\Settings\\PasswordTest": 0.2575,
+        "Tests\\Feature\\Settings\\ProfileTest": 0.4078,
+        "Tests\\Feature\\Settings\\SessionTest": 0.1872,
+        "Tests\\Feature\\TelescopeProviderTest": 0.2026
+    },
+    "checksum": "bdedefe9b2582bab4addfa64fa674ab6",
+    "updated_at": "2026-04-20T19:06:00+00:00"
+}
