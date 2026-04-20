@@ -5,7 +5,10 @@
     "scripts": {
         "build": "vp build",
         "build:ssr": "vp build && vp build --ssr",
-        "dev": "vp dev"
+        "dev": "vp dev",
+        "lint": "NODE_OPTIONS='--experimental-strip-types' vp fmt resources/ && NODE_OPTIONS='--experimental-strip-types' vp lint --fix",
+        "test:lint": "NODE_OPTIONS='--experimental-strip-types' vp fmt --check resources/ && NODE_OPTIONS='--experimental-strip-types' vp lint",
+        "test:types": "tsc --noEmit"
     },
     "dependencies": {
         "@base-ui/react": "^1.4.0",
@@ -46,11 +49,8 @@
         "laravel-vite-plugin": "^3.0.0",
         "playwright": "^1.59.1",
         "tailwindcss": "^4.0.0",
-        "typescript": "^6.0.0-dev.20260416",
-        "vite": "^8.0.0",
-        "vite-plus": "^0.1.18"
-    },
-    "overrides": {
-        "vite": "npm:@voidzero-dev/vite-plus-core@latest"
+        "typescript": "^6.0.3",
+        "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+        "vite-plus": "latest"
     }
 }

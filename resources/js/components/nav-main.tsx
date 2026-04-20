@@ -13,6 +13,7 @@ import {
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl, type IsCurrentUrlFn } from '@/hooks/use-current-url';
+import {Link} from "@inertiajs/react";
 
 type NavSubItem = {
     title: string;
@@ -70,7 +71,7 @@ function NavLeaf({ item, isCurrentUrl }: { item: NavLeafItem; isCurrentUrl: IsCu
                             <SidebarMenuSubItem key={subItem.title}>
                                 <SidebarMenuSubButton
                                     isActive={subItem.isActive}
-                                    render={<a href={subItem.url} />}
+                                    render={<Link href={subItem.url} />}
                                 >
                                     <span>{subItem.title}</span>
                                 </SidebarMenuSubButton>
@@ -87,7 +88,7 @@ function NavLeaf({ item, isCurrentUrl }: { item: NavLeafItem; isCurrentUrl: IsCu
             <SidebarMenuButton
                 tooltip={item.title}
                 isActive={resolveActive(item.url, item.isActive, isCurrentUrl)}
-                render={<a href={item.url} />}
+                render={<Link href={item.url} />}
             >
                 {item.icon}
                 <span>{item.title}</span>
