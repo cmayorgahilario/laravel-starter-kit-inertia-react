@@ -9,13 +9,13 @@ jobs:
   # "Pest (tests + coverage)" must be updated to the new suffixed name or a glob pattern.
   # Scaling to N shards is a 1-line change: replace ["1/1"] with ["1/N", "2/N", ..., "N/N"].
   pest-coverage:
-    name: Pest (tests + coverage)
+    name: Tests (Shard ${{ matrix.shard }}/5)
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        shard: ["1/1"]
+        shard: [1, 2, 3, 4, 5]
 
     services:
       postgres:
@@ -51,18 +51,17 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          # TODO: downgrade to 8.4 if 8.5 is not yet available on setup-php
           php-version: "8.5"
           extensions: mbstring, dom, fileinfo, pgsql, pdo_pgsql, redis, intl, bcmath, gd, pcov
           coverage: pcov
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
@@ -72,7 +71,7 @@ jobs:
         run: composer install --prefer-dist --no-interaction --no-progress
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "22"
 
@@ -80,7 +79,7 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Cache Bun dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.bun/install/cache
           key: bun-${{ hashFiles('bun.lock') }}
@@ -107,4 +106,4 @@ jobs:
         run: php artisan migrate --force
 
       - name: Run tests with coverage
-        run: php artisan test --coverage --min=100 --compact --shard=${{ matrix.shard }}
+        run: php artisan test --coverage --min=100 --compact --shard=${{ matrix.shard }}/5
