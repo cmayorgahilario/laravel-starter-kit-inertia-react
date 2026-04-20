@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use App\Models\Security\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -38,7 +37,7 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        /** @var User|null $user */
+        /** @var \App\Models\Security\User|null $user */
         $user = $request->user();
 
         return array_merge(parent::share($request), [
