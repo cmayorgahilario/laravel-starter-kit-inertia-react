@@ -31,6 +31,7 @@ export default defineConfig({
                     { text: 'Static Analysis', link: '/static-analysis' },
                     { text: 'MCP Servers', link: '/mcp-servers' },
                     { text: 'Developer Tools', link: '/developer-tools' },
+                    { text: 'Git Hooks', link: '/git-hooks' },
                 ],
             },
             {
