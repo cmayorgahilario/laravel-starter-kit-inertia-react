@@ -1,5 +1,6 @@
 'use client';
 
+import { usePage } from '@inertiajs/react';
 import {
     TerminalSquareIcon,
     BotIcon,
@@ -10,7 +11,6 @@ import {
     MapIcon,
     LifeBuoy,
     Send,
-    Command,
     LayoutDashboardIcon,
     InboxIcon,
     UsersIcon,
@@ -18,6 +18,7 @@ import {
     ShieldIcon,
 } from 'lucide-react';
 import * as React from 'react';
+import AppLogo from '@/components/app-logo';
 import { NavMain, type NavMainItem } from '@/components/nav-main';
 import { NavProjects } from '@/components/nav-projects';
 import { NavSecondary } from '@/components/nav-secondary';
@@ -161,6 +162,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const { auth } = usePage().props;
+
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
@@ -170,17 +173,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             size="lg"
                             render={
                                 <a href="#">
-                                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                                        <Command className="size-4" />
-                                    </div>
-                                    <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-medium">
-                                            Laravel
-                                        </span>
-                                        <span className="truncate text-xs">
-                                            Starter Kit
-                                        </span>
-                                    </div>
+                                    <AppLogo />
                                 </a>
                             }
                         />
@@ -193,7 +186,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavSecondary items={data.navSecondary} className="mt-auto" />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                {auth.user && <NavUser user={auth.user} />}
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

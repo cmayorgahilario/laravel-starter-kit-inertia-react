@@ -1,20 +1,8 @@
-import { Link, router } from '@inertiajs/react';
-import {
-    ChevronsUpDownIcon,
-    SparklesIcon,
-    UserRoundCogIcon,
-    CreditCardIcon,
-    BellIcon,
-    LogOutIcon,
-} from 'lucide-react';
+import { ChevronsUpDownIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -23,24 +11,13 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from '@/components/ui/sidebar';
-import { logout } from '@/routes';
-import { edit as editProfile } from '@/routes/settings/profile';
+import { UserMenuContent } from '@/components/user-menu-content';
+import { useInitials } from '@/hooks/use-initials';
+import type { User } from '@/types';
 
-export function NavUser({
-    user,
-}: {
-    user: {
-        name: string;
-        email: string;
-        avatar: string;
-    };
-}) {
+export function NavUser({ user }: { user: User }) {
     const { isMobile } = useSidebar();
-
-    const handleLogout = () => {
-        router.flushAll();
-        router.post(logout().url);
-    };
+    const getInitials = useInitials();
 
     return (
         <SidebarMenu>
@@ -55,8 +32,13 @@ export function NavUser({
                         }
                     >
                         <Avatar>
-                            <AvatarImage src={user.avatar} alt={user.name} />
-                            <AvatarFallback>CN</AvatarFallback>
+                            <AvatarImage
+                                src={user.avatar ?? undefined}
+                                alt={user.name}
+                            />
+                            <AvatarFallback>
+                                {getInitials(user.name)}
+                            </AvatarFallback>
                         </Avatar>
                         <div className="grid flex-1 text-left text-sm leading-tight">
                             <span className="truncate font-medium">
@@ -74,59 +56,7 @@ export function NavUser({
                         align="end"
                         sideOffset={4}
                     >
-                        <DropdownMenuGroup>
-                            <DropdownMenuLabel className="p-0 font-normal">
-                                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                    <Avatar>
-                                        <AvatarImage
-                                            src={user.avatar}
-                                            alt={user.name}
-                                        />
-                                        <AvatarFallback>CN</AvatarFallback>
-                                    </Avatar>
-                                    <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-medium">
-                                            {user.name}
-                                        </span>
-                                        <span className="truncate text-xs">
-                                            {user.email}
-                                        </span>
-                                    </div>
-                                </div>
-                            </DropdownMenuLabel>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <SparklesIcon />
-                                Upgrade to Pro
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem
-                                render={<Link href={editProfile()} />}
-                            >
-                                <UserRoundCogIcon />
-                                Settings
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <CreditCardIcon />
-                                Billing
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <BellIcon />
-                                Notifications
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                            onClick={handleLogout}
-                            data-test="logout-button"
-                        >
-                            <LogOutIcon />
-                            Log out
-                        </DropdownMenuItem>
+                        <UserMenuContent user={user} />
                     </DropdownMenuContent>
                 </DropdownMenu>
             </SidebarMenuItem>

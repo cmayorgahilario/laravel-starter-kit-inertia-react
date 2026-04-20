@@ -39,7 +39,6 @@
         "pestphp/pest-plugin-profanity": "^4.2",
         "pestphp/pest-plugin-type-coverage": "^4.0",
         "phpunit/phpcov": "^11.0",
-        "phpunit/phpunit": "^12.5.12",
         "rector/rector": "^2.0"
     },
     "autoload": {

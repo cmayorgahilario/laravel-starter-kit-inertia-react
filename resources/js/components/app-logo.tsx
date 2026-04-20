@@ -1,18 +1,14 @@
-import AppLogoIcon from '@/components/app-logo-icon';
+import { Command } from 'lucide-react';
 
 export default function AppLogo() {
     return (
         <>
-            <div className="relative flex aspect-square size-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground shadow-sm ring-1 ring-sidebar-primary/10 ring-inset">
-                <AppLogoIcon className="size-5 fill-current text-sidebar-primary-foreground" />
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <Command className="size-4" />
             </div>
-            <div className="ml-1 grid flex-1 text-left">
-                <span className="truncate text-sm leading-tight font-semibold tracking-tight">
-                    Laravel Starter Kit
-                </span>
-                <span className="truncate text-[11px] leading-tight text-sidebar-foreground/60">
-                    Workspace
-                </span>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">Laravel</span>
+                <span className="truncate text-xs">Starter Kit</span>
             </div>
         </>
     );
