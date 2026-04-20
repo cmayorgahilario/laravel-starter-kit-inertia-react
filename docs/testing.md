@@ -181,6 +181,73 @@ The project enforces 100% coverage on two axes to prevent gaps from going unnoti
 
 The `app/` directory is the coverage source (configured in `phpunit.xml`). Tests themselves are excluded.
 
+## CI Pipeline
+
+CI is composed of one short orchestrator (`ci.yml`) that calls three reusable `workflow_call` files. The orchestrator has no jobs of its own — it delegates everything and passes `secrets: inherit` so reusable workflows can reach any secret the calling repo has in scope.
+
+| File | Purpose | Trigger | Jobs |
+| ---- | ------- | ------- | ---- |
+| `.github/workflows/ci.yml` | Orchestrator — delegates to reusables with `secrets: inherit` | `push` (all branches) + `pull_request` (main) | none (calls others) |
+| `.github/workflows/php-quality.yml` | PHP lint + static analysis | `workflow_call` | `Pint (code style)`, `Larastan (static analysis)` |
+| `.github/workflows/js-quality.yml` | JS lint + type check + build | `workflow_call` | `oxlint (JS lint)`, `tsc (type check)`, `build (Vite)` |
+| `.github/workflows/pest.yml` | Pest tests + coverage (sharded) | `workflow_call` | `Pest (tests + coverage)` (matrix) |
+
+Design principles:
+
+- Reusable files use `workflow_call` only — they have no `push` or `pull_request` triggers and cannot be run directly.
+- The orchestrator passes `secrets: inherit` so downstream workflows can access repo secrets without re-declaring them.
+- `js-quality.yml` runs a dual-runtime (PHP + Bun) chain in each job because Wayfinder generates TypeScript type files that are gitignored; they must be regenerated at CI time before linting, type-checking, or building.
+- Job display names (`Pint (code style)`, `Larastan (static analysis)`, etc.) are deliberately distinct to support exact-name branch-protection rules.
+
+## Test Sharding
+
+Pest supports splitting the test suite across parallel CI jobs via the `--shard=N/T` flag, where `N` is this shard's 1-based index and `T` is the total number of shards. Each shard runs an independent subset of tests so the full suite completes faster. See the [Pest sharding docs](https://pestphp.com/docs/continuous-integration#content-sharding-your-tests) for the full reference.
+
+The default matrix in `pest.yml` runs a single shard (equivalent to no sharding):
+
+```yaml
+strategy:
+  fail-fast: false
+  matrix:
+    shard: ["1/1"]
+```
+
+The test step passes the shard value directly to the runner:
+
+```yaml
+run: php artisan test --coverage --min=100 --compact --shard=${{ matrix.shard }}
+```
+
+### When to scale
+
+Add shards when:
+
+- The Pest job exceeds ~5 minutes wall-clock time and CI feedback loops are blocking developer throughput.
+- The test suite grows large enough that a single runner is the bottleneck.
+
+### How to scale
+
+Expanding to five shards is a one-line matrix change:
+
+```yaml
+matrix:
+  shard: ["1/5","2/5","3/5","4/5","5/5"]
+```
+
+`fail-fast: false` is already set, so a failing shard does not cancel its siblings — all shards complete and failures are reported together.
+
+### Rebalancing shards with --update-shards
+
+Pest can emit time-balanced redistribution data to prevent hot-shard skew. Run `--update-shards` locally or in a scheduled job, then commit the updated distribution file so subsequent runs use the new boundaries:
+
+```bash
+vendor/bin/sail artisan test --shard=1/5 --update-shards
+```
+
+### Branch protection caveat
+
+When the matrix expands, GitHub Actions appends the shard value to the job display name. With the default single shard the required status check is named `Pest (tests + coverage) (1/1)`. Expanding to five shards produces `Pest (tests + coverage) (1/5)` through `Pest (tests + coverage) (5/5)`. Branch-protection rules that require the exact job name must be updated to match the new suffixed names, or switched to a glob or regex pattern that covers all shards.
+
 ## Browser Testing
 
 Browser tests use Playwright to drive a real Chromium browser. The browser binary must be installed once per environment:
