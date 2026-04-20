@@ -220,3 +220,91 @@ jobs:
 
       - name: Run build
         run: bun run build
+
+  pest-coverage:
+    name: Pest (tests + coverage)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: sail
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U sail -d testing"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_DATABASE: testing
+      DB_USERNAME: sail
+      DB_PASSWORD: password
+      REDIS_HOST: 127.0.0.1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          # TODO: downgrade to 8.4 if 8.5 is not yet available on setup-php
+          php-version: "8.5"
+          extensions: mbstring, dom, fileinfo, pgsql, pdo_pgsql, redis, intl, bcmath, gd, pcov
+          coverage: pcov
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-
+
+      - name: Install JS dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Bootstrap app environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Generate Wayfinder types
+        run: php artisan wayfinder:generate
+
+      - name: Install Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run tests with coverage
+        run: php artisan test --coverage --min=100 --compact
