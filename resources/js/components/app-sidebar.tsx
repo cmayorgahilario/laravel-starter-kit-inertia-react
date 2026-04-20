@@ -1,25 +1,9 @@
 'use client';
 
 import { usePage } from '@inertiajs/react';
-import {
-    TerminalSquareIcon,
-    BotIcon,
-    BookOpenIcon,
-    Settings2Icon,
-    FrameIcon,
-    PieChartIcon,
-    MapIcon,
-    LifeBuoy,
-    Send,
-    LayoutDashboardIcon,
-    InboxIcon,
-    UsersIcon,
-    CalendarIcon,
-    ShieldIcon,
-} from 'lucide-react';
 import * as React from 'react';
 import AppLogo from '@/components/app-logo';
-import { NavMain, type NavMainItem } from '@/components/nav-main';
+import { NavMain } from '@/components/nav-main';
 import { NavProjects } from '@/components/nav-projects';
 import { NavSecondary } from '@/components/nav-secondary';
 import { NavUser } from '@/components/nav-user';
@@ -33,133 +17,7 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
-
-// This is sample data.
-const data = {
-    user: {
-        name: 'shadcn',
-        email: 'm@example.com',
-        avatar: '/avatars/shadcn.jpg',
-    },
-    navMain: [
-        // Flat single — direct link, no submenu.
-        {
-            type: 'single',
-            title: 'Dashboard',
-            url: dashboard.url(),
-            icon: <LayoutDashboardIcon />,
-        },
-        // Second flat single — demonstrates that consecutive singles share one
-        // anonymous group (no label, no extra vertical gap between them).
-        {
-            type: 'single',
-            title: 'Inbox',
-            url: '#',
-            icon: <InboxIcon />,
-        },
-
-        // Single with items — top-level collapsible parent (no group label).
-        {
-            type: 'single',
-            title: 'Documentation',
-            url: '#',
-            icon: <BookOpenIcon />,
-            items: [
-                { title: 'Introduction', url: '#' },
-                { title: 'Get Started', url: '#' },
-                { title: 'Tutorials', url: '#' },
-                { title: 'Changelog', url: '#' },
-            ],
-        },
-        // Group with flat children — label + simple items (no nested submenu).
-        {
-            type: 'group',
-            title: 'Workspace',
-            items: [
-                { title: 'Projects', url: '#', icon: <FrameIcon /> },
-                { title: 'Team', url: '#', icon: <UsersIcon /> },
-                { title: 'Calendar', url: '#', icon: <CalendarIcon /> },
-            ],
-        },
-        // Group with nested collapsible children — label + children that each
-        // have their own submenu.
-        {
-            type: 'group',
-            title: 'AI Tools',
-            items: [
-                {
-                    title: 'Playground',
-                    url: '#',
-                    icon: <TerminalSquareIcon />,
-                    items: [
-                        { title: 'History', url: '#' },
-                        { title: 'Starred', url: '#', isActive: true },
-                        { title: 'Settings', url: '#' },
-                    ],
-                },
-                {
-                    title: 'Models',
-                    url: '#',
-                    icon: <BotIcon />,
-                    items: [
-                        { title: 'Genesis', url: '#' },
-                        { title: 'Explorer', url: '#' },
-                        { title: 'Quantum', url: '#' },
-                    ],
-                },
-            ],
-        },
-        // Group with mixed children — flat + collapsible in the same group.
-        {
-            type: 'group',
-            title: 'Admin',
-            items: [
-                { title: 'Users', url: '#', icon: <UsersIcon /> },
-                { title: 'Permissions', url: '#', icon: <ShieldIcon /> },
-                {
-                    title: 'Settings',
-                    url: '#',
-                    icon: <Settings2Icon />,
-                    items: [
-                        { title: 'General', url: '#' },
-                        { title: 'Billing', url: '#' },
-                        { title: 'Limits', url: '#' },
-                    ],
-                },
-            ],
-        },
-    ] satisfies NavMainItem[],
-    navSecondary: [
-        {
-            title: 'Support',
-            url: '#',
-            icon: <LifeBuoy />,
-        },
-        {
-            title: 'Feedback',
-            url: '#',
-            icon: <Send />,
-        },
-    ],
-    projects: [
-        {
-            name: 'Design Engineering',
-            url: '#',
-            icon: <FrameIcon />,
-        },
-        {
-            name: 'Sales & Marketing',
-            url: '#',
-            icon: <PieChartIcon />,
-        },
-        {
-            name: 'Travel',
-            url: '#',
-            icon: <MapIcon />,
-        },
-    ],
-};
+import { mainNav, navSecondary, projects } from '@/lib/navigation';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { auth } = usePage().props;
@@ -181,9 +39,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} />
-                <NavProjects projects={data.projects} />
-                <NavSecondary items={data.navSecondary} className="mt-auto" />
+                <NavMain items={mainNav} />
+                <NavProjects projects={projects} />
+                <NavSecondary items={navSecondary} className="mt-auto" />
             </SidebarContent>
             <SidebarFooter>
                 {auth.user && <NavUser user={auth.user} />}

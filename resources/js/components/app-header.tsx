@@ -1,10 +1,16 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { BookOpen, ChevronDown, Folder, Menu, Search } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import type { NavMainItem } from '@/components/nav-main';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,8 +18,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
     NavigationMenu,
+    NavigationMenuContent,
     NavigationMenuItem,
+    NavigationMenuLink,
     NavigationMenuList,
+    NavigationMenuTrigger,
     navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import {
@@ -31,21 +40,13 @@ import {
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { useInitials } from '@/hooks/use-initials';
+import { mainNav } from '@/lib/navigation';
 import { cn, toUrl } from '@/lib/utils';
-import { dashboard } from '@/routes';
 import type { BreadcrumbItem, NavItem } from '@/types';
 
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
 };
-
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
 
 const rightNavItems: NavItem[] = [
     {
@@ -62,11 +63,211 @@ const rightNavItems: NavItem[] = [
 
 const activeItemStyles = 'text-foreground';
 
+function HeaderNavItem({ item }: { item: NavMainItem }) {
+    const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
+
+    if (item.type === 'single') {
+        const hasChildren = Boolean(item.items && item.items.length > 0);
+
+        if (!hasChildren) {
+            return (
+                <NavigationMenuItem className="relative flex h-full items-center">
+                    <Link
+                        href={item.url}
+                        className={cn(
+                            navigationMenuTriggerStyle(),
+                            'h-9 cursor-pointer gap-2 bg-transparent px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground',
+                            whenCurrentUrl(item.url, activeItemStyles),
+                        )}
+                    >
+                        {item.icon}
+                        {item.title}
+                    </Link>
+                    {isCurrentUrl(item.url) && (
+                        <span
+                            aria-hidden
+                            className="absolute right-2 -bottom-px left-2 h-0.5 rounded-full bg-foreground"
+                        />
+                    )}
+                </NavigationMenuItem>
+            );
+        }
+
+        return (
+            <NavigationMenuItem className="relative flex h-full items-center">
+                <NavigationMenuTrigger className="h-9 gap-2 bg-transparent px-3 text-sm font-medium text-muted-foreground hover:text-foreground">
+                    {item.icon}
+                    {item.title}
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                    <ul className="grid w-[220px] gap-0.5 p-1">
+                        {item.items!.map((sub) => (
+                            <li key={sub.title}>
+                                <NavigationMenuLink
+                                    render={<Link href={sub.url} />}
+                                >
+                                    <span>{sub.title}</span>
+                                </NavigationMenuLink>
+                            </li>
+                        ))}
+                    </ul>
+                </NavigationMenuContent>
+            </NavigationMenuItem>
+        );
+    }
+
+    return (
+        <NavigationMenuItem className="relative flex h-full items-center">
+            <NavigationMenuTrigger className="h-9 bg-transparent px-3 text-sm font-medium text-muted-foreground hover:text-foreground">
+                {item.title}
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+                <ul className="grid w-[260px] gap-1 p-1">
+                    {item.items.map((child) => {
+                        if (child.items && child.items.length > 0) {
+                            return (
+                                <li key={child.title} className="pt-1">
+                                    <div className="flex items-center gap-2 px-2 py-1 text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
+                                        {child.icon}
+                                        <span>{child.title}</span>
+                                    </div>
+                                    <ul className="grid gap-0.5">
+                                        {child.items.map((sub) => (
+                                            <li key={sub.title}>
+                                                <NavigationMenuLink
+                                                    className="pl-7"
+                                                    render={
+                                                        <Link href={sub.url} />
+                                                    }
+                                                >
+                                                    <span>{sub.title}</span>
+                                                </NavigationMenuLink>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </li>
+                            );
+                        }
+                        return (
+                            <li key={child.title}>
+                                <NavigationMenuLink
+                                    render={<Link href={child.url} />}
+                                >
+                                    {child.icon}
+                                    <span>{child.title}</span>
+                                </NavigationMenuLink>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </NavigationMenuContent>
+        </NavigationMenuItem>
+    );
+}
+
+function MobileNavLeaf({
+    title,
+    url,
+    icon,
+}: {
+    title: string;
+    url: string;
+    icon?: React.ReactNode;
+}) {
+    return (
+        <Link
+            href={url}
+            className="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+            {icon}
+            <span>{title}</span>
+        </Link>
+    );
+}
+
+function MobileNavItem({ item }: { item: NavMainItem }) {
+    if (item.type === 'single') {
+        if (!item.items || item.items.length === 0) {
+            return (
+                <MobileNavLeaf
+                    title={item.title}
+                    url={item.url}
+                    icon={item.icon}
+                />
+            );
+        }
+        return (
+            <Collapsible className="group/mobile-nav">
+                <CollapsibleTrigger className="flex w-full items-center gap-3 rounded-md px-3 py-2 font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                    {item.icon}
+                    <span className="flex-1 text-left">{item.title}</span>
+                    <ChevronDown className="size-4 transition-transform group-data-open/mobile-nav:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="ml-3 flex flex-col gap-0.5 border-l border-sidebar-border/60 pl-3">
+                    {item.items.map((sub) => (
+                        <Link
+                            key={sub.title}
+                            href={sub.url}
+                            className="rounded-md px-3 py-1.5 text-sm text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                        >
+                            {sub.title}
+                        </Link>
+                    ))}
+                </CollapsibleContent>
+            </Collapsible>
+        );
+    }
+
+    return (
+        <div className="flex flex-col gap-1">
+            <p className="px-3 py-2 text-[11px] font-medium tracking-[0.08em] text-sidebar-foreground/60 uppercase">
+                {item.title}
+            </p>
+            {item.items.map((child) => {
+                if (child.items && child.items.length > 0) {
+                    return (
+                        <Collapsible
+                            key={child.title}
+                            className="group/mobile-nav"
+                        >
+                            <CollapsibleTrigger className="flex w-full items-center gap-3 rounded-md px-3 py-2 font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                                {child.icon}
+                                <span className="flex-1 text-left">
+                                    {child.title}
+                                </span>
+                                <ChevronDown className="size-4 transition-transform group-data-open/mobile-nav:rotate-180" />
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="ml-3 flex flex-col gap-0.5 border-l border-sidebar-border/60 pl-3">
+                                {child.items.map((sub) => (
+                                    <Link
+                                        key={sub.title}
+                                        href={sub.url}
+                                        className="rounded-md px-3 py-1.5 text-sm text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                                    >
+                                        {sub.title}
+                                    </Link>
+                                ))}
+                            </CollapsibleContent>
+                        </Collapsible>
+                    );
+                }
+                return (
+                    <MobileNavLeaf
+                        key={child.title}
+                        title={child.title}
+                        url={child.url}
+                        icon={child.icon}
+                    />
+                );
+            })}
+        </div>
+    );
+}
+
 export function AppHeader({ breadcrumbs = [] }: Props) {
     const page = usePage();
     const { auth } = page.props;
     const getInitials = useInitials();
-    const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
 
     return (
         <>
@@ -96,22 +297,13 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                 <SheetHeader className="flex h-14 flex-row items-center justify-start border-b border-sidebar-border/60 px-5 text-left">
                                     <AppLogoIcon className="size-6 fill-current text-sidebar-foreground" />
                                 </SheetHeader>
-                                <div className="flex flex-1 flex-col justify-between p-3 text-sm">
-                                    <div className="flex flex-col gap-1">
-                                        <p className="px-3 py-2 text-[11px] font-medium tracking-[0.08em] text-sidebar-foreground/60 uppercase">
-                                            Platform
-                                        </p>
-                                        {mainNavItems.map((item) => (
-                                            <Link
-                                                key={item.title}
-                                                href={item.href}
-                                                className="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                                            >
-                                                {item.icon && (
-                                                    <item.icon className="size-4" />
-                                                )}
-                                                <span>{item.title}</span>
-                                            </Link>
+                                <div className="flex flex-1 flex-col justify-between overflow-y-auto p-3 text-sm">
+                                    <div className="flex flex-col gap-2">
+                                        {mainNav.map((item, index) => (
+                                            <MobileNavItem
+                                                key={`${item.title}-${index}`}
+                                                item={item}
+                                            />
                                         ))}
                                     </div>
 
@@ -136,11 +328,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                         </Sheet>
                     </div>
 
-                    <Link
-                        href={dashboard()}
-                        prefetch
-                        className="flex items-center gap-2"
-                    >
+                    <Link href="#" prefetch className="flex items-center gap-2">
                         <AppLogo />
                     </Link>
 
@@ -148,34 +336,11 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                     <div className="ml-6 hidden h-full items-center gap-1 lg:flex">
                         <NavigationMenu className="flex h-full items-stretch">
                             <NavigationMenuList className="flex h-full items-stretch gap-1">
-                                {mainNavItems.map((item, index) => (
-                                    <NavigationMenuItem
-                                        key={index}
-                                        className="relative flex h-full items-center"
-                                    >
-                                        <Link
-                                            href={item.href}
-                                            className={cn(
-                                                navigationMenuTriggerStyle(),
-                                                'h-9 cursor-pointer bg-transparent px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground',
-                                                whenCurrentUrl(
-                                                    item.href,
-                                                    activeItemStyles,
-                                                ),
-                                            )}
-                                        >
-                                            {item.icon && (
-                                                <item.icon className="mr-2 size-4" />
-                                            )}
-                                            {item.title}
-                                        </Link>
-                                        {isCurrentUrl(item.href) && (
-                                            <span
-                                                aria-hidden
-                                                className="absolute right-2 -bottom-px left-2 h-0.5 rounded-full bg-foreground"
-                                            />
-                                        )}
-                                    </NavigationMenuItem>
+                                {mainNav.map((item, index) => (
+                                    <HeaderNavItem
+                                        key={`${item.title}-${index}`}
+                                        item={item}
+                                    />
                                 ))}
                             </NavigationMenuList>
                         </NavigationMenu>
