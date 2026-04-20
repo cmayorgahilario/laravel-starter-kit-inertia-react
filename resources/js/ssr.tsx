@@ -8,10 +8,9 @@ createServer((page) =>
         page,
         render: renderToString,
         resolve: (name: string) => {
-            const pages = import.meta.glob('./pages/**/*.tsx', { eager: true }) as Record<
-                string,
-                { default: React.ComponentType }
-            >;
+            const pages = import.meta.glob('./pages/**/*.tsx', {
+                eager: true,
+            }) as Record<string, { default: React.ComponentType }>;
             return pages[`./pages/${name}.tsx`];
         },
         setup: ({ App, props }) => <App {...props} />,

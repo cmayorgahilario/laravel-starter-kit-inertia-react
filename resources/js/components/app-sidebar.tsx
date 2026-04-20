@@ -18,7 +18,6 @@ import {
     ShieldIcon,
 } from 'lucide-react';
 import * as React from 'react';
-
 import { NavMain, type NavMainItem } from '@/components/nav-main';
 import { NavProjects } from '@/components/nav-projects';
 import { NavSecondary } from '@/components/nav-secondary';
@@ -171,12 +170,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             size="lg"
                             render={
                                 <a href="#">
-                                    <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                                         <Command className="size-4" />
                                     </div>
                                     <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-medium">Laravel</span>
-                                        <span className="truncate text-xs">Starter Kit</span>
+                                        <span className="truncate font-medium">
+                                            Laravel
+                                        </span>
+                                        <span className="truncate text-xs">
+                                            Starter Kit
+                                        </span>
                                     </div>
                                 </a>
                             }

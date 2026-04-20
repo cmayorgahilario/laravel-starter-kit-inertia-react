@@ -13,7 +13,14 @@ export default defineConfig({
             typeCheck: true,
         },
         plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'react'],
-        ignorePatterns: ['vite.config.ts'],
+        ignorePatterns: [
+            'vite.config.ts',
+            'docs/',
+            'resources/js/components/ui/*',
+            'resources/js/actions/*',
+            'resources/js/routes/*',
+            'resources/js/wayfinder/*',
+        ],
     },
     fmt: {
         printWidth: 80,

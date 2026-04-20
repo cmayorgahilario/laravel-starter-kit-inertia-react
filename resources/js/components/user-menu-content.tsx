@@ -1,6 +1,5 @@
 import { Link, router } from '@inertiajs/react';
 import { LogOut, Settings } from 'lucide-react';
-
 import {
     DropdownMenuGroup,
     DropdownMenuItem,

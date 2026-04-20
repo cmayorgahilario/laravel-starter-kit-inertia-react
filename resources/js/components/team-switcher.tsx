@@ -2,7 +2,6 @@
 
 import { ChevronsUpDownIcon, PlusIcon } from 'lucide-react';
 import * as React from 'react';
-
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -46,12 +45,16 @@ export function TeamSwitcher({
                             />
                         }
                     >
-                        <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                        <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                             {activeTeam.logo}
                         </div>
                         <div className="grid flex-1 text-left text-sm leading-tight">
-                            <span className="truncate font-medium">{activeTeam.name}</span>
-                            <span className="truncate text-xs">{activeTeam.plan}</span>
+                            <span className="truncate font-medium">
+                                {activeTeam.name}
+                            </span>
+                            <span className="truncate text-xs">
+                                {activeTeam.plan}
+                            </span>
                         </div>
                         <ChevronsUpDownIcon className="ml-auto" />
                     </DropdownMenuTrigger>
@@ -62,7 +65,7 @@ export function TeamSwitcher({
                         sideOffset={4}
                     >
                         <DropdownMenuGroup>
-                            <DropdownMenuLabel className="text-muted-foreground text-xs">
+                            <DropdownMenuLabel className="text-xs text-muted-foreground">
                                 Teams
                             </DropdownMenuLabel>
                             {teams.map((team, index) => (
@@ -75,7 +78,9 @@ export function TeamSwitcher({
                                         {team.logo}
                                     </div>
                                     {team.name}
-                                    <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                                    <DropdownMenuShortcut>
+                                        ⌘{index + 1}
+                                    </DropdownMenuShortcut>
                                 </DropdownMenuItem>
                             ))}
                         </DropdownMenuGroup>
@@ -85,7 +90,9 @@ export function TeamSwitcher({
                                 <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                                     <PlusIcon className="size-4" />
                                 </div>
-                                <div className="text-muted-foreground font-medium">Add team</div>
+                                <div className="font-medium text-muted-foreground">
+                                    Add team
+                                </div>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                     </DropdownMenuContent>

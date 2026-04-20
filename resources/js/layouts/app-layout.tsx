@@ -1,5 +1,4 @@
 import React from 'react';
-
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

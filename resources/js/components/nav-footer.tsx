@@ -1,5 +1,4 @@
 import type { ComponentPropsWithoutRef } from 'react';
-
 import {
     SidebarGroup,
     SidebarGroupContent,
@@ -28,14 +27,16 @@ export function NavFooter({
                         <SidebarMenuItem key={item.title}>
                             <SidebarMenuButton
                                 size="sm"
-                                className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors duration-150"
+                                className="text-sidebar-foreground/70 transition-colors duration-150 hover:text-sidebar-foreground"
                                 render={
                                     <a
                                         href={toUrl(item.href)}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        {item.icon && <item.icon className="size-4" />}
+                                        {item.icon && (
+                                            <item.icon className="size-4" />
+                                        )}
                                         <span>{item.title}</span>
                                     </a>
                                 }

@@ -1,7 +1,6 @@
 import type { PageProps } from '@inertiajs/core';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { SubmitEvent, useState } from 'react';
-
 import Heading from '@/components/heading';
 import type { SessionData } from '@/types/session';
 
@@ -57,7 +56,8 @@ export default function Sessions() {
                     description="Review devices signed in to your account and log out other sessions"
                 />
 
-                {(flash.status === 'sessions-terminated' || status === 'sessions-terminated') && (
+                {(flash.status === 'sessions-terminated' ||
+                    status === 'sessions-terminated') && (
                     <div className="rounded-md bg-green-50 px-4 py-3 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-400">
                         Other sessions have been logged out.
                     </div>
@@ -81,7 +81,8 @@ export default function Sessions() {
                                     )}
                                 </div>
                                 <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                                    {session.ip_address} · Last active {session.last_activity}
+                                    {session.ip_address} · Last active{' '}
+                                    {session.last_activity}
                                 </p>
                             </div>
                         </div>
@@ -106,7 +107,8 @@ export default function Sessions() {
                     ) : (
                         <form onSubmit={submit} className="space-y-4">
                             <p className="text-sm text-gray-700 dark:text-gray-300">
-                                Enter your password to log out all other sessions.
+                                Enter your password to log out all other
+                                sessions.
                             </p>
                             <div>
                                 <label
@@ -119,7 +121,9 @@ export default function Sessions() {
                                     id="session-password"
                                     type="password"
                                     value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('password', e.target.value)
+                                    }
                                     required
                                     autoComplete="current-password"
                                     autoFocus
@@ -137,7 +141,9 @@ export default function Sessions() {
                                     disabled={processing}
                                     className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
                                 >
-                                    {processing ? 'Logging out…' : 'Log out other sessions'}
+                                    {processing
+                                        ? 'Logging out…'
+                                        : 'Log out other sessions'}
                                 </button>
                                 <button
                                     type="button"

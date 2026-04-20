@@ -1,7 +1,11 @@
+import { Link } from '@inertiajs/react';
 import { ChevronRightIcon } from 'lucide-react';
 import React from 'react';
-
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -13,7 +17,6 @@ import {
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl, type IsCurrentUrlFn } from '@/hooks/use-current-url';
-import {Link} from "@inertiajs/react";
 
 type NavSubItem = {
     title: string;
@@ -43,14 +46,26 @@ function resolveActive(
     return isCurrentUrl(url);
 }
 
-function NavLeaf({ item, isCurrentUrl }: { item: NavLeafItem; isCurrentUrl: IsCurrentUrlFn }) {
+function NavLeaf({
+    item,
+    isCurrentUrl,
+}: {
+    item: NavLeafItem;
+    isCurrentUrl: IsCurrentUrlFn;
+}) {
     if (item.items && item.items.length > 0) {
         const subItemsWithActive = item.items.map((subItem) => ({
             ...subItem,
-            isActive: resolveActive(subItem.url, subItem.isActive, isCurrentUrl),
+            isActive: resolveActive(
+                subItem.url,
+                subItem.isActive,
+                isCurrentUrl,
+            ),
         }));
         const anySubActive = subItemsWithActive.some((sub) => sub.isActive);
-        const parentActive = resolveActive(item.url, item.isActive, isCurrentUrl) || anySubActive;
+        const parentActive =
+            resolveActive(item.url, item.isActive, isCurrentUrl) ||
+            anySubActive;
 
         return (
             <Collapsible
@@ -59,7 +74,12 @@ function NavLeaf({ item, isCurrentUrl }: { item: NavLeafItem; isCurrentUrl: IsCu
                 render={<SidebarMenuItem />}
             >
                 <CollapsibleTrigger
-                    render={<SidebarMenuButton tooltip={item.title} isActive={parentActive} />}
+                    render={
+                        <SidebarMenuButton
+                            tooltip={item.title}
+                            isActive={parentActive}
+                        />
+                    }
                 >
                     {item.icon}
                     <span>{item.title}</span>
@@ -108,7 +128,11 @@ export function NavMain({ items }: { items: NavMainItem[] }) {
             <SidebarGroup key={key}>
                 <SidebarMenu>
                     {singleChunk.map(({ item, key: itemKey }) => (
-                        <NavLeaf key={itemKey} item={item} isCurrentUrl={isCurrentUrl} />
+                        <NavLeaf
+                            key={itemKey}
+                            item={item}
+                            isCurrentUrl={isCurrentUrl}
+                        />
                     ))}
                 </SidebarMenu>
             </SidebarGroup>,

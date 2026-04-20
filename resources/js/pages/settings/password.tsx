@@ -1,7 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import { ShieldCheck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
@@ -67,7 +66,11 @@ export default function Password({
                     options={{
                         preserveScroll: true,
                     }}
-                    resetOnError={['password', 'password_confirmation', 'current_password']}
+                    resetOnError={[
+                        'password',
+                        'password_confirmation',
+                        'current_password',
+                    ]}
                     resetOnSuccess
                     onError={(errors) => {
                         if (errors.password) {
@@ -83,7 +86,9 @@ export default function Password({
                     {({ errors, processing }) => (
                         <>
                             <div className="grid gap-2">
-                                <Label htmlFor="current_password">Current password</Label>
+                                <Label htmlFor="current_password">
+                                    Current password
+                                </Label>
 
                                 <PasswordInput
                                     id="current_password"
@@ -113,7 +118,9 @@ export default function Password({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password_confirmation">Confirm password</Label>
+                                <Label htmlFor="password_confirmation">
+                                    Confirm password
+                                </Label>
 
                                 <PasswordInput
                                     id="password_confirmation"
@@ -123,11 +130,16 @@ export default function Password({
                                     placeholder="Confirm password"
                                 />
 
-                                <InputError message={errors.password_confirmation} />
+                                <InputError
+                                    message={errors.password_confirmation}
+                                />
                             </div>
 
                             <div className="flex items-center gap-4">
-                                <Button disabled={processing} data-test="update-password-button">
+                                <Button
+                                    disabled={processing}
+                                    data-test="update-password-button"
+                                >
                                     Save password
                                 </Button>
                             </div>
@@ -145,9 +157,10 @@ export default function Password({
                     />
                     {twoFactorEnabled ? (
                         <div className="flex flex-col items-start justify-start space-y-4">
-                            <p className="text-muted-foreground text-sm">
-                                You will be prompted for a secure, random pin during login, which
-                                you can retrieve from the TOTP-supported application on your phone.
+                            <p className="text-sm text-muted-foreground">
+                                You will be prompted for a secure, random pin
+                                during login, which you can retrieve from the
+                                TOTP-supported application on your phone.
                             </p>
 
                             <div className="relative inline">
@@ -172,25 +185,33 @@ export default function Password({
                         </div>
                     ) : (
                         <div className="flex flex-col items-start justify-start space-y-4">
-                            <p className="text-muted-foreground text-sm">
-                                When you enable two-factor authentication, you will be prompted for
-                                a secure pin during login. This pin can be retrieved from a
-                                TOTP-supported application on your phone.
+                            <p className="text-sm text-muted-foreground">
+                                When you enable two-factor authentication, you
+                                will be prompted for a secure pin during login.
+                                This pin can be retrieved from a TOTP-supported
+                                application on your phone.
                             </p>
 
                             <div>
                                 {hasSetupData ? (
-                                    <Button onClick={() => setShowSetupModal(true)}>
+                                    <Button
+                                        onClick={() => setShowSetupModal(true)}
+                                    >
                                         <ShieldCheck />
                                         Continue setup
                                     </Button>
                                 ) : (
                                     <Form
                                         {...enable.form()}
-                                        onSuccess={() => setShowSetupModal(true)}
+                                        onSuccess={() =>
+                                            setShowSetupModal(true)
+                                        }
                                     >
                                         {({ processing }) => (
-                                            <Button type="submit" disabled={processing}>
+                                            <Button
+                                                type="submit"
+                                                disabled={processing}
+                                            >
                                                 Enable 2FA
                                             </Button>
                                         )}

@@ -1,6 +1,5 @@
 import { usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
-
 import { AppContent } from '@/components/app-content';
 import { AppHeader } from '@/components/app-header';
 import { AppShell } from '@/components/app-shell';

@@ -1,7 +1,11 @@
 'use client';
 
-import { MoreHorizontalIcon, FolderIcon, ArrowRightIcon, Trash2Icon } from 'lucide-react';
-
+import {
+    MoreHorizontalIcon,
+    FolderIcon,
+    ArrowRightIcon,
+    Trash2Icon,
+} from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,

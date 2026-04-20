@@ -1,6 +1,5 @@
 import { Link } from '@inertiajs/react';
 import { Fragment } from 'react';
-
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -11,7 +10,11 @@ import {
 } from '@/components/ui/breadcrumb';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
-export function Breadcrumbs({ breadcrumbs }: { breadcrumbs: BreadcrumbItemType[] }) {
+export function Breadcrumbs({
+    breadcrumbs,
+}: {
+    breadcrumbs: BreadcrumbItemType[];
+}) {
     return (
         <>
             {breadcrumbs.length > 0 && (
@@ -23,17 +26,29 @@ export function Breadcrumbs({ breadcrumbs }: { breadcrumbs: BreadcrumbItemType[]
                             return (
                                 <Fragment key={index}>
                                     <BreadcrumbItem
-                                        className={isLast ? undefined : 'hidden md:block'}
+                                        className={
+                                            isLast
+                                                ? undefined
+                                                : 'hidden md:block'
+                                        }
                                     >
                                         {isLast ? (
-                                            <BreadcrumbPage>{item.title}</BreadcrumbPage>
+                                            <BreadcrumbPage>
+                                                {item.title}
+                                            </BreadcrumbPage>
                                         ) : (
                                             <BreadcrumbLink
-                                                render={<Link href={item.url}>{item.title}</Link>}
+                                                render={
+                                                    <Link href={item.url}>
+                                                        {item.title}
+                                                    </Link>
+                                                }
                                             />
                                         )}
                                     </BreadcrumbItem>
-                                    {!isLast && <BreadcrumbSeparator className="hidden md:block" />}
+                                    {!isLast && (
+                                        <BreadcrumbSeparator className="hidden md:block" />
+                                    )}
                                 </Fragment>
                             );
                         })}

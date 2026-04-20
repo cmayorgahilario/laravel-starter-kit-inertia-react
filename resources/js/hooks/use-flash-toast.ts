@@ -1,7 +1,6 @@
 import { router } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
-
 import type { FlashToast } from '@/types/ui';
 
 export function useFlashToast(): void {

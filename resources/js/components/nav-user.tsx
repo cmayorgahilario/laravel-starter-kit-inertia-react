@@ -7,7 +7,6 @@ import {
     BellIcon,
     LogOutIcon,
 } from 'lucide-react';
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
@@ -48,15 +47,24 @@ export function NavUser({
             <SidebarMenuItem>
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        render={<SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />}
+                        render={
+                            <SidebarMenuButton
+                                size="lg"
+                                className="aria-expanded:bg-muted"
+                            />
+                        }
                     >
                         <Avatar>
                             <AvatarImage src={user.avatar} alt={user.name} />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                         <div className="grid flex-1 text-left text-sm leading-tight">
-                            <span className="truncate font-medium">{user.name}</span>
-                            <span className="truncate text-xs">{user.email}</span>
+                            <span className="truncate font-medium">
+                                {user.name}
+                            </span>
+                            <span className="truncate text-xs">
+                                {user.email}
+                            </span>
                         </div>
                         <ChevronsUpDownIcon className="ml-auto size-4" />
                     </DropdownMenuTrigger>
@@ -70,12 +78,19 @@ export function NavUser({
                             <DropdownMenuLabel className="p-0 font-normal">
                                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                     <Avatar>
-                                        <AvatarImage src={user.avatar} alt={user.name} />
+                                        <AvatarImage
+                                            src={user.avatar}
+                                            alt={user.name}
+                                        />
                                         <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
                                     <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-medium">{user.name}</span>
-                                        <span className="truncate text-xs">{user.email}</span>
+                                        <span className="truncate font-medium">
+                                            {user.name}
+                                        </span>
+                                        <span className="truncate text-xs">
+                                            {user.email}
+                                        </span>
                                     </div>
                                 </div>
                             </DropdownMenuLabel>
@@ -89,7 +104,9 @@ export function NavUser({
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem render={<Link href={editProfile()} />}>
+                            <DropdownMenuItem
+                                render={<Link href={editProfile()} />}
+                            >
                                 <UserRoundCogIcon />
                                 Settings
                             </DropdownMenuItem>
@@ -103,7 +120,10 @@ export function NavUser({
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleLogout} data-test="logout-button">
+                        <DropdownMenuItem
+                            onClick={handleLogout}
+                            data-test="logout-button"
+                        >
                             <LogOutIcon />
                             Log out
                         </DropdownMenuItem>
