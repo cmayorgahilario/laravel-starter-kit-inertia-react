@@ -51,6 +51,16 @@ This starts all six Docker services: `pgsql`, `redis`, `typesense`, `rustfs`, `m
 vendor/bin/sail artisan migrate
 ```
 
+## Install Git Hooks
+
+Activate Lefthook to enforce code quality and commit message checks (see [Git Hooks](./git-hooks.md) for details):
+
+```bash
+bunx lefthook install
+```
+
+This runs on the host machine — not inside Docker — because git hooks are invoked by the host's `git` process.
+
 ## Start the Frontend Dev Server
 
 ```bash

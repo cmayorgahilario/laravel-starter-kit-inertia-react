@@ -5,7 +5,7 @@ description: Lefthook pre-commit pipeline and Commitlint message enforcement.
 
 # Git Hooks
 
-This project uses [Lefthook](https://github.com/evilmartians/lefthook) to enforce quality gates at commit time and [Commitlint](https://commitlint.js.org/) to validate commit messages against the Conventional Commits specification. Both run automatically — no manual setup is needed after `bun install`.
+This project uses [Lefthook](https://github.com/evilmartians/lefthook) to enforce quality gates at commit time and [Commitlint](https://commitlint.js.org/) to validate commit messages against the Conventional Commits specification.
 
 ## Pipeline Overview
 
@@ -79,13 +79,25 @@ git commit -m "FEAT: add login"
 
 ## Setup
 
-Hooks are installed automatically. The `package.json` `postinstall` script runs `lefthook install` after every `bun install`:
+After cloning the repository and installing dependencies, activate the git hooks manually:
 
 ```bash
-bun install   # lefthook install runs automatically via postinstall
+bun install              # install dependencies (does NOT install hooks)
+bunx lefthook install    # wire lefthook into .git/hooks/
 ```
 
-No manual `lefthook install` call is needed. If you clone the repository and run `bun install`, the hooks are active immediately.
+Both commands run on the **host machine**, not inside Docker. Lefthook hooks are invoked by the host's `git` process, so they must be installed where `git` runs.
+
+::: warning Why no postinstall?
+Many projects use a `postinstall` script to auto-install git hooks on `bun install`. This project intentionally avoids that pattern. The `postinstall` lifecycle hook runs arbitrary code from any dependency during installation — a known supply-chain attack vector (see [axios CVE-2025-27152](https://nvd.nist.gov/vuln/detail/CVE-2025-27152) and similar incidents). Running `bunx lefthook install` once after cloning is a minimal manual step that eliminates this class of risk.
+:::
+
+To verify hooks are active:
+
+```bash
+lefthook list            # shows registered hooks
+ls .git/hooks/pre-commit # should exist and reference lefthook
+```
 
 ## Troubleshooting
 
@@ -99,11 +111,11 @@ vendor/bin/sail up -d
 **oxlint may report warnings, not errors.**
 Some oxlint rules emit warnings rather than errors. Warnings do not block the commit — only rules that exit non-zero will fail the hook. If `bun run test:lint` exits 0 despite visible warnings, the commit will proceed.
 
-**Re-installing hooks after a fresh clone.**
-If hooks are missing (e.g., after a `git clone` without running `bun install`), install them manually:
+**Hooks not running after clone.**
+If `git commit` doesn't trigger any checks, you likely forgot to install hooks:
 
 ```bash
-bun run lefthook install
+bunx lefthook install
 ```
 
 **Bypassing hooks in an emergency.**
