@@ -1,18 +1,13 @@
-name: Pest (sharded tests)
+name: Pest (coverage)
 
 on:
   workflow_call: {}
 
 jobs:
-  pest:
-    name: Tests (Shard ${{ matrix.shard }}/5)
+  coverage:
+    name: Coverage (full suite, min 100%)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2, 3, 4, 5]
+    timeout-minutes: 20
 
     services:
       postgres:
@@ -54,8 +49,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.5"
-          extensions: mbstring, dom, fileinfo, pgsql, pdo_pgsql, redis, intl, bcmath, gd
-          coverage: none
+          extensions: mbstring, dom, fileinfo, pgsql, pdo_pgsql, redis, intl, bcmath, gd, pcov
+          coverage: pcov
 
       - name: Cache Composer dependencies
         uses: actions/cache@v5
@@ -118,12 +113,12 @@ jobs:
       - name: Run migrations
         run: php artisan migrate --force
 
-      - name: Run tests
-        run: php artisan test --shard=${{ matrix.shard }}/5
+      - name: Run tests with coverage
+        run: php artisan test --coverage --min=100
 
       - name: Store Artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: browser-screenshots-shard-${{ matrix.shard }}
+          name: browser-screenshots-coverage
           path: tests/Browser/Screenshots

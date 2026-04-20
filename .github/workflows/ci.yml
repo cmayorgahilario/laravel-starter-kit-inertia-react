@@ -24,3 +24,7 @@ jobs:
   pest:
     uses: ./.github/workflows/tests.yml
     secrets: inherit
+
+  coverage:
+    uses: ./.github/workflows/coverage.yml
+    secrets: inherit

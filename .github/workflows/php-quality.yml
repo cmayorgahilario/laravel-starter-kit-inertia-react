@@ -70,4 +70,4 @@ jobs:
         run: mkdir -p /tmp/phpstan
 
       - name: Run Larastan
-        run: vendor/bin/phpstan analyse --memory-limit=512M --tmp-dir=/tmp/phpstan
+        run: vendor/bin/phpstan analyse --memory-limit=512M
