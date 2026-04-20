@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Models\Security\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -37,15 +38,18 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        /** @var User|null $user */
+        $user = $request->user();
+
         return array_merge(parent::share($request), [
             'auth' => fn () => [
-                'user' => $request->user() ? [
-                    'id' => $request->user()->id,
-                    'name' => $request->user()->name,
-                    'email' => $request->user()->email,
-                    'avatar' => $request->user()->avatar,
-                    'email_verified_at' => $request->user()->email_verified_at?->toISOString(),
-                    'two_factor_confirmed_at' => $request->user()->two_factor_confirmed_at?->toISOString(),
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'avatar' => $user->avatar,
+                    'email_verified_at' => $user->email_verified_at?->toISOString(),
+                    'two_factor_confirmed_at' => $user->two_factor_confirmed_at?->toISOString(),
                 ] : null,
             ],
             'app' => fn () => [

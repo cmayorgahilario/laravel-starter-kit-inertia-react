@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Settings;
 
+use App\Models\Security\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,8 +14,11 @@ class NotificationController
 {
     public function edit(Request $request): Response
     {
+        /** @var User $user */
+        $user = $request->user();
+
         return Inertia::render('settings/notifications', [
-            'preferences' => $request->user()->notification_preferences ?? [],
+            'preferences' => $user->notification_preferences ?? [],
             'status' => session('status'),
         ]);
     }
@@ -26,7 +30,10 @@ class NotificationController
             'preferences.*' => ['boolean'],
         ]);
 
-        $request->user()->update([
+        /** @var User $user */
+        $user = $request->user();
+
+        $user->update([
             'notification_preferences' => $validated['preferences'],
         ]);
 

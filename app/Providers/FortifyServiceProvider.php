@@ -48,7 +48,8 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/two-factor-challenge'));
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $usernameInput = $request->input(Fortify::username());
+            $throttleKey = Str::transliterate(Str::lower(is_string($usernameInput) ? $usernameInput : '').'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });

@@ -97,6 +97,11 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
@@ -116,7 +121,7 @@ jobs:
           php artisan key:generate
 
       - name: Generate Wayfinder types
-        run: php artisan wayfinder:generate
+        run: php artisan wayfinder:generate --with-form
 
       - name: Run oxlint
         run: bun run test:lint
@@ -147,6 +152,11 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
@@ -166,7 +176,7 @@ jobs:
           php artisan key:generate
 
       - name: Generate Wayfinder types
-        run: php artisan wayfinder:generate
+        run: php artisan wayfinder:generate --with-form
 
       - name: Run tsc
         run: bun run test:types
@@ -197,6 +207,11 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
@@ -216,7 +231,7 @@ jobs:
           php artisan key:generate
 
       - name: Generate Wayfinder types
-        run: php artisan wayfinder:generate
+        run: php artisan wayfinder:generate --with-form
 
       - name: Run build
         run: bun run build
@@ -279,6 +294,11 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
@@ -298,7 +318,10 @@ jobs:
           php artisan key:generate
 
       - name: Generate Wayfinder types
-        run: php artisan wayfinder:generate
+        run: php artisan wayfinder:generate --with-form
+
+      - name: Build frontend assets
+        run: bun run build
 
       - name: Install Playwright Chromium
         run: bunx playwright install --with-deps chromium

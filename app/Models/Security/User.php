@@ -14,6 +14,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
+/**
+ * @property-read string|null $avatar
+ * @property \Carbon\Carbon|null $email_verified_at
+ * @property \Carbon\Carbon|null $two_factor_confirmed_at
+ */
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -67,8 +72,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return UserFactory::new();
     }
 
+    /** @return Attribute<string|null, never> */
     protected function avatar(): Attribute
     {
+        // @phpstan-ignore return.type (closure always returns null; TGet is string|null for future implementations)
         return Attribute::get(fn (): ?string => null);
     }
 }

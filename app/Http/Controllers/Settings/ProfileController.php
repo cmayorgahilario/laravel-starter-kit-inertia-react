@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Settings;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Models\Security\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,13 +26,17 @@ class ProfileController
 
     public function update(ProfileUpdateRequest $request, UpdateUserProfileInformation $updater): RedirectResponse
     {
-        $updater->update($request->user(), $request->validated());
+        /** @var User $user */
+        $user = $request->user();
+
+        $updater->update($user, $request->validated());
 
         return to_route('settings.profile.edit')->with('status', 'profile-updated');
     }
 
     public function destroy(ProfileDeleteRequest $request): RedirectResponse
     {
+        /** @var User $user */
         $user = $request->user();
 
         Auth::logout();

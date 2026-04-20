@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Settings;
 
+use App\Models\Security\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -16,8 +17,11 @@ class SessionController
 {
     public function index(Request $request): Response
     {
+        /** @var User $user */
+        $user = $request->user();
+
         $sessions = DB::table('sessions')
-            ->where('user_id', $request->user()->getAuthIdentifier())
+            ->where('user_id', $user->getAuthIdentifier())
             ->orderByDesc('last_activity')
             ->get()
             ->map(fn (object $session) => [
@@ -36,11 +40,11 @@ class SessionController
 
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        Auth::logoutOtherDevices($request->password);
+        Auth::logoutOtherDevices((string) $validated['password']);
 
         $request->session()->regenerate();
 
