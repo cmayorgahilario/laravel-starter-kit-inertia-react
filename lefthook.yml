@@ -2,13 +2,21 @@ pre-commit:
   parallel: true
   commands:
     lint:
+      env:
+        LC_ALL: C
       run: vendor/bin/sail bun run test:lint
     types:
+      env:
+        LC_ALL: C
       run: vendor/bin/sail bun run test:types
     pint:
+      env:
+        LC_ALL: C
       run: vendor/bin/sail bin pint --dirty --test
 
 commit-msg:
   commands:
     commitlint:
+      env:
+        LC_ALL: C
       run: vendor/bin/sail bun run commitlint --edit {1}
