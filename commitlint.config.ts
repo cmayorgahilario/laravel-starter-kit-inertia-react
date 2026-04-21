@@ -23,6 +23,8 @@ const Configuration: UserConfig = {
                 'release',
             ],
         ],
+        'body-max-line-length': [2, 'always', 150],
+        'footer-max-line-length': [2, 'always', 150],
     },
 };
 
