@@ -4,9 +4,11 @@
     "type": "module",
     "scripts": {
         "build": "vp build",
+        "build-storybook": "storybook build",
         "build:ssr": "vp build && vp build --ssr",
         "dev": "vp dev",
         "lint": "NODE_OPTIONS='--experimental-strip-types' vp fmt resources/ && NODE_OPTIONS='--experimental-strip-types' vp lint --fix",
+        "storybook": "storybook dev -p 6006 --host 0.0.0.0",
         "test:lint": "NODE_OPTIONS='--experimental-strip-types' vp fmt --check resources/ && NODE_OPTIONS='--experimental-strip-types' vp lint",
         "test:types": "tsc --noEmit"
     },
@@ -35,6 +37,9 @@
     },
     "devDependencies": {
         "@commitlint/cli": "^20.5.0",
+        "@storybook/addon-essentials": "latest",
+        "@storybook/addon-themes": "latest",
+        "@storybook/react-vite": "latest",
         "@commitlint/config-conventional": "^20.5.0",
         "@commitlint/types": "^20.5.0",
         "@evilmartians/lefthook": "^2.1.6",
@@ -52,6 +57,7 @@
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^3.0.0",
         "playwright": "^1.59.1",
+        "storybook": "latest",
         "tailwindcss": "^4.0.0",
         "typescript": "^6.0.3",
         "vite": "npm:@voidzero-dev/vite-plus-core@latest",
