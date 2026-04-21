@@ -1,15 +1,14 @@
 import { defineConfig } from 'vitepress';
+import { withMermaid } from 'vitepress-plugin-mermaid';
 
-export default defineConfig({
+export default withMermaid(defineConfig({
     title: 'React Starter Kit Docs',
     description: 'Documentation for the React Starter Kit',
 
     srcExclude: ['**/_template/**'],
     ignoreDeadLinks: true,
 
-    markdown: {
-        mermaid: true,
-    },
+    mermaid: {},
 
     themeConfig: {
         search: {
@@ -126,4 +125,4 @@ export default defineConfig({
             },
         ],
     },
-});
+}));
