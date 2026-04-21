@@ -3,7 +3,9 @@ import { withThemeByClassName } from '@storybook/addon-themes';
 import '../resources/css/app.css';
 
 const preview: Preview = {
+    tags: ['autodocs'],
     parameters: {
+        layout: 'centered',
         backgrounds: {
             disable: true,
         },

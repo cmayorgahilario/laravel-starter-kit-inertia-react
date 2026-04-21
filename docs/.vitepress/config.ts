@@ -36,6 +36,7 @@ export default withMermaid(defineConfig({
                 items: [
                     { text: 'Pipeline', link: '/frontend/' },
                     { text: 'shadcn/ui', link: '/frontend/shadcn' },
+                    { text: 'Storybook', link: '/frontend/storybook' },
                     { text: 'Theming', link: '/frontend/theming' },
                 ],
             },

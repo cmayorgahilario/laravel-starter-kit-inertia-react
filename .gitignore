@@ -35,6 +35,9 @@ coverage-report/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
 
+# ── Storybook ──
+storybook-static/
+
 # ── Storage & secrets ──
 /storage/*.key
 

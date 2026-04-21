@@ -16,6 +16,7 @@ export default defineConfig({
         ignorePatterns: [
             'vite.config.ts',
             'docs/',
+            'storybook-static/',
             'resources/js/components/ui/*',
             'resources/js/actions/*',
             'resources/js/routes/*',
@@ -52,6 +53,7 @@ export default defineConfig({
             newlinesBetween: false,
         },
         ignorePatterns: [
+            'storybook-static/',
             'resources/js/components/ui/*',
             'resources/views/mail/*',
             'resources/js/actions/*',
