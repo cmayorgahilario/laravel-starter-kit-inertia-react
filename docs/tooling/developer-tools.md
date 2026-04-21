@@ -75,7 +75,7 @@ Entries older than 48 hours are deleted automatically. Adjust `--hours` in `rout
 
 Telescope is disabled in production by design. The provider registration is wrapped in an `environment('local')` check, so the package never loads outside of local development — no performance overhead, no data collection, no dashboard exposure.
 
----
+***
 
 ## IDE Helper
 
@@ -122,7 +122,7 @@ The stubs are regenerated automatically after every `composer update` or `compos
 
 You rarely need to run the commands manually — pulling new changes and running `composer install` is enough.
 
----
+***
 
 ## Dev-Only Provider Gating Pattern
 

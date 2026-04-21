@@ -14,6 +14,7 @@ If you are reading the main docs to understand the stack, you do not need to rea
 | Page                                    | Purpose                                                                             |
 | --------------------------------------- | ----------------------------------------------------------------------------------- |
 | [Structure Guide](./structure-guide.md) | The 16-section blueprint, 6 writing rules, and the process for adding a new section |
+| [Authoring Guide](./authoring-guide.md) | How to add or edit pages while respecting frontmatter, source-first, and horizontal-rule conventions |
 
 ## Why this exists
 

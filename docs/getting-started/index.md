@@ -53,7 +53,7 @@ vendor/bin/sail artisan migrate
 
 ## Install Git Hooks
 
-Activate Lefthook to enforce code quality and commit message checks (see [Git Hooks](./git-hooks.md) for details):
+Activate Lefthook to enforce code quality and commit message checks (see [Git Hooks](../tooling/git-hooks.md) for details):
 
 ```bash
 bunx lefthook install
