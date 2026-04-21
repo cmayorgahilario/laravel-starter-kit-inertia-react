@@ -17,7 +17,7 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from '@/components/ui/sidebar';
-import { mainNav, navSecondary, projects } from '@/lib/navigation';
+import { mainNav, navSecondary, projects } from '@/data/navigation';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { auth } = usePage().props;

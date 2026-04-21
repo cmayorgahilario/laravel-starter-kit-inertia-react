@@ -5,6 +5,7 @@ import {
     FolderIcon,
     ArrowRightIcon,
     Trash2Icon,
+    type LucideIcon,
 } from 'lucide-react';
 import {
     DropdownMenu,
@@ -29,7 +30,7 @@ export function NavProjects({
     projects: {
         name: string;
         url: string;
-        icon: React.ReactNode;
+        icon: LucideIcon;
     }[];
 }) {
     const { isMobile } = useSidebar();
@@ -40,7 +41,7 @@ export function NavProjects({
                 {projects.map((item) => (
                     <SidebarMenuItem key={item.name}>
                         <SidebarMenuButton render={<a href={item.url} />}>
-                            {item.icon}
+                            <item.icon />
                             <span>{item.name}</span>
                         </SidebarMenuButton>
                         <DropdownMenu>

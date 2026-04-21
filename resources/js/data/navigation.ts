@@ -5,16 +5,16 @@ import {
     FrameIcon,
     InboxIcon,
     LayoutDashboardIcon,
-    LifeBuoy,
+    LifeBuoyIcon,
+    type LucideIcon,
     MapIcon,
     PieChartIcon,
-    Send,
+    SendIcon,
     Settings2Icon,
     ShieldIcon,
     TerminalSquareIcon,
     UsersIcon,
 } from 'lucide-react';
-import * as React from 'react';
 import type { NavMainItem } from '@/components/nav-main';
 import { dashboard } from '@/routes';
 
@@ -23,19 +23,19 @@ export const mainNav: NavMainItem[] = [
         type: 'single',
         title: 'Dashboard',
         url: dashboard.url(),
-        icon: <LayoutDashboardIcon />,
+        icon: LayoutDashboardIcon,
     },
     {
         type: 'single',
         title: 'Inbox',
         url: '#',
-        icon: <InboxIcon />,
+        icon: InboxIcon,
     },
     {
         type: 'single',
         title: 'Documentation',
         url: '#',
-        icon: <BookOpenIcon />,
+        icon: BookOpenIcon,
         items: [
             { title: 'Introduction', url: '#' },
             { title: 'Get Started', url: '#' },
@@ -47,9 +47,9 @@ export const mainNav: NavMainItem[] = [
         type: 'group',
         title: 'Workspace',
         items: [
-            { title: 'Projects', url: '#', icon: <FrameIcon /> },
-            { title: 'Team', url: '#', icon: <UsersIcon /> },
-            { title: 'Calendar', url: '#', icon: <CalendarIcon /> },
+            { title: 'Projects', url: '#', icon: FrameIcon },
+            { title: 'Team', url: '#', icon: UsersIcon },
+            { title: 'Calendar', url: '#', icon: CalendarIcon },
         ],
     },
     {
@@ -59,7 +59,7 @@ export const mainNav: NavMainItem[] = [
             {
                 title: 'Playground',
                 url: '#',
-                icon: <TerminalSquareIcon />,
+                icon: TerminalSquareIcon,
                 items: [
                     { title: 'History', url: '#' },
                     { title: 'Starred', url: '#', isActive: true },
@@ -69,7 +69,7 @@ export const mainNav: NavMainItem[] = [
             {
                 title: 'Models',
                 url: '#',
-                icon: <BotIcon />,
+                icon: BotIcon,
                 items: [
                     { title: 'Genesis', url: '#' },
                     { title: 'Explorer', url: '#' },
@@ -82,12 +82,12 @@ export const mainNav: NavMainItem[] = [
         type: 'group',
         title: 'Admin',
         items: [
-            { title: 'Users', url: '#', icon: <UsersIcon /> },
-            { title: 'Permissions', url: '#', icon: <ShieldIcon /> },
+            { title: 'Users', url: '#', icon: UsersIcon },
+            { title: 'Permissions', url: '#', icon: ShieldIcon },
             {
                 title: 'Settings',
                 url: '#',
-                icon: <Settings2Icon />,
+                icon: Settings2Icon,
                 items: [
                     { title: 'General', url: '#' },
                     { title: 'Billing', url: '#' },
@@ -101,22 +101,22 @@ export const mainNav: NavMainItem[] = [
 export type NavSecondaryItem = {
     title: string;
     url: string;
-    icon: React.ReactNode;
+    icon: LucideIcon;
 };
 
 export const navSecondary: NavSecondaryItem[] = [
-    { title: 'Support', url: '#', icon: <LifeBuoy /> },
-    { title: 'Feedback', url: '#', icon: <Send /> },
+    { title: 'Support', url: '#', icon: LifeBuoyIcon },
+    { title: 'Feedback', url: '#', icon: SendIcon },
 ];
 
 export type ProjectItem = {
     name: string;
     url: string;
-    icon: React.ReactNode;
+    icon: LucideIcon;
 };
 
 export const projects: ProjectItem[] = [
-    { name: 'Design Engineering', url: '#', icon: <FrameIcon /> },
-    { name: 'Sales & Marketing', url: '#', icon: <PieChartIcon /> },
-    { name: 'Travel', url: '#', icon: <MapIcon /> },
+    { name: 'Design Engineering', url: '#', icon: FrameIcon },
+    { name: 'Sales & Marketing', url: '#', icon: PieChartIcon },
+    { name: 'Travel', url: '#', icon: MapIcon },
 ];

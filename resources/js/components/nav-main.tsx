@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ChevronRightIcon } from 'lucide-react';
+import { ChevronRightIcon, type LucideIcon } from 'lucide-react';
 import React from 'react';
 import {
     Collapsible,
@@ -27,7 +27,7 @@ type NavSubItem = {
 type NavLeafItem = {
     title: string;
     url: string;
-    icon?: React.ReactNode;
+    icon?: LucideIcon;
     isActive?: boolean;
     items?: NavSubItem[];
 };
@@ -81,7 +81,7 @@ function NavLeaf({
                         />
                     }
                 >
-                    {item.icon}
+                    {item.icon && <item.icon />}
                     <span>{item.title}</span>
                     <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
                 </CollapsibleTrigger>
@@ -110,7 +110,7 @@ function NavLeaf({
                 isActive={resolveActive(item.url, item.isActive, isCurrentUrl)}
                 render={<Link href={item.url} />}
             >
-                {item.icon}
+                {item.icon && <item.icon />}
                 <span>{item.title}</span>
             </SidebarMenuButton>
         </SidebarMenuItem>

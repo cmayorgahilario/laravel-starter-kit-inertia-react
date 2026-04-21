@@ -1,5 +1,12 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, ChevronDown, Folder, Menu, Search } from 'lucide-react';
+import {
+    BookOpenIcon,
+    ChevronDownIcon,
+    FolderIcon,
+    type LucideIcon,
+    MenuIcon,
+    SearchIcon,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Breadcrumbs } from '@/components/breadcrumbs';
@@ -38,9 +45,9 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { UserMenuContent } from '@/components/user-menu-content';
+import { mainNav } from '@/data/navigation';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { useInitials } from '@/hooks/use-initials';
-import { mainNav } from '@/lib/navigation';
 import { cn, toUrl } from '@/lib/utils';
 import type { BreadcrumbItem, NavItem } from '@/types';
 
@@ -52,12 +59,12 @@ const rightNavItems: NavItem[] = [
     {
         title: 'Repository',
         href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
+        icon: FolderIcon,
     },
     {
         title: 'Documentation',
         href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
+        icon: BookOpenIcon,
     },
 ];
 
@@ -80,7 +87,7 @@ function HeaderNavItem({ item }: { item: NavMainItem }) {
                             whenCurrentUrl(item.url, activeItemStyles),
                         )}
                     >
-                        {item.icon}
+                        {item.icon && <item.icon />}
                         {item.title}
                     </Link>
                     {isCurrentUrl(item.url) && (
@@ -96,7 +103,7 @@ function HeaderNavItem({ item }: { item: NavMainItem }) {
         return (
             <NavigationMenuItem className="relative flex h-full items-center">
                 <NavigationMenuTrigger className="h-9 gap-2 bg-transparent px-3 text-sm font-medium text-muted-foreground hover:text-foreground">
-                    {item.icon}
+                    {item.icon && <item.icon />}
                     {item.title}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -128,7 +135,7 @@ function HeaderNavItem({ item }: { item: NavMainItem }) {
                             return (
                                 <li key={child.title} className="pt-1">
                                     <div className="flex items-center gap-2 px-2 py-1 text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
-                                        {child.icon}
+                                        {child.icon && <child.icon />}
                                         <span>{child.title}</span>
                                     </div>
                                     <ul className="grid gap-0.5">
@@ -153,7 +160,7 @@ function HeaderNavItem({ item }: { item: NavMainItem }) {
                                 <NavigationMenuLink
                                     render={<Link href={child.url} />}
                                 >
-                                    {child.icon}
+                                    {child.icon && <child.icon />}
                                     <span>{child.title}</span>
                                 </NavigationMenuLink>
                             </li>
@@ -168,18 +175,18 @@ function HeaderNavItem({ item }: { item: NavMainItem }) {
 function MobileNavLeaf({
     title,
     url,
-    icon,
+    icon: Icon,
 }: {
     title: string;
     url: string;
-    icon?: React.ReactNode;
+    icon?: LucideIcon;
 }) {
     return (
         <Link
             href={url}
             className="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
-            {icon}
+            {Icon && <Icon />}
             <span>{title}</span>
         </Link>
     );
@@ -199,9 +206,9 @@ function MobileNavItem({ item }: { item: NavMainItem }) {
         return (
             <Collapsible className="group/mobile-nav">
                 <CollapsibleTrigger className="flex w-full items-center gap-3 rounded-md px-3 py-2 font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-                    {item.icon}
+                    {item.icon && <item.icon />}
                     <span className="flex-1 text-left">{item.title}</span>
-                    <ChevronDown className="size-4 transition-transform group-data-open/mobile-nav:rotate-180" />
+                    <ChevronDownIcon className="size-4 transition-transform group-data-open/mobile-nav:rotate-180" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="ml-3 flex flex-col gap-0.5 border-l border-sidebar-border/60 pl-3">
                     {item.items.map((sub) => (
@@ -231,11 +238,11 @@ function MobileNavItem({ item }: { item: NavMainItem }) {
                             className="group/mobile-nav"
                         >
                             <CollapsibleTrigger className="flex w-full items-center gap-3 rounded-md px-3 py-2 font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-                                {child.icon}
+                                {child.icon && <child.icon />}
                                 <span className="flex-1 text-left">
                                     {child.title}
                                 </span>
-                                <ChevronDown className="size-4 transition-transform group-data-open/mobile-nav:rotate-180" />
+                                <ChevronDownIcon className="size-4 transition-transform group-data-open/mobile-nav:rotate-180" />
                             </CollapsibleTrigger>
                             <CollapsibleContent className="ml-3 flex flex-col gap-0.5 border-l border-sidebar-border/60 pl-3">
                                 {child.items.map((sub) => (
@@ -283,7 +290,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                         size="icon"
                                         className="-ml-1 size-9"
                                     >
-                                        <Menu className="size-5" />
+                                        <MenuIcon className="size-5" />
                                     </Button>
                                 }
                             />
@@ -352,7 +359,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                             size="icon"
                             className="size-9 text-muted-foreground hover:text-foreground"
                         >
-                            <Search className="!size-5" />
+                            <SearchIcon className="!size-5" />
                             <span className="sr-only">Search</span>
                         </Button>
                         <div className="hidden items-center gap-0.5 lg:flex">
