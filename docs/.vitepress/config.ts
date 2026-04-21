@@ -53,6 +53,7 @@ export default withMermaid(defineConfig({
                     { text: 'Developer Tools', link: '/tooling/developer-tools' },
                     { text: 'Git Hooks', link: '/tooling/git-hooks' },
                     { text: 'Static Analysis', link: '/tooling/static-analysis' },
+                    { text: 'Recommended Packages', link: '/tooling/recommended-packages' },
                 ],
             },
             {
@@ -71,6 +72,7 @@ export default withMermaid(defineConfig({
                 text: 'Authorization',
                 items: [
                     { text: 'Overview', link: '/authorization/' },
+                    { text: 'Choosing a Package', link: '/authorization/package-comparison' },
                 ],
             },
             {

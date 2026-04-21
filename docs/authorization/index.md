@@ -79,3 +79,7 @@ This application has no policies, gates (beyond the internal Telescope dashboard
 A future milestone will introduce an authorization layer. The specific package and pattern have not been decided — no assumptions should be made about which approach will be used.
 
 :::
+
+## Choosing a Package
+
+When the authorization milestone begins, the first decision is which package to adopt. The two realistic candidates are `spatie/laravel-permission` and `silber/bouncer`. The trade-offs specific to **this repo** — the `App\Models\Security\User` namespace, the arch test constraints, the `security_users` table rename, the Inertia shared-prop integration, and the test-suite cache gotchas — are documented in [Choosing an Authorization Package](./package-comparison.md). Read it before picking.
