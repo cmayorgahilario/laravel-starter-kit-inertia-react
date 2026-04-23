@@ -57,10 +57,11 @@
         "setup": [
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php -r \"file_exists('.mcp.json') || copy('.mcp.json.example', '.mcp.json');\"",
             "@php artisan key:generate",
             "@php artisan migrate --force",
-            "npm install --ignore-scripts",
-            "npm run build"
+            "bun install",
+            "bun run build:ssr"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
