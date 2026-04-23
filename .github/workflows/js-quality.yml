@@ -28,7 +28,10 @@ jobs:
           restore-keys: composer-
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
+        run: composer install --prefer-dist --no-interaction --no-progress --no-scripts
+
+      - name: Discover packages
+        run: php artisan package:discover --ansi
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -83,7 +86,10 @@ jobs:
           restore-keys: composer-
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
+        run: composer install --prefer-dist --no-interaction --no-progress --no-scripts
+
+      - name: Discover packages
+        run: php artisan package:discover --ansi
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -138,7 +144,10 @@ jobs:
           restore-keys: composer-
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
+        run: composer install --prefer-dist --no-interaction --no-progress --no-scripts
+
+      - name: Discover packages
+        run: php artisan package:discover --ansi
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2

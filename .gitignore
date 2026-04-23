@@ -77,10 +77,6 @@ Thumbs.db
 .gsd-id
 .bg-shell/
 
-# ── MCP config (local-only, contains personal paths) ──
-.mcp.json
-!.mcp.json.example
-
 # ── Claude Code (personal overrides only) ──
 .claude/settings.local.json
 
