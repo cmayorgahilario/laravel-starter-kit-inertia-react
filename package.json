@@ -44,7 +44,7 @@
         "@inertiajs/vite": "^3.0.0",
         "@laravel/vite-plugin-wayfinder": "^0.1.7",
         "@rolldown/plugin-babel": "^0.2.3",
-        "@storybook/addon-docs": "10.3.5",
+        "@storybook/addon-docs": "10.3.6",
         "@storybook/addon-themes": "^10.3.5",
         "@storybook/react-vite": "^10.3.5",
         "@tailwindcss/vite": "^4.0.0",
