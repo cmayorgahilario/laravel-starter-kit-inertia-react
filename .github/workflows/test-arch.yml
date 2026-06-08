@@ -1,0 +1,48 @@
+name: Arch Tests
+
+# Architecture tests (Pest arch presets). Static checks over the codebase — no DB,
+# no frontend build. Kept as its own reusable workflow so it can run on push
+# without dragging in type-coverage/profanity (which live in test-static.yml).
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  arch:
+    name: Arch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['8.5']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, dom, fileinfo, zip
+          coverage: none
+          ini-values: memory_limit=2G
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ runner.os }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-${{ matrix.php-version }}-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Run Arch Tests
+        run: ./vendor/bin/pest --testsuite=Arch --colors=always

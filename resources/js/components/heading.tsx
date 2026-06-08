@@ -1,37 +1,18 @@
-export default function Heading({
-    title,
-    description,
-    variant = 'default',
-}: {
+import { cn } from '@/lib/utils';
+
+interface HeadingProps {
     title: string;
     description?: string;
-    variant?: 'default' | 'small';
-}) {
-    if (variant === 'small') {
-        return (
-            <header className="space-y-1">
-                <h2 className="text-base font-semibold tracking-tight">
-                    {title}
-                </h2>
-                {description && (
-                    <p className="text-sm text-muted-foreground">
-                        {description}
-                    </p>
-                )}
-            </header>
-        );
-    }
+    className?: string;
+}
 
+export function Heading({ title, description, className }: HeadingProps) {
     return (
-        <header className="mb-8 space-y-1.5">
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-                {title}
-            </h2>
-            {description && (
-                <p className="text-sm text-balance text-muted-foreground">
-                    {description}
-                </p>
-            )}
-        </header>
+        <div className={cn('flex flex-col gap-1.5', className)}>
+            <h1 className="text-2xl font-semibold tracking-tight text-balance text-foreground">{title}</h1>
+            {description ? (
+                <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">{description}</p>
+            ) : null}
+        </div>
     );
 }

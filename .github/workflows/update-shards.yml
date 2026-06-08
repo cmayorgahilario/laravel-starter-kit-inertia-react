@@ -1,0 +1,122 @@
+name: Update Test Shards
+
+# Regenera el balanceo por tiempo de Pest (tests/.pest/shards.json) y lo commitea.
+# Semanal (lunes 04:00 UTC) + manual.
+on:
+  schedule:
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-shards:
+    name: Regenerate shards timing
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    env:
+      APP_ENV: testing
+      APP_DEBUG: false
+      APP_URL: http://127.0.0.1:8000
+      DB_CONNECTION: pgsql
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: testing_${{ github.run_id }}
+      LEFTHOOK: 0
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testing_${{ github.run_id }}
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+          --tmpfs /var/lib/postgresql/data:noexec,nosuid,size=1024m
+
+    steps:
+      - name: Checkout
+        # Commit the timing to `develop` (the active branch coverage runs on and
+        # where feature branches fork from), not the release branch `master`.
+        # NOTE: a `schedule` trigger only fires if this workflow exists on the
+        # repo's DEFAULT branch; if `develop` is protected against bot pushes,
+        # add github-actions[bot] to the bypass list.
+        uses: actions/checkout@v6
+        with:
+          ref: develop
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v6
+        with:
+          version: latest
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, dom, fileinfo, pgsql, zip, bcmath, gd, exif, intl
+          coverage: none
+          ini-values: memory_limit=2G, max_execution_time=300
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ runner.os }}-8.5-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-8.5-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Install JS dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        run: pnpm build:ssr
+
+      - name: Prepare application
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate --ansi --no-interaction
+          php artisan config:clear --ansi --no-interaction
+
+      - name: Run Migrations
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ job.services.postgres.ports['5432'] }}
+        run: php artisan migrate:fresh --ansi --force --no-interaction
+
+      - name: Regenerate shards timing
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ job.services.postgres.ports['5432'] }}
+        run: ./vendor/bin/pest --parallel --update-shards --exclude-testsuite=Browser,Arch
+
+      - name: Commit updated timing (if changed)
+        run: |
+          git add tests/.pest/shards.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios en el timing de shards."
+          else
+            git config user.name  "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore(ci): actualizar timing de shards [skip ci]"
+            git push
+          fi

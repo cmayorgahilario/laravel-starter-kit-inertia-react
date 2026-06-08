@@ -1,22 +1,136 @@
-pre-commit:
-  parallel: true
-  commands:
-    lint:
-      env:
-        LC_ALL: C
-      run: vendor/bin/sail bun run test:lint
-    types:
-      env:
-        LC_ALL: C
-      run: vendor/bin/sail bun run test:types
-    pint:
-      env:
-        LC_ALL: C
-      run: vendor/bin/sail bin pint --dirty --test
+glob_matcher: doublestar
 
 commit-msg:
   commands:
-    commitlint:
+    commit-lint:
       env:
-        LC_ALL: C
-      run: vendor/bin/sail bun run commitlint --edit {1}
+        LC_ALL: C.UTF-8
+      run: ./vendor/bin/sail pnpm --silent exec commitlint --edit {1}
+      fail_text: |
+        Commit message does not follow conventional format.
+
+        Expected format: type(scope?): description
+
+        Examples:
+        - feat: add user authentication
+        - fix(auth): resolve login validation issue
+        - docs: update API documentation
+
+        Available types:
+        feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert, config, security, release
+
+pre-commit:
+  parallel: true
+  skip:
+    - merge
+    - rebase
+  jobs:
+    - name: pint
+      glob: '**/*.php'
+      env:
+        LC_ALL: C.UTF-8
+      run: ./vendor/bin/sail pint {staged_files}
+      stage_fixed: true
+      fail_text: 'Pint formatting failed.'
+
+    # eslint --fix then prettier: avoid parallel writes to the same file
+    - name: js-lint-format
+      glob: '**/*.{js,jsx,ts,tsx}'
+      exclude: '**/*.min.js'
+      group:
+        piped: true
+        jobs:
+          - name: eslint
+            env:
+              LC_ALL: C.UTF-8
+            run: ./vendor/bin/sail pnpm --silent exec eslint --fix {staged_files}
+            stage_fixed: true
+            fail_text: 'ESLint failed.'
+          - name: prettier
+            env:
+              LC_ALL: C.UTF-8
+            run: ./vendor/bin/sail pnpm --silent exec prettier --write {staged_files}
+            stage_fixed: true
+            fail_text: 'Prettier failed.'
+
+    - name: prettier-assets
+      glob:
+        - '**/*.{json,md,yml,yaml,toml,css,scss}'
+        - '**/*.blade.php'
+      exclude: '**/*.min.css'
+      env:
+        LC_ALL: C.UTF-8
+      run: ./vendor/bin/sail pnpm --silent exec prettier --write {staged_files}
+      stage_fixed: true
+      fail_text: 'Prettier failed.'
+
+pre-push:
+  piped: true # gate first; skip checks if it blocks
+  jobs:
+    - name: protect-branches
+      run: |
+        current_branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+        if [ "$current_branch" = "master" ]; then
+          echo "🚫 Push blocked: you cannot push directly to 'master'."
+          echo "👉 Push your feature branch and open a Pull Request instead."
+          exit 1
+        fi
+
+    - name: quality-checks
+      group:
+        parallel: true
+        jobs:
+          - name: tests
+            env:
+              LC_ALL: C.UTF-8
+            run: ./vendor/bin/sail bin pest --parallel
+            fail_text: 'Test suite failed. Fix all failing tests before pushing.'
+
+          - name: type-coverage
+            env:
+              LC_ALL: C.UTF-8
+            run: ./vendor/bin/sail bin pest --type-coverage --compact --min=100
+            fail_text: 'Type coverage below 100%. Add missing type declarations.'
+
+          - name: profanity
+            env:
+              LC_ALL: C.UTF-8
+            run: ./vendor/bin/sail bin pest --profanity --compact --language=en,es
+            fail_text: 'Profanity detected. Remove inappropriate language.'
+
+          - name: phpstan
+            glob: '**/*.php'
+            env:
+              LC_ALL: C.UTF-8
+            run: ./vendor/bin/sail bin phpstan analyse --no-progress --error-format=table
+            fail_text: 'Static analysis failed. Fix reported PHPStan errors.'
+
+          - name: rector
+            env:
+              LC_ALL: C.UTF-8
+            run: ./vendor/bin/sail bin rector process --dry-run --no-progress-bar
+            fail_text: "Pending Rector changes. Run 'sail bin rector process' to apply them."
+
+post-merge:
+  commands:
+    composer-install:
+      files: git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD
+      glob:
+        - composer.json
+        - composer.lock
+      env:
+        LC_ALL: C.UTF-8
+      run: ./vendor/bin/sail composer install --optimize-autoloader
+      fail_text: 'Failed to install Composer dependencies.'
+
+    pnpm-install:
+      files: git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD
+      glob:
+        - package.json
+        - pnpm-lock.yaml
+      env:
+        LC_ALL: C.UTF-8
+      run: |
+        ./vendor/bin/sail pnpm install
+        ./vendor/bin/sail pnpm build:ssr
+      fail_text: 'Failed to install pnpm dependencies.'

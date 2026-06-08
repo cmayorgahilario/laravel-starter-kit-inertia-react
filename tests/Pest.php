@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use App\Models\Security\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,23 +13,13 @@ use Tests\TestCase;
 |
 | The closure you provide to your test functions is always bound to a specific PHPUnit test
 | case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
-| need to change it using the "pest()" function to bind a different classes or traits.
+| need to change it using the "pest()" function to bind different classes or traits.
 |
 */
 
-pest()
-    ->extend(TestCase::class)
-    ->use(LazilyRefreshDatabase::class)
-    ->in('Feature');
-
-pest()
-    ->extend(TestCase::class)
-    ->in('Unit');
-
-pest()
-    ->extend(TestCase::class)
+pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
-    ->in('Browser');
+    ->in('Browser', 'Feature');
 
 /*
 |--------------------------------------------------------------------------
@@ -55,7 +45,27 @@ expect()->extend('toBeOne', fn () => $this->toBe(1));
 |
 */
 
-function something(): void
+/**
+ * Create a verified user and authenticate as them. The factory marks the email
+ * as verified, so the returned user satisfies canAccessPanel() out of the box.
+ */
+function loginAsUser(): User
 {
-    // ..
+    $user = User::factory()->create();
+
+    test()->actingAs($user);
+
+    return $user;
+}
+
+/**
+ * Confirm the current password in the browser session. Required before sensitive
+ * 2FA / passkey actions, which sit behind Fortify's password.confirm middleware.
+ * Assumes the factory default password ('Password123!').
+ */
+function confirmPasswordInBrowser(): void
+{
+    visit('/user/confirm-password')
+        ->fill('password', 'Password123!')
+        ->press('Confirm');
 }

@@ -1,83 +1,27 @@
-import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import babel from '@rolldown/plugin-babel';
+import inertia from '@inertiajs/vite';
+import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import tailwindcss from '@tailwindcss/vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
-import { defineConfig } from 'vite-plus';
-import inertia from "@inertiajs/vite";
+import { bunny } from 'laravel-vite-plugin/fonts';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-    lint: {
-        options: {
-            typeAware: true,
-            typeCheck: true,
-        },
-        plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'react'],
-        ignorePatterns: [
-            'vite.config.ts',
-            'docs/',
-            'storybook-static/',
-            'resources/js/components/ui/*',
-            'resources/js/actions/*',
-            'resources/js/routes/*',
-            'resources/js/wayfinder/*',
-        ],
-    },
-    fmt: {
-        printWidth: 80,
-        tabWidth: 4,
-        useTabs: false,
-        semi: true,
-        singleQuote: true,
-        overrides: [
-            {
-                files: ['**/*.yml'],
-                options: {
-                    tabWidth: 2,
-                },
-            },
-        ],
-        sortTailwindcss: {
-            functions: ['clsx', 'cn'],
-            stylesheet: 'resources/css/app.css',
-        },
-        sortImports: {
-            groups: [
-                'builtin',
-                'external',
-                'internal',
-                'parent',
-                'sibling',
-                'index',
-            ],
-            newlinesBetween: false,
-        },
-        ignorePatterns: [
-            'storybook-static/',
-            'resources/js/components/ui/*',
-            'resources/views/mail/*',
-            'resources/js/actions/*',
-            'resources/js/routes/*',
-            'resources/js/wayfinder/*',
-        ],
-    },
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.tsx'],
-            ssr: 'resources/js/ssr.tsx',
+            input: ['resources/css/app.css', 'resources/js/app.tsx', 'resources/css/filament/admin/theme.css'],
             refresh: true,
+            fonts: [
+                bunny('Instrument Sans', {
+                    weights: [400, 500, 600],
+                }),
+            ],
         }),
         inertia(),
         react(),
+        babel({ presets: [reactCompilerPreset()] }),
         tailwindcss(),
-        wayfinder({
-            formVariants: true,
-        }),
-        babel({ presets: [reactCompilerPreset({target: '19'})] }),
+        wayfinder({ formVariants: true }),
     ],
-    server: {
-        watch: {
-            ignored: ['**/storage/framework/views/**'],
-        },
-    },
 });

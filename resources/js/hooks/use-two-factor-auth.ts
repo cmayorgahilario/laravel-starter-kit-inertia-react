@@ -1,8 +1,11 @@
 import { useHttp } from '@inertiajs/react';
 import { useCallback, useState } from 'react';
+
 import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
 
-export type UseTwoFactorAuthReturn = {
+export const OTP_MAX_LENGTH = 6;
+
+export interface UseTwoFactorAuthReturn {
     qrCodeSvg: string | null;
     manualSetupKey: string | null;
     recoveryCodesList: string[];
@@ -15,11 +18,13 @@ export type UseTwoFactorAuthReturn = {
     fetchSetupKey: () => Promise<void>;
     fetchSetupData: () => Promise<void>;
     fetchRecoveryCodes: () => Promise<void>;
-};
+}
 
-export const OTP_MAX_LENGTH = 6;
-
-export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
+/**
+ * Fetches 2FA setup data (QR, manual key, recovery codes) on demand from Fortify's
+ * endpoints.
+ */
+export function useTwoFactorAuth(): UseTwoFactorAuthReturn {
     const { submit } = useHttp();
 
     const [qrCodeSvg, setQrCodeSvg] = useState<string | null>(null);
@@ -48,27 +53,20 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
     const fetchQrCode = useCallback(async (): Promise<void> => {
         try {
-            const { svg } = (await submit(qrCode())) as {
-                svg: string;
-                url: string;
-            };
-
+            const { svg } = (await submit(qrCode())) as { svg: string; url: string };
             setQrCodeSvg(svg);
         } catch {
-            setErrors((prev) => [...prev, 'Failed to fetch QR code']);
+            setErrors((prev) => [...prev, 'Could not retrieve the QR code.']);
             setQrCodeSvg(null);
         }
     }, [submit]);
 
     const fetchSetupKey = useCallback(async (): Promise<void> => {
         try {
-            const { secretKey: key } = (await submit(secretKey())) as {
-                secretKey: string;
-            };
-
+            const { secretKey: key } = (await submit(secretKey())) as { secretKey: string };
             setManualSetupKey(key);
         } catch {
-            setErrors((prev) => [...prev, 'Failed to fetch a setup key']);
+            setErrors((prev) => [...prev, 'Could not retrieve the setup key.']);
             setManualSetupKey(null);
         }
     }, [submit]);
@@ -79,7 +77,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
             const codes = (await submit(recoveryCodes())) as string[];
             setRecoveryCodesList(codes);
         } catch {
-            setErrors((prev) => [...prev, 'Failed to fetch recovery codes']);
+            setErrors((prev) => [...prev, 'Could not retrieve the recovery codes.']);
             setRecoveryCodesList([]);
         }
     }, [submit]);
@@ -108,4 +106,4 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
         fetchSetupData,
         fetchRecoveryCodes,
     };
-};
+}

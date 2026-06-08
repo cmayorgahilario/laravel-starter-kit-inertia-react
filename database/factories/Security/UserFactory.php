@@ -17,10 +17,7 @@ class UserFactory extends Factory
     /**
      * The current password being used by the factory.
      */
-    protected static ?string $password;
-
-    /** @var class-string<User> */
-    protected $model = User::class;
+    protected static ?string $password = 'Password123!';
 
     /**
      * Define the model's default state.
@@ -35,6 +32,10 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'two_factor_secret' => null,
+            'two_factor_recovery_codes' => null,
+            'two_factor_confirmed_at' => null,
+            'avatar_path' => null,
         ];
     }
 
@@ -45,6 +46,16 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes): array => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user has an uploaded avatar.
+     */
+    public function withAvatar(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'avatar_path' => 'avatars/'.fake()->uuid().'.png',
         ]);
     }
 }

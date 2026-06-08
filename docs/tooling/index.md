@@ -1,16 +1,33 @@
 ---
 title: Tooling
-description: Developer tooling catalogue — MCP servers, day-to-day dev commands, and git hooks.
+description: Local developer tooling — git hooks and the code-quality stack.
 ---
 
 # Tooling
 
-This section catalogues the developer tooling layered on top of the application runtime. See the sub-pages for details.
+**Why it exists:** document the local tooling that runs on the developer's machine — git hooks and the
+formatters/analyzers that gate commits and pushes.
+**Covers:** Lefthook (hooks), and the code-quality tools (Pint, PHPStan, Rector, ESLint, Prettier,
+commitlint).
+**Does not cover:** the CI pipeline that re-runs these in the cloud (see
+[../continuous-integration/index.md](../continuous-integration/index.md)) or the test suites
+themselves (see [../testing/index.md](../testing/index.md)).
 
-| Page | Purpose |
-| --- | --- |
-| [MCP Servers](./mcp-servers.md) | External MCP integrations configured in `.mcp.json` |
-| [Developer Tools](./developer-tools.md) | Day-to-day artisan, sail, and bun commands |
-| [Git Hooks](./git-hooks.md) | Lefthook-managed pre-commit and commit-msg checks |
-| [Static Analysis](./static-analysis.md) | Pint, Larastan, Rector, and Pest arch tests |
-| [Recommended Packages](./recommended-packages.md) | Curated third-party packages worth considering on top of the starter kit |
+## Sub-pages
+
+| Topic                                                              | Link                               |
+| ------------------------------------------------------------------ | ---------------------------------- |
+| Git hooks (Lefthook) and the Sail constraint                       | [git-hooks.md](git-hooks.md)       |
+| Code quality (Pint, PHPStan, Rector, ESLint, Prettier, commitlint) | [code-quality.md](code-quality.md) |
+
+## At a glance
+
+| Tool               | Scope                         | Config                 |
+| ------------------ | ----------------------------- | ---------------------- |
+| Lefthook           | git hooks                     | `lefthook.yml`         |
+| Pint               | PHP formatting                | `pint.json`            |
+| PHPStan (Larastan) | PHP static analysis           | `phpstan.neon.dist`    |
+| Rector             | PHP refactoring               | `rector.php`           |
+| ESLint             | JS/TS linting                 | `eslint.config.js`     |
+| Prettier           | JS/TS/Blade/assets formatting | `prettier.config.js`   |
+| commitlint         | commit message format         | `commitlint.config.js` |

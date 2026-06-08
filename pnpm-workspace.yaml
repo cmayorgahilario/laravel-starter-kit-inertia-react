@@ -1,0 +1,10 @@
+# pnpm v11 build-script control (replaces onlyBuiltDependencies/ignoredBuiltDependencies).
+# Every dependency with a postinstall/build script needs an explicit decision, otherwise
+# strictDepBuilds (default true) fails the install with ERR_PNPM_IGNORED_BUILDS.
+allowBuilds:
+  # Native Rust binding required by eslint-import-resolver-typescript.
+  unrs-resolver: true
+  # Never run lefthook's postinstall: inside the Sail container it would run
+  # `lefthook install` and bake /var/www/html paths into the git hooks, breaking
+  # them on the host. Install hooks from the HOST with `lefthook install`.
+  lefthook: false

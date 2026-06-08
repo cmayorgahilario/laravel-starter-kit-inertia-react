@@ -1,0 +1,136 @@
+name: Sharded Tests
+
+# Single execution of the Unit + Feature suite, split across shards. Each shard
+# emits a per-shard coverage data file (.cov) as an artifact. The coverage merge
+# and the min gate live in test-coverage.yml, which consumes these artifacts —
+# so the suite runs ONCE, not twice.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Shard ${{ matrix.shard }}/4
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+
+    # The testing drivers (cache=array, session=array, queue=sync, mail=array)
+    # are already set in phpunit.xml, so here we only configure the database.
+    env:
+      APP_ENV: testing
+      APP_DEBUG: false
+      APP_URL: http://127.0.0.1:8000
+      DB_CONNECTION: pgsql
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: testing_${{ github.run_id }}_${{ matrix.shard }}
+      LEFTHOOK: 0
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testing_${{ github.run_id }}_${{ matrix.shard }}
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+          --tmpfs /var/lib/postgresql/data:noexec,nosuid,size=1024m
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v6
+        with:
+          version: latest
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, dom, fileinfo, pgsql, zip, bcmath, gd, exif, intl
+          coverage: pcov
+          ini-values: memory_limit=2G, max_execution_time=300
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ runner.os }}-8.5-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-8.5-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Install JS dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        run: pnpm build:ssr
+
+      - name: Prepare application
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate --ansi --no-interaction
+          php artisan config:clear --ansi --no-interaction
+
+      - name: Run Migrations
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ job.services.postgres.ports['5432'] }}
+        run: php artisan migrate:fresh --ansi --force --no-interaction
+
+      - name: Run shard (emit coverage data)
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ job.services.postgres.ports['5432'] }}
+        # Tests run ONCE here. Emit a per-shard .cov (coverage DATA, no report/gate).
+        # Pass --coverage-php ALONE: Pest 4 auto-adds its own --coverage-php under
+        # --coverage, so passing both aborts ("Option --coverage-php cannot be used
+        # more than once"). The merge + min gate happen in test-coverage.yml.
+        run: |
+          mkdir -p coverage
+          ./vendor/bin/pest --shard=${{ matrix.shard }}/4 \
+            --exclude-testsuite=Browser,Arch \
+            --coverage-php=coverage/shard-${{ matrix.shard }}.cov \
+            --colors=always
+
+      - name: Upload shard coverage data
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-cov-${{ matrix.shard }}
+          path: coverage/shard-${{ matrix.shard }}.cov
+          if-no-files-found: ignore
+          retention-days: 1
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-tests-shard-${{ matrix.shard }}-${{ github.run_id }}
+          path: ./storage/logs
+          retention-days: 3

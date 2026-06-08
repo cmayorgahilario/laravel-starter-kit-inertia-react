@@ -1,100 +1,98 @@
 ---
-title: Getting Started
-description: Clone the repo, start the Docker stack with Laravel Sail, and verify all services are healthy.
+title: Getting started
+description: Clone the repository, configure the environment and start the Laravel Starter Kit with Laravel Sail.
 ---
 
-# Getting Started
+# Getting started
 
-## Prerequisites
+**Why it exists:** get the project running locally from scratch, with all Docker services up and the
+database migrated.
+**Covers:** requirements, dependency installation, environment variables, starting with Sail,
+migrations and a health check.
+**Does not cover:** the detail of each service (see [../services/index.md](../services/index.md)) or the
+frontend development workflow (see [../frontend/index.md](../frontend/index.md)).
 
-- **Docker Desktop** (or Docker Engine + Compose) — all services run in containers.
-- **Git** — to clone the repository.
+## Overview
 
-No local PHP or Node installation is required. All commands run inside the Sail container.
+The whole environment runs in Docker via **Laravel Sail**. The only requirement on the host is Docker
+(and, for the git hooks, Node via nvm). You do not need PHP or Composer installed globally: the first
+boot uses the Sail container.
 
-## Clone and Install
+## Steps
 
-```bash
-git clone <repo-url> laravel-react-starter-kit
-cd laravel-react-starter-kit
-```
+1. Clone the repository and enter the project folder.
 
-Bootstrap PHP dependencies using the Sail helper (no local PHP needed):
+2. Copy the environment file:
 
-```bash
-docker run --rm \
-  -u "$(id -u):$(id -g)" \
-  -v "$(pwd):/var/www/html" \
-  -w /var/www/html \
-  laravelsail/php85-composer:latest \
-  composer install --ignore-platform-reqs
-```
+    ```bash
+    cp .env.example .env
+    ```
 
-Copy the environment file and generate the application key:
+3. Install the PHP dependencies (using the Sail Composer container):
 
-```bash
-cp .env.example .env
-vendor/bin/sail artisan key:generate
-```
+    ```bash
+    docker run --rm -v "$(pwd)":/var/www/html -w /var/www/html laravelsail/php85-composer:latest composer install --ignore-platform-reqs
+    ```
 
-## Start the Stack
+    From here on you can use `./vendor/bin/sail`.
 
-```bash
-vendor/bin/sail up -d
-```
+4. Start the services (Postgres, Valkey, Meilisearch, RustFS, Mailpit, Soketi and the app):
 
-This starts all six Docker services: `pgsql`, `redis`, `typesense`, `rustfs`, `mailpit`, and `soketi`.
+    ```bash
+    ./vendor/bin/sail up -d
+    ```
 
-## Run Migrations
+5. Generate the application key and migrate the database:
 
-```bash
-vendor/bin/sail artisan migrate
-```
+    ```bash
+    ./vendor/bin/sail artisan key:generate
+    ./vendor/bin/sail artisan migrate
+    ```
 
-## Install Git Hooks
+6. Create the initial administrative user (the "founder"). First fill in these variables in `.env`
+   (they are empty in `.env.example`):
 
-Activate Lefthook to enforce code quality and commit message checks (see [Git Hooks](../tooling/git-hooks.md) for details):
+    ```dotenv
+    AUTH_FOUNDER_NAME="Your Name"
+    AUTH_FOUNDER_EMAIL=you@example.com
+    AUTH_FOUNDER_PASSWORD=a-strong-password
+    ```
 
-```bash
-bunx lefthook install
-```
+    Then run the one-time operation that creates the founder and marks the email as verified:
 
-This runs on the host machine — not inside Docker — because git hooks are invoked by the host's `git` process.
+    ```bash
+    ./vendor/bin/sail artisan operations:process
+    ```
 
-## Start the Frontend Dev Server
+    It throws an error if any of the three variables is blank. Detail in
+    [../services/database.md](../services/database.md). For sample local data you can additionally run
+    `./vendor/bin/sail artisan db:seed`.
 
-```bash
-vendor/bin/sail bun run dev
-```
+7. Install dependencies and build the frontend assets:
 
-Or start all services (server, queue worker, log watcher, Vite) concurrently:
+    ```bash
+    ./vendor/bin/sail pnpm install
+    ./vendor/bin/sail pnpm dev
+    ```
 
-```bash
-vendor/bin/sail composer run dev
-```
+8. Install the git hooks **from the host** (not inside the container):
 
-## Verify Services Are Running
+    ```bash
+    lefthook install
+    ```
 
-Check that all containers are healthy:
+    The reason and details are in [../tooling/git-hooks.md](../tooling/git-hooks.md).
 
-```bash
-vendor/bin/sail ps
-```
+## Health check
 
-Spot-check individual services:
+- The app responds at `http://localhost` (port `APP_PORT`, default 80).
+- Laravel exposes a health endpoint at `/up` (configured in `bootstrap/app.php`).
+- The admin panel is at `http://localhost/admin` (see [../admin-panel/index.md](../admin-panel/index.md)).
+- Mailpit (development mailbox) is at `http://localhost:8025`.
 
-| Service    | Check                                                            |
-| ---------- | ---------------------------------------------------------------- |
-| App        | `curl http://localhost`                                          |
-| PostgreSQL | `vendor/bin/sail artisan config:show database.default` → `pgsql` |
-| Redis      | `vendor/bin/sail exec redis redis-cli ping` → `PONG`             |
-| Typesense  | `curl http://localhost:8108/health` → `{"ok":true}`              |
-| RustFS     | `curl http://localhost:9000/health`                              |
-| Mailpit UI | Open `http://localhost:8025` in a browser                        |
-| Soketi     | `curl http://localhost:9601/usage`                               |
+## Troubleshooting
 
-## Run Tests
-
-```bash
-vendor/bin/sail artisan test --compact
-```
+- If a Node/pnpm command fails with PATH errors, it is almost always because it ran outside Sail.
+  Re-run it with the `./vendor/bin/sail` prefix.
+- If the git hooks do not fire or point to `/var/www/html` paths, reinstall them from the host with
+  `lefthook install` (see [../tooling/git-hooks.md](../tooling/git-hooks.md)).

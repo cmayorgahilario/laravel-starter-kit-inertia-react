@@ -1,114 +1,82 @@
-# Agent Brief
+# AGENTS.md
 
-This file is the minimal brief for AI coding agents working in this repo. It covers only the rules that must be applied from the first turn. Every other detail — stack, commands, conventions — lives in [`docs/`](./docs/index.md). Follow the links when you need more.
+Minimal brief for AI agents (Claude Code, Cursor, Copilot, Codex…). Only what applies from the first
+turn; **all the detail lives in `docs/`** (read on demand). Start at `docs/index.md`.
 
-## Runtime
+Laravel Starter Kit is a Laravel 13 / PHP 8.5 application with a Filament 5 admin panel and an Inertia.js v3 +
+React 19 SPA. Authentication runs on Fortify + Sanctum, with 2FA and passkeys (WebAuthn). All
+documentation is in English.
 
-- **PHP 8.5 / Laravel 13 inside Laravel Sail (Docker).** Every PHP, Artisan, Composer, Node, or Bun command must be prefixed with `vendor/bin/sail`. Running `php`, `composer`, or `bun` directly on the host is wrong.
-- Full service topology, ports, and environment drivers: [`docs/architecture/`](./docs/architecture/index.md).
-- Clone / boot / health-check walkthrough: [`docs/getting-started/`](./docs/getting-started/index.md).
+## Runtime / Environment
 
-## Essential Commands
+- Everything runs in **Docker via Laravel Sail**. The binary is `./vendor/bin/sail` (recommended alias:
+  `sail`). Services in `compose.yaml`: Postgres 18, Valkey, Meilisearch, RustFS (S3), Mailpit, Soketi.
+- **Non-negotiable rule:** never run `php`, `artisan`, `composer`, `node`, `pnpm`, `pest` or `npx`
+  directly. Always prefix with `./vendor/bin/sail` (e.g. `./vendor/bin/sail artisan …`). Node lives in
+  nvm and is missing from the hooks/GUI PATH; running commands outside Sail breaks the store.
+- Real app defaults (not what `compose.yaml` suggests): database `pgsql`; cache, queue and session on
+  `database`; mail over SMTP to Mailpit; filesystem disk `local`; broadcast `log`. Detail and caveats
+  in `docs/services/index.md`.
+- Boot: see `docs/getting-started/index.md`.
 
-All commands run through Sail. The container must be up (`vendor/bin/sail up -d`) before most of these work.
+## Essential commands
 
-### Artisan
+| Action               | Command                                                         |
+| -------------------- | --------------------------------------------------------------- |
+| Start environment    | `./vendor/bin/sail up -d`                                       |
+| Migrate              | `./vendor/bin/sail artisan migrate`                             |
+| Dev (Vite)           | `./vendor/bin/sail pnpm dev`                                    |
+| Build frontend       | `./vendor/bin/sail pnpm build`                                  |
+| Tests (Unit+Feature) | `./vendor/bin/sail pest`                                        |
+| A single test        | `./vendor/bin/sail pest --filter="test name"`                   |
+| Architecture tests   | `./vendor/bin/sail pest --testsuite=Arch`                       |
+| Type coverage (100%) | `./vendor/bin/sail pest --type-coverage --min=100`              |
+| Profanity (en, es)   | `./vendor/bin/sail pest --profanity --language=en,es`           |
+| Static analysis      | `./vendor/bin/sail phpstan analyse`                             |
+| Refactor (dry-run)   | `./vendor/bin/sail rector process --dry-run`                    |
+| PHP formatting       | `./vendor/bin/sail pint`                                        |
+| Lint / format JS     | `./vendor/bin/sail pnpm lint` · `./vendor/bin/sail pnpm format` |
+| TS types             | `./vendor/bin/sail pnpm types:check`                            |
 
-```bash
-vendor/bin/sail artisan migrate                          # run migrations
-vendor/bin/sail artisan migrate:fresh --seed             # reset + seed (local only)
-vendor/bin/sail artisan route:list --except-vendor       # inspect app routes
-vendor/bin/sail artisan config:show database.default     # verify active driver
-vendor/bin/sail artisan tinker                           # REPL (prefer `laravel-boost/database-query` for reads)
-vendor/bin/sail artisan make:model Models/Foo/Bar --no-interaction
-```
+Test detail in `docs/testing/index.md`; tooling in `docs/tooling/index.md`.
 
-### Composer scripts
+## Critical rules
 
-```bash
-vendor/bin/sail composer run dev         # server + queue + pail + vite, concurrent
-vendor/bin/sail composer test            # Pest, compact output
-vendor/bin/sail composer test:coverage   # enforces 100% code coverage
-vendor/bin/sail composer test:types      # enforces 100% type coverage
-vendor/bin/sail composer test:pao        # PAO printer (agent-friendly output)
-vendor/bin/sail composer lint            # Pint (write)
-vendor/bin/sail composer lint:test       # Pint (check only)
-vendor/bin/sail composer refactor        # Rector dry-run
-vendor/bin/sail composer refactor:apply  # Rector write
-vendor/bin/sail composer types           # Larastan / PHPStan
-vendor/bin/sail composer check-all       # lint:test + refactor + types + test
-```
+- **Always prefix commands with `./vendor/bin/sail`** (see Runtime). This is the most-forgotten rule.
+- **Do not edit generated code.** Wayfinder (`resources/js/actions/`, `resources/js/routes/`) and the
+  shadcn base UI are excluded from linting; they are regenerated. See `docs/frontend/routing-wayfinder.md`.
+- **Domain convention:** code is organized by bounded-context (`App\…\Security\…`). Tests mirror `app/`
+  under `tests/Unit` and `tests/Feature`. See `docs/architecture/code-organization.md`.
+- **Visible UI text is in English**, hardcoded (no i18n) in `resources/js`. Test titles and comments are
+  also in English. Project documentation (`docs/`) is in English.
+- **Git hooks run through Sail:** `lefthook` runs the hooks inside Sail. Install them from the HOST with
+  `lefthook install`. Pushing directly to `master` is blocked by a hook. See `docs/tooling/git-hooks.md`.
+- **Conventional commits** validated by commitlint. The user commits manually: do not run `git commit`
+  on their behalf. See `docs/tooling/code-quality.md`.
+- **Mandatory quality:** PHPStan at `max` level and 100% type-coverage. Do not lower these thresholds.
 
-After modifying PHP, run `vendor/bin/sail bin pint --dirty` (or `composer lint`) before committing.
+## Tooling / MCP / skills
 
-### Bun / frontend
+- **Laravel Boost** is installed and exposes an MCP server (`./vendor/bin/sail artisan boost:mcp`,
+  declared in `.mcp.json`). It offers semantic docs search, DB schema and logs. Suggested skills in
+  `boost.json`. See `docs/ai-tooling/index.md`.
 
-```bash
-vendor/bin/sail bun install              # install JS deps
-vendor/bin/sail bun run dev              # Vite dev server (HMR on :5173)
-vendor/bin/sail bun run build            # production client build
-vendor/bin/sail bun run build:ssr        # SSR bundle to bootstrap/ssr/ssr.js
-vendor/bin/sail bun run lint             # vp fmt + vp lint --fix
-vendor/bin/sail bun run test:lint        # lint check only
-vendor/bin/sail bun run test:types       # tsc --noEmit
-vendor/bin/sail bun run storybook        # Storybook on :6006
-```
+## Where to find more
 
-### Tests (Pest 4)
+| Topic                                                  | Path                                   |
+| ------------------------------------------------------ | -------------------------------------- |
+| Overview + verified stack                              | `docs/index.md`                        |
+| Getting started                                        | `docs/getting-started/index.md`        |
+| Architecture and bootstrap                             | `docs/architecture/index.md`           |
+| Services (DB, cache, storage, mail, search, broadcast) | `docs/services/index.md`               |
+| Authentication (Fortify, Sanctum, 2FA, passkeys)       | `docs/authentication/index.md`         |
+| Admin panel (Filament)                                 | `docs/admin-panel/index.md`            |
+| Frontend (Inertia + React)                             | `docs/frontend/index.md`               |
+| Testing (Pest)                                         | `docs/testing/index.md`                |
+| Local tooling (hooks, quality)                         | `docs/tooling/index.md`                |
+| Continuous integration                                 | `docs/continuous-integration/index.md` |
+| AI tooling (Boost/MCP)                                 | `docs/ai-tooling/index.md`             |
+| Domain catalog                                         | `docs/domains/index.md`                |
+| Documentation conventions                              | `docs/meta/index.md`                   |
 
-```bash
-vendor/bin/sail artisan test --compact                       # full suite
-vendor/bin/sail artisan test --compact --testsuite=Arch      # arch rules only
-vendor/bin/sail artisan test --compact --filter=homepage     # single test by name
-```
-
-### Git hooks (host, not container)
-
-```bash
-bunx lefthook install    # one-time, runs on the host since git invokes hooks there
-```
-
-Deeper reference (what each tool does, why it's wired that way, edge cases): [`docs/tooling/`](./docs/tooling/index.md) and [`docs/testing/`](./docs/testing/index.md).
-
-## MCP Servers
-
-`.mcp.json` declares four servers: `laravel-boost`, `context7`, `tavily`, `jina`. Only `laravel-boost` is guaranteed available — the other three need API keys exported in the user's shell and may be disconnected. Do not retry a server that returned a connection/auth/`tool not found` error; fall back per the priority in [`docs/tooling/mcp-servers.md`](./docs/tooling/mcp-servers.md).
-
-**CRITICAL: Always use `laravel-boost/search-docs` before writing or modifying Laravel code. Do not rely on training data for Laravel APIs.**
-
-Priority when choosing an MCP:
-
-1. **This app's runtime state or Laravel-ecosystem docs** → `laravel-boost` first.
-2. **Third-party library / framework API docs** → `context7`, then `tavily`/`jina` against the official site.
-3. **General web search** → `tavily` first, `jina/search_web` fallback.
-4. **Read a specific URL** → `jina/read_url` first, `tavily/tavily_extract` fallback.
-5. **Scholarly / PDF / screenshots / images** → `jina` only (no fallback).
-6. **Site crawl / sitemap** → `tavily` only (no fallback).
-
-Laravel Boost tools used in place of manual alternatives (full list and usage patterns in [`docs/tooling/mcp-servers.md`](./docs/tooling/mcp-servers.md)):
-
-- `search-docs` · `database-query` · `database-schema` · `get-absolute-url` · `browser-logs` · `last-error` · `read-log-entries` · `application-info`
-
-## Boost Skills
-
-Skills published via `boost.json`: `laravel-best-practices`, `tailwindcss-development`. Activate the matching skill whenever working in those domains.
-
-## Where to Find More
-
-| Topic                                              | Go to                                                                       |
-| -------------------------------------------------- | --------------------------------------------------------------------------- |
-| Docker services, ports, environment drivers        | [`docs/architecture/`](./docs/architecture/index.md)                        |
-| What `AppServiceProvider::boot()` wires up         | [`docs/architecture/app-configuration.md`](./docs/architecture/app-configuration.md) |
-| `App\Models\{Domain}` conventions                  | [`docs/architecture/domain-namespaces.md`](./docs/architecture/domain-namespaces.md) |
-| Vite plugins, Inertia resolver, SSR, React Compiler | [`docs/frontend/`](./docs/frontend/index.md)                                |
-| shadcn/ui · Storybook · Theming (Tailwind v4 oklch) | [`docs/frontend/`](./docs/frontend/index.md)                                |
-| Fortify auth (Actions, 2FA, rate limiters)         | [`docs/authentication/`](./docs/authentication/index.md)                    |
-| Pest 4 conventions, arch tests, browser tests      | [`docs/testing/`](./docs/testing/index.md)                                  |
-| MCP fallbacks, quotas, API keys                    | [`docs/tooling/mcp-servers.md`](./docs/tooling/mcp-servers.md)              |
-| Telescope · IDE Helper · dev-only provider gating  | [`docs/tooling/developer-tools.md`](./docs/tooling/developer-tools.md)      |
-| Lefthook-managed pre-commit & commit-msg checks    | [`docs/tooling/git-hooks.md`](./docs/tooling/git-hooks.md)                  |
-| Pint · Larastan · Rector · Pest arch rules         | [`docs/tooling/static-analysis.md`](./docs/tooling/static-analysis.md)      |
-| Queue · Search (Typesense) · File Storage · Mail · Realtime · API · Authorization · Database · Deployment | Matching section in [`docs/`](./docs/index.md) |
-| How these docs are authored / structured          | [`docs/meta/`](./docs/meta/index.md)                                        |
-
-When in doubt, start at [`docs/index.md`](./docs/index.md) and navigate from there.
+Always start at `docs/index.md`.

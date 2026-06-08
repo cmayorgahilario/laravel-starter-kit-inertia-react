@@ -1,0 +1,25 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: max
+
+    paths:
+        - app
+        - bootstrap/app.php
+        - config
+        - database
+        - public
+        - routes
+
+    # Cache inside the project.
+    tmpDir: storage/framework/cache/phpstan
+
+    # Stricter checks layered on top of "max".
+    checkUninitializedProperties: true
+    checkBenevolentUnionTypes: true
+    checkMissingCallableSignature: true
+    reportUnmatchedIgnoredErrors: true
+    treatPhpDocTypesAsCertain: true
+
+    ignoreErrors: []

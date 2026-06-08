@@ -3,11 +3,11 @@ import { useSyncExternalStore } from 'react';
 export type ResolvedAppearance = 'light' | 'dark';
 export type Appearance = ResolvedAppearance | 'system';
 
-export type UseAppearanceReturn = {
+export interface UseAppearanceReturn {
     readonly appearance: Appearance;
     readonly resolvedAppearance: ResolvedAppearance;
     readonly updateAppearance: (mode: Appearance) => void;
-};
+}
 
 const listeners = new Set<() => void>();
 let currentAppearance: Appearance = 'system';
@@ -94,9 +94,7 @@ export function useAppearance(): UseAppearanceReturn {
         () => 'system',
     );
 
-    const resolvedAppearance: ResolvedAppearance = isDarkMode(appearance)
-        ? 'dark'
-        : 'light';
+    const resolvedAppearance: ResolvedAppearance = isDarkMode(appearance) ? 'dark' : 'light';
 
     const updateAppearance = (mode: Appearance): void => {
         currentAppearance = mode;

@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\Security\User;
 use Laravel\Fortify\Features;
 
 return [
@@ -76,8 +75,6 @@ return [
     |
     */
 
-    'model' => User::class,
-
     'home' => '/dashboard',
 
     /*
@@ -122,6 +119,7 @@ return [
     'limiters' => [
         'login' => 'login',
         'two-factor' => 'two-factor',
+        'passkeys' => 'passkeys',
     ],
 
     /*
@@ -135,7 +133,27 @@ return [
     |
     */
 
+    // Fortify registers the GET auth routes and renders them as Inertia pages
+    // (see FortifyServiceProvider::configureViews). The POST routes still respond
+    // with JSON when the request asks for it (tests/clients); Inertia gets redirects.
     'views' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Passkeys
+    |--------------------------------------------------------------------------
+    |
+    | These settings configure Fortify's passkey (WebAuthn) support. Passkeys
+    | allow users to sign in without needing to remember credentials since
+    | they use public-key cryptography - making them immune to breaches.
+    |
+    */
+
+    'passkeys' => [
+        'relying_party_id' => parse_url(is_string($appUrl = config('app.url')) ? $appUrl : '', PHP_URL_HOST),
+        'allowed_origins' => [config('app.url')],
+        'timeout' => 60000,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -149,6 +167,7 @@ return [
     */
 
     'features' => [
+        // The 7 active features. To DISABLE one, comment out its line.
         Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
@@ -158,6 +177,9 @@ return [
             'confirm' => true,
             'confirmPassword' => true,
             // 'window' => 0,
+        ]),
+        Features::passkeys([
+            'confirmPassword' => true,
         ]),
     ],
 

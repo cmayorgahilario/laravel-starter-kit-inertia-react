@@ -1,13 +1,13 @@
 {
     "preset": "laravel",
-    "notPath": ["tests/TestCase.php"],
+    "notPath": [
+        "tests/TestCase.php"
+    ],
     "rules": {
         "array_push": true,
         "backtick_to_shell_exec": true,
         "date_time_immutable": true,
         "declare_strict_types": true,
-        "lowercase_keywords": true,
-        "lowercase_static_reference": true,
         "final_class": false,
         "final_internal_class": false,
         "final_public_method_for_abstract_class": false,
@@ -19,15 +19,14 @@
         },
         "mb_str_functions": true,
         "modernize_types_casting": true,
-        "new_with_parentheses": false,
+        "no_multiple_statements_per_line": true,
         "no_superfluous_elseif": true,
         "no_useless_else": true,
-        "no_multiple_statements_per_line": true,
+        "nullable_type_declaration_for_default_null_value": true,
         "ordered_class_elements": {
             "order": [
                 "use_trait",
                 "case",
-                "constant",
                 "constant_public",
                 "constant_protected",
                 "constant_private",
@@ -38,7 +37,6 @@
                 "destruct",
                 "magic",
                 "phpunit",
-                "method:casts",
                 "method_abstract",
                 "method_public_static",
                 "method_public",
@@ -51,7 +49,6 @@
         },
         "ordered_interfaces": true,
         "ordered_traits": true,
-        "protected_to_private": true,
         "self_accessor": true,
         "self_static_accessor": true,
         "strict_comparison": true,

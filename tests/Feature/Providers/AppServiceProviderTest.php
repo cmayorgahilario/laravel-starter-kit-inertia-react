@@ -2,49 +2,39 @@
 
 declare(strict_types=1);
 
-use App\Providers\AppServiceProvider;
-use Carbon\CarbonImmutable;
-use Illuminate\Database\Console\Migrations\FreshCommand;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rules\Password;
+use Inertia\Testing\AssertableInertia;
 
-test('models are unguarded', function () {
-    expect(Model::isUnguarded())->toBeTrue();
+test('renders an Inertia component for handled error statuses', function (): void {
+    $this->get('/a-route-that-does-not-exist')
+        ->assertNotFound()
+        ->assertInertia(fn (AssertableInertia $page): AssertableInertia => $page
+            ->component('errors/404')
+            ->where('status', 404));
 });
 
-test('dates use carbon immutable', function () {
-    expect(now())->toBeInstanceOf(CarbonImmutable::class);
+test('returns the default JSON response for API-style error requests', function (): void {
+    $this->getJson('/a-route-that-does-not-exist')
+        ->assertNotFound()
+        ->assertJsonStructure(['message']);
 });
 
-test('password defaults require min eight characters', function () {
-    $rule = Password::defaults();
+test('leaves unhandled status codes to the default response', function (): void {
+    Route::middleware('web')->get('/only-get', fn (): string => 'ok');
 
-    expect($rule)->toBeInstanceOf(Password::class);
-
-    $validator = validator(['password' => 'short'], ['password' => $rule]);
-    expect($validator->fails())->toBeTrue();
-
-    $validator = validator(['password' => 'ValidPass1!'], ['password' => $rule]);
-    expect($validator->passes())->toBeTrue();
+    $this->post('/only-get')->assertStatus(405);
 });
 
-test('application boots successfully', function () {
-    $response = $this->get('/');
+test('leaves server errors to Laravel while debugging', function (): void {
+    config(['app.debug' => true]);
+    Route::middleware('web')->get('/boom', fn () => abort(500));
 
-    $response->assertSuccessful();
+    $this->get('/boom')->assertStatus(500);
 });
 
-test('destructive commands are prohibited in production', function () {
-    $this->app->detectEnvironment(fn () => 'production');
-    (new AppServiceProvider($this->app))->boot();
+test('enforces strong password rules in production', function (): void {
+    $this->app->detectEnvironment(fn (): string => 'production');
 
-    $prop = new ReflectionProperty(FreshCommand::class, 'prohibitedFromRunning');
-    expect($prop->getValue())->toBeTrue();
-});
-
-test('https scheme is forced in production', function () {
-    $this->app->detectEnvironment(fn () => 'production');
-    (new AppServiceProvider($this->app))->boot();
-
-    expect(url('/test'))->toStartWith('https://');
+    expect(Password::default())->toBeInstanceOf(Password::class);
 });

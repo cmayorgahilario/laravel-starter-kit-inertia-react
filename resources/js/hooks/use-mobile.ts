@@ -1,23 +1,31 @@
-import * as React from 'react';
+import { useSyncExternalStore } from 'react';
 
-const MOBILE_BREAKPOINT = 768;
+export const MOBILE_BREAKPOINT = 768;
 
-export function useIsMobile() {
-    const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
-        undefined,
-    );
+const mql = typeof window === 'undefined' ? undefined : window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
 
-    React.useEffect(() => {
-        const mql = window.matchMedia(
-            `(max-width: ${MOBILE_BREAKPOINT - 1}px)`,
-        );
-        const onChange = () => {
-            setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+function mediaQueryListener(callback: (event: MediaQueryListEvent) => void) {
+    if (!mql) {
+        return () => {
+            // SSR / sin matchMedia: nada que limpiar.
         };
-        mql.addEventListener('change', onChange);
-        setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-        return () => mql.removeEventListener('change', onChange);
-    }, []);
+    }
 
-    return !!isMobile;
+    mql.addEventListener('change', callback);
+
+    return () => {
+        mql.removeEventListener('change', callback);
+    };
+}
+
+function isSmallerThanBreakpoint(): boolean {
+    return mql?.matches ?? false;
+}
+
+function getServerSnapshot(): boolean {
+    return false;
+}
+
+export function useIsMobile(): boolean {
+    return useSyncExternalStore(mediaQueryListener, isSmallerThanBreakpoint, getServerSnapshot);
 }

@@ -1,0 +1,125 @@
+name: Browser Tests
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-tests:
+    name: Playwright E2E Tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['8.5']
+
+    env:
+      APP_ENV: testing
+      APP_DEBUG: false
+      APP_URL: http://127.0.0.1:8000
+      DB_CONNECTION: pgsql
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: testing_${{ github.run_id }}
+      LEFTHOOK: 0
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testing_${{ github.run_id }}
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+          --tmpfs /var/lib/postgresql/data:noexec,nosuid,size=1024m
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v6
+        with:
+          version: latest
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, dom, fileinfo, pgsql, zip, bcmath, gd, exif, intl
+          coverage: none
+          ini-values: memory_limit=2G, max_execution_time=300
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ runner.os }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-${{ matrix.php-version }}-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Install JS dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        run: pnpm build:ssr
+
+      - name: Install Playwright (Chromium)
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Prepare application
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate --ansi --no-interaction
+          php artisan config:clear --ansi --no-interaction
+
+      - name: Run Migrations
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ job.services.postgres.ports['5432'] }}
+        run: php artisan migrate:fresh --ansi --force --no-interaction
+
+      - name: Run Browser tests
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ job.services.postgres.ports['5432'] }}
+        run: ./vendor/bin/pest --testsuite=Browser
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-screenshots-${{ github.run_id }}
+          path: tests/Browser/Screenshots
+          retention-days: 3
+          if-no-files-found: ignore
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-browser-tests-${{ github.run_id }}
+          path: ./storage/logs
+          retention-days: 3
+          if-no-files-found: ignore

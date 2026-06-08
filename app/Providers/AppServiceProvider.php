@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Security\Passkey;
+use App\Models\Security\PersonalAccessToken;
+use App\Models\Security\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Inertia\ExceptionResponse;
+use Inertia\Inertia;
+use Laravel\Passkeys\Passkeys;
+use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,20 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        if ($this->app->environment('local')) {
-            if (class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
-                $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
-                $this->app->register(TelescopeServiceProvider::class);
-            }
-
-            if (class_exists(\Fruitcake\TelescopeToolbar\ToolbarServiceProvider::class)) {
-                $this->app->register(\Fruitcake\TelescopeToolbar\ToolbarServiceProvider::class);
-            }
-
-            if (class_exists(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class)) {
-                $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
-            }
-        }
+        //
     }
 
     /**
@@ -41,47 +33,104 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->configureModels();
         $this->configureCommands();
-        $this->configureDates();
-        $this->configureUrls();
-        $this->configureVite();
+        $this->configureModels();
         $this->configurePasswordValidation();
+        $this->configureDates();
+        $this->configureSanctum();
+        $this->configurePasskeys();
+        $this->configureInertiaExceptions();
     }
 
-    private function configureModels(): void
-    {
-        Model::unguard();
-
-        Model::shouldBeStrict(! $this->app->isProduction());
-
-        Model::automaticallyEagerLoadRelationships();
-    }
-
+    /**
+     * Configure the application's commands.
+     */
     private function configureCommands(): void
     {
-        DB::prohibitDestructiveCommands($this->app->isProduction());
+        DB::prohibitDestructiveCommands(
+            $this->app->isProduction()
+        );
     }
 
+    /**
+     * Configure the dates.
+     */
     private function configureDates(): void
     {
         Date::use(CarbonImmutable::class);
     }
 
-    private function configureUrls(): void
+    /**
+     * Render error pages as Inertia responses through Inertia's own exception
+     * pipeline (so version, root view and shared data are set correctly).
+     */
+    private function configureInertiaExceptions(): void
     {
-        if ($this->app->isProduction()) {
-            URL::forceScheme('https');
-        }
+        Inertia::handleExceptionsUsing(function (ExceptionResponse $response): ?ExceptionResponse {
+            $request = $response->request;
+
+            // JSON / API clients keep Laravel's default (JSON) error response.
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return null;
+            }
+
+            $status = $response->statusCode();
+            $alwaysInertia = [403, 404, 419, 429];
+
+            if (! in_array($status, [...$alwaysInertia, 500, 503], true)) {
+                return null;
+            }
+
+            // Keep Laravel's debug page for 500/503 while APP_DEBUG is on.
+            if ($this->app->hasDebugModeEnabled() && ! in_array($status, $alwaysInertia, true)) {
+                return null;
+            }
+
+            return $response
+                ->render('errors/'.$status, ['status' => $status])
+                ->withSharedData();
+        });
     }
 
-    private function configureVite(): void
+    /**
+     * Configure the models.
+     */
+    private function configureModels(): void
     {
-        Vite::prefetch();
+        Model::shouldBeStrict(! $this->app->isProduction());
+        Model::unguard();
     }
 
+    /**
+     * Configure the passkeys.
+     */
+    private function configurePasskeys(): void
+    {
+        Passkeys::useUserModel(User::class);
+        Passkeys::usePasskeyModel(Passkey::class);
+    }
+
+    /**
+     * Configure the password validation rules.
+     */
     private function configurePasswordValidation(): void
     {
-        Password::defaults(fn () => Password::min(8)->mixedCase()->letters()->numbers()->uncompromised());
+        Password::defaults(fn (): ?Password => app()->isProduction()
+            ? Password::min(8)
+                ->mixedCase()
+                ->letters()
+                ->numbers()
+                ->symbols()
+                ->uncompromised()
+            : null,
+        );
+    }
+
+    /**
+     * Configure Sanctum.
+     */
+    private function configureSanctum(): void
+    {
+        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
     }
 }

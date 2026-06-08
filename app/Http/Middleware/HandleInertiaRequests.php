@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Models\Security\User;
+use Filament\Facades\Filament;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -37,26 +39,28 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        /** @var \App\Models\Security\User|null $user */
         $user = $request->user();
 
-        return array_merge(parent::share($request), [
-            'auth' => fn () => [
-                'user' => $user ? [
+        return [
+            ...parent::share($request),
+            'name' => config('app.name'),
+            'auth' => [
+                'user' => $user instanceof User ? [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
-                    'avatar' => $user->avatar,
-                    'email_verified_at' => $user->email_verified_at?->toISOString(),
-                    'two_factor_confirmed_at' => $user->two_factor_confirmed_at?->toISOString(),
+                    'email_verified_at' => $user->email_verified_at?->toIso8601String(),
+                    'avatar_url' => $user->avatar_url,
+                    'two_factor_enabled' => $user->hasEnabledTwoFactorAuthentication(),
+                    'can_access_admin' => $user->canAccessPanel(Filament::getDefaultPanel()),
                 ] : null,
             ],
-            'app' => fn () => [
-                'name' => config('app.name'),
+            'features' => [
+                'browserSessions' => config('session.driver') === 'database',
             ],
-            'flash' => fn () => [
-                'status' => $request->session()->get('status'),
+            'flash' => [
+                'toast' => $request->hasSession() ? $request->session()->get('toast') : null,
             ],
-        ]);
+        ];
     }
 }

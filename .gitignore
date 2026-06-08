@@ -1,89 +1,66 @@
-# ── Environment variables ──
+# Dependencies
+/node_modules
+/vendor
+/auth.json
+/.pnpm-store/
+
+# Environment and secrets
 .env
 .env.backup
 .env.production
-.env.*
-!.env.example
+/storage/*.key
 
-# ── Dependencies ──
-/node_modules
-node_modules/
-/vendor
-vendor/
-/auth.json
-
-# ── Build output & compiled assets ──
+# Build and compiled assets
 /public/build
 /public/hot
 /public/storage
-.next/
-dist/
-build/
-target/
+/public/fonts-manifest.dev.json
+/bootstrap/ssr/
 
-# ── Logs & caches ──
-*.log
+# Wayfinder (generated helpers; the Vite plugin regenerates them on dev/build)
+/resources/js/actions
+/resources/js/routes
+/resources/js/wayfinder
+
+# Laravel: caches and tooling
+/storage/pail
 /.phpunit.cache
 .phpunit.result.cache
-/storage/pail
-.cache/
-tmp/
-coverage/
-coverage-report/
-
-# ── VitePress ──
-docs/.vitepress/dist/
-docs/.vitepress/cache/
-
-# ── Storybook ──
-storybook-static/
-
-# ── Storage & secrets ──
-/storage/*.key
-
-# ── Laravel / PHP tooling ──
-.phpactor.json
 _ide_helper.php
-_ide_helper_models.php
-.phpstorm.meta.php
+.phpactor.json
+
+# Static analysis / refactoring (local overrides and caches)
+/phpstan.neon
+
+# Testing (browser/Dusk artifacts)
+/tests/Browser/Screenshots
+
+# Playwright MCP (local screenshots and snapshots)
+/.playwright-mcp
+
+# Homestead
 Homestead.json
 Homestead.yaml
 
-# ── Python ──
-__pycache__/
-*.pyc
-.venv/
-venv/
-
-# ── IDE & editor configs ──
+# Editors and IDEs
+/.codex
 /.cursor/
 /.idea
-.idea/
 /.nova
 /.vscode
-.vscode/
 /.zed
-*.code-workspace
-*.swp
-*.swo
-*~
 
-# ── OS-generated files ──
+# Operating system
 .DS_Store
 Thumbs.db
 
-# ── GSD baseline (auto-generated) ──
-.gsd
-.gsd-id
-.bg-shell/
+# Local coverage verification (POC artefacts, never committed)
+/phpcov.phar
+/coverage
 
-# ── Claude Code (personal overrides only) ──
-.claude/settings.local.json
+# Logs
+*.log
+/docs/superpowers/
 
-
-tests/Browser/Screenshots/
-bootstrap/ssr/
-
-resources/js/actions/
-resources/js/routes/
-resources/js/wayfinder/
+# Laravel Boost auto-generated guidelines (redirected here; distilled into AGENTS.md/docs by the docs skill)
+/.ai/boost-guidelines.md

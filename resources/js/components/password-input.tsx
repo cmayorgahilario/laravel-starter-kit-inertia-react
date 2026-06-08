@@ -1,37 +1,26 @@
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
-import type { ComponentProps, Ref } from 'react';
 import { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import type { ComponentProps } from 'react';
 
-export default function PasswordInput({
-    className,
-    ref,
-    ...props
-}: Omit<ComponentProps<'input'>, 'type'> & { ref?: Ref<HTMLInputElement> }) {
-    const [showPassword, setShowPassword] = useState(false);
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group';
+
+type PasswordInputProps = Omit<ComponentProps<typeof InputGroupInput>, 'type'>;
+
+export function PasswordInput(props: PasswordInputProps) {
+    const [visible, setVisible] = useState(false);
 
     return (
-        <div className="relative">
-            <Input
-                type={showPassword ? 'text' : 'password'}
-                className={cn('pr-10', className)}
-                ref={ref}
-                {...props}
-            />
-            <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-3 text-muted-foreground hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:outline-none"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                tabIndex={-1}
-            >
-                {showPassword ? (
-                    <EyeOffIcon className="size-4" />
-                ) : (
-                    <EyeIcon className="size-4" />
-                )}
-            </button>
-        </div>
+        <InputGroup>
+            <InputGroupInput type={visible ? 'text' : 'password'} {...props} />
+            <InputGroupAddon align="inline-end">
+                <InputGroupButton
+                    size="icon-xs"
+                    aria-label={visible ? 'Hide password' : 'Show password'}
+                    onClick={() => setVisible((value) => !value)}
+                >
+                    {visible ? <EyeOffIcon /> : <EyeIcon />}
+                </InputGroupButton>
+            </InputGroupAddon>
+        </InputGroup>
     );
 }

@@ -1,39 +1,60 @@
 ---
-title: React Starter Kit
-description: A Laravel 13 + React starter kit with a full local service stack — PostgreSQL, Redis, Typesense, RustFS, Mailpit, and Soketi — all orchestrated via Docker Compose and Laravel Sail.
-layout: home
-
-hero:
-    name: React Starter Kit
-    tagline: Laravel 13 · PHP 8.5 · Vite 8 · Tailwind CSS v4 — with a production-grade local service stack out of the box.
-    actions:
-        - theme: brand
-          text: Get Started
-          link: /getting-started
-        - theme: alt
-          text: Architecture
-          link: /architecture
+title: Laravel Starter Kit documentation
+description: Entry map to the project documentation, with the verified stack and quick links.
 ---
 
-## Stack
+# Laravel Starter Kit documentation
 
-| Layer            | Package / Image                          | Version          |
-| ---------------- | ---------------------------------------- | ---------------- |
-| PHP              | `sail-8.5/app` (runtime)                 | 8.5              |
-| PHP constraint   | `composer.json` require                  | ^8.3             |
-| Framework        | `laravel/framework`                      | ^13.0            |
-| Frontend bundler | Vite                                     | ^8.0.0           |
-| CSS              | Tailwind CSS                             | ^4.0.0           |
-| Database         | `postgres:18-alpine`                     | PostgreSQL 18    |
-| Cache            | Database (SQL)                           | —                |
-| Sessions         | Redis                                    | `redis:alpine`   |
-| Queues           | Redis                                    | `redis:alpine`   |
-| Full-text search | `typesense/typesense:27.1`               | 27.1             |
-| Object storage   | `rustfs/rustfs:latest` (S3-compatible)   | latest           |
-| Local mail       | `axllent/mailpit:latest`                 | latest           |
-| WebSockets       | `quay.io/soketi/soketi:latest-16-alpine` | latest-16-alpine |
+Full project reference, organized by section and meant to be read on demand. The first-turn summary
+lives in `../AGENTS.md`; the detail is here. The source of truth is always the repository code.
 
-## Quick Links
+Laravel Starter Kit is a **Laravel 13 / PHP 8.5** application with a **Filament 5** admin panel and an
+**Inertia.js v3 + React 19 + TypeScript** SPA. Authentication runs on **Fortify + Sanctum**, with 2FA
+(TOTP) and passkeys (WebAuthn). The whole development environment is orchestrated with **Laravel Sail**
+(Docker).
 
-- [Getting Started](/getting-started) — clone, configure, and boot the stack
-- [Architecture](/architecture) — service topology, ports, and environment drivers
+## Verified stack
+
+| Layer / Service     | Technology             | Version                 | Verified in                       |
+| ------------------- | ---------------------- | ----------------------- | --------------------------------- |
+| Language            | PHP                    | `^8.5`                  | `composer.json`                   |
+| Framework           | Laravel                | `^13.8`                 | `composer.json`                   |
+| Admin panel         | Filament               | `^5.0`                  | `composer.json`                   |
+| Auth backend        | Laravel Fortify        | `^1.37`                 | `composer.json`                   |
+| API tokens / SPA    | Laravel Sanctum        | `^4.0`                  | `composer.json`                   |
+| Passkeys (WebAuthn) | `@laravel/passkeys`    | `^0.2.0`                | `package.json`                    |
+| Typed routes        | Laravel Wayfinder      | `^0.1.20`               | `composer.json`                   |
+| Frontend            | Inertia.js + React     | `^3.3.1` / `^19.2.7`    | `package.json`                    |
+| UI                  | shadcn/ui on Base UI   | `@base-ui/react ^1.5.0` | `package.json`, `components.json` |
+| Styling             | Tailwind CSS           | `^4.3.0`                | `package.json`                    |
+| Build               | Vite                   | `^8.0.0`                | `package.json`, `vite.config.ts`  |
+| Database            | PostgreSQL             | `18-alpine`             | `compose.yaml`                    |
+| Cache / Valkey      | `valkey/valkey:alpine` | latest                  | `compose.yaml`                    |
+| Search              | Meilisearch            | latest                  | `compose.yaml`                    |
+| S3 storage          | RustFS                 | latest                  | `compose.yaml`                    |
+| Mail (dev)          | Mailpit                | latest                  | `compose.yaml`                    |
+| WebSockets          | Soketi                 | `latest-16-alpine`      | `compose.yaml`                    |
+| Tests               | Pest                   | `^4.7`                  | `composer.json`                   |
+| Local runtime       | Laravel Sail           | `^1.62`                 | `composer.json`                   |
+
+> [!NOTE]
+> `compose.yaml` provisions all the services above, but the app does not use all of them by default:
+> cache, queue and session go to `database`; the disk is `local`; broadcast is `log`; and Scout is not
+> installed. The "available vs. active" caveats are in `services/index.md`.
+
+## Sections
+
+| Section                                                   | What it covers                                                                      |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| [getting-started](getting-started/index.md)               | Clone, configure the environment and start the app with Sail.                       |
+| [architecture](architecture/index.md)                     | Topology, bootstrap, providers, middleware and code organization.                   |
+| [services](services/index.md)                             | `compose.yaml` services: DB, cache/queue/session, storage, mail, search, broadcast. |
+| [authentication](authentication/index.md)                 | Fortify, Sanctum, 2FA, passkeys and the security actions.                           |
+| [admin-panel](admin-panel/index.md)                       | The Filament panel at `/admin` and its resources.                                   |
+| [frontend](frontend/index.md)                             | The Inertia + React SPA: structure, routing, UI and styling.                        |
+| [testing](testing/index.md)                               | Pest: suites, helpers, commands and test organization.                              |
+| [tooling](tooling/index.md)                               | Git hooks and local quality tooling.                                                |
+| [continuous-integration](continuous-integration/index.md) | The GitHub Actions workflows.                                                       |
+| [ai-tooling](ai-tooling/index.md)                         | Laravel Boost, the MCP server and the skills.                                       |
+| [domains](domains/index.md)                               | Catalog of the code's bounded-contexts.                                             |
+| [meta](meta/index.md)                                     | Conventions that govern this documentation.                                         |

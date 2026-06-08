@@ -1,20 +1,34 @@
 {
     "compilerOptions": {
-        "strict": true,
-        "noImplicitAny": true,
-        "forceConsistentCasingInFileNames": true,
-        "allowJs": true,
+        /* Language and Environment */
         "target": "ESNext",
+        "jsx": "react-jsx",
+
+        /* Modules */
         "module": "ESNext",
         "moduleResolution": "bundler",
-        "jsx": "react-jsx",
+        "resolveJsonModule": true,
         "paths": {
             "@/*": ["./resources/js/*"]
         },
-        "skipLibCheck": true,
+
+        /* Emit */
         "noEmit": true,
+
+        /* Interop Constraints */
+        "isolatedModules": true,
         "esModuleInterop": true,
-        "isolatedModules": true
+        "forceConsistentCasingInFileNames": true,
+
+        /* Type Checking */
+        "strict": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noUncheckedIndexedAccess": true,
+
+        /* Completeness */
+        "skipLibCheck": true
     },
-    "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx", "resources/js/**/*.d.ts"]
+    "include": ["resources/js/**/*.ts", "resources/js/**/*.d.ts", "resources/js/**/*.tsx"]
 }

@@ -116,4 +116,20 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Founder User Credentials
+    |--------------------------------------------------------------------------
+    |
+    | This option defines the credentials for the founder user account. These
+    | values are typically used during the initial application setup or
+    | seeding process to create the primary administrative user.
+    |
+    */
+
+    'founder' => [
+        'name' => env('AUTH_FOUNDER_NAME'),
+        'email' => env('AUTH_FOUNDER_EMAIL'),
+        'password' => env('AUTH_FOUNDER_PASSWORD'),
+    ],
 ];

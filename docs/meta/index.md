@@ -1,21 +1,26 @@
 ---
-title: Documentation Meta
-description: An orientation to how this documentation is organized and maintained — docs about the docs.
+title: Documentation conventions
+description: The rules that govern this documentation system — structure and authoring guides.
 ---
 
-# Documentation Meta
+# Documentation conventions
 
-This section is the meta layer of the documentation: it describes how the docs themselves are structured, what conventions apply to every page, and how contributors should extend them.
+**Why it exists:** be the meta-section that documents how this documentation is built and maintained, so
+it stays consistent and useful as the project grows.
+**Covers:** the section blueprint (structure) and the writing rules (authoring).
+**Does not cover:** the project's own content — that is the rest of `docs/` (start at
+[../index.md](../index.md)).
 
-If you are reading the main docs to understand the stack, you do not need to read this section. If you are contributing new documentation — adding a guide, restructuring a section, or updating stale content — start here.
+## Sub-pages
 
-## What you will find here
+| Topic                                                        | Link                                     |
+| ------------------------------------------------------------ | ---------------------------------------- |
+| Section blueprint and why each section exists                | [structure-guide.md](structure-guide.md) |
+| Authoring rules (frontmatter, source-first, headings, links) | [authoring-guide.md](authoring-guide.md) |
 
-| Page                                    | Purpose                                                                             |
-| --------------------------------------- | ----------------------------------------------------------------------------------- |
-| [Structure Guide](./structure-guide.md) | The 16-section blueprint, 6 writing rules, and the process for adding a new section |
-| [Authoring Guide](./authoring-guide.md) | How to add or edit pages while respecting frontmatter, source-first, and horizontal-rule conventions |
+## The system in one paragraph
 
-## Why this exists
-
-Docs rot when contributors write in isolation without a shared mental model of what the docs are trying to accomplish and how they should look. This meta section makes that model explicit so every contribution — large or small — fits coherently into the whole.
+`AGENTS.md` is the canonical, minimal root file read on every turn; `CLAUDE.md` is a one-line stub that
+imports it (`@AGENTS.md`). All the detail lives in `docs/`, organized by blueprint and read on demand.
+Each fact lives in exactly one canonical page; everything else links to it. The source of truth is
+always the repository code.

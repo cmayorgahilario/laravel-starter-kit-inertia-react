@@ -2,11 +2,19 @@
 
 declare(strict_types=1);
 
-arch('controllers have Controller suffix')
+use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Http\FormRequest;
+
+arch('controllers')
     ->expect('App\Http\Controllers')
     ->toHaveSuffix('Controller')
-    ->toExtendNothing();
+    ->ignoring(Controller::class);
 
-arch('controllers are not used by other app classes')
-    ->expect('App\Http\Controllers')
-    ->not->toBeUsed();
+arch('middleware')
+    ->expect('App\Http\Middleware')
+    ->toBeClasses();
+
+arch('requests')
+    ->expect('App\Http\Requests')
+    ->toHaveSuffix('Request')
+    ->toExtend(FormRequest::class);

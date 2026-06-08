@@ -1,0 +1,25 @@
+# Dependencies
+/node_modules
+/vendor
+
+# Build and compiled assets
+/public
+/bootstrap/ssr
+/storage
+
+# Lockfiles (managed by package managers)
+pnpm-lock.yaml
+composer.lock
+
+# Generated / non-source files
+/public/build
+*.min.js
+*.min.css
+
+# shadcn/ui generated components (not formatted by Prettier)
+/resources/js/components/ui
+
+# PHP (formatted by Pint, not Prettier)
+*.php
+# ...except Blade templates, which Chisel (prettier-plugin-blade) formats.
+!*.blade.php

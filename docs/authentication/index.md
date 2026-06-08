@@ -1,195 +1,94 @@
 ---
 title: Authentication
-description: Fortify-based authentication stack — service provider wiring, Inertia view closures, Actions, 2FA, rate limiting, and post-login account management.
+description: Fortify + Sanctum with 2FA and passkeys, the enabled features and the user control panel.
 ---
 
 # Authentication
 
+**Why it exists:** explain how identity works end to end — login, registration, email verification,
+password reset, two-factor authentication, passkeys and API tokens.
+**Covers:** the Fortify configuration, its enabled features, the Inertia views, rate limiters, Sanctum,
+passkeys and the user control panel (UCP).
+**Does not cover:** the detail of the Fortify actions (see [actions.md](actions.md)) or who can access
+the admin panel (that authorization is in [../admin-panel/index.md](../admin-panel/index.md)).
+
 ## Overview
 
-Authentication is handled by **Laravel Fortify** (`laravel/fortify: ^1.36`, declared in `composer.json`). Fortify is a frontend-agnostic authentication back-end: it registers all auth routes and their controllers internally. This application customizes only three things:
+Authentication runs on **Laravel Fortify** (frontend-agnostic backend), wired in
+`App\Providers\FortifyServiceProvider`. The auth views are rendered as **Inertia** pages, the API uses
+**Sanctum** in SPA mode, and the credentials extend to **passkeys** (WebAuthn) and **TOTP 2FA**.
 
-1. **View closures** — binds Inertia React components to each Fortify route.
-2. **Actions** — four replaceable classes that implement user creation, profile updates, password changes, and password resets.
-3. **Rate limiters** — two named limiters for login and 2FA challenge endpoints.
+## Enabled Fortify features
 
-All customizations live in `app/Providers/FortifyServiceProvider.php`, which is loaded automatically via Laravel's service-provider auto-discovery.
+`config/fortify.php` enables seven features (guard `web`, broker `users`):
 
-## Configuration
+| Feature                    | Notes                                    |
+| -------------------------- | ---------------------------------------- |
+| Registration               | New user sign-up.                        |
+| Reset passwords            | "Forgot my password" flow.               |
+| Email verification         | `User` implements `MustVerifyEmail`.     |
+| Update profile information | Name, email and avatar.                  |
+| Update passwords           | Password change.                         |
+| Two-factor authentication  | `confirm` and `confirmPassword` enabled. |
+| Passkeys                   | `confirmPassword` enabled.               |
 
-Two config files govern the auth stack.
+## Inertia views
 
-### `config/fortify.php`
+`FortifyServiceProvider` maps each Fortify view to an Inertia page under `resources/js/pages/auth/`:
 
-| Key | Value | Effect |
-| --- | ----- | ------ |
-| `guard` | `web` | Session-based authentication |
-| `username` | `email` | Login credential field |
-| `lowercase_usernames` | `true` | Emails are lowercased before DB lookup |
-| `home` | `/dashboard` | Redirect target after successful login/register |
-| `limiters.login` | `'login'` | Named rate limiter for login endpoint |
-| `limiters.two-factor` | `'two-factor'` | Named rate limiter for 2FA challenge endpoint |
+| Fortify view         | Inertia page                |
+| -------------------- | --------------------------- |
+| login                | `auth/login`                |
+| register             | `auth/register`             |
+| forgot-password      | `auth/forgot-password`      |
+| reset-password       | `auth/reset-password`       |
+| verify-email         | `auth/verify-email`         |
+| confirm-password     | `auth/confirm-password`     |
+| two-factor-challenge | `auth/two-factor-challenge` |
 
-**Enabled features:**
+## Rate limiters
 
-```php
-// config/fortify.php
-'features' => [
-    Features::registration(),
-    Features::resetPasswords(),
-    Features::emailVerification(),
-    Features::updateProfileInformation(),
-    Features::updatePasswords(),
-    Features::twoFactorAuthentication([
-        'confirm' => true,
-        'confirmPassword' => true,
-    ]),
-],
-```
+Defined in `FortifyServiceProvider`:
 
-### `config/auth.php`
+| Limiter    | Limit                 |
+| ---------- | --------------------- |
+| login      | 5/min per email + IP  |
+| two-factor | 5/min per user        |
+| passkeys   | 10/min per credential |
 
-| Key | Value |
-| --- | ----- |
-| Default guard | `web` (session driver) |
-| User provider | `eloquent` → `App\Models\Security\User` |
-| Password reset table | `password_reset_tokens` |
-| Password confirmation timeout | `10800` seconds (3 hours) |
+## Sanctum and API
 
-The `AUTH_MODEL`, `AUTH_GUARD`, `AUTH_PASSWORD_BROKER`, and `AUTH_PASSWORD_RESET_TOKEN_TABLE` env vars can override all of these values without touching the file.
+Sanctum runs in SPA mode (`statefulApi()` in `bootstrap/app.php`). The API token model is
+`App\Models\Security\PersonalAccessToken` (table `security_personal_access_tokens`), registered in
+`AppServiceProvider`. The only API route is `GET /user` (`routes/api.php`), guarded by `auth:sanctum`.
 
-## Inertia View Closures
+## Passkeys
 
-Fortify calls each registered closure when rendering its view routes. The 7 closures in `app/Providers/FortifyServiceProvider.php` map Fortify's route names to Inertia React pages:
+The `User` model uses `PasskeyAuthenticatable` and the `Passkey` model
+(`App\Models\Security\Passkey`, table `security_passkeys`) extends `Laravel\Passkeys\Passkey`. The
+models are registered with the Passkeys package in `AppServiceProvider`. On the frontend, registration
+and management use the `@laravel/passkeys` package (see
+[../frontend/ui-and-styling.md](../frontend/ui-and-styling.md)).
 
-| Fortify method | Inertia component | Notes |
-| -------------- | ----------------- | ----- |
-| `Fortify::loginView()` | `auth/login` | — |
-| `Fortify::registerView()` | `auth/register` | — |
-| `Fortify::requestPasswordResetLinkView()` | `auth/forgot-password` | — |
-| `Fortify::resetPasswordView()` | `auth/reset-password` | Passes `token` and `email` as props |
-| `Fortify::verifyEmailView()` | `auth/verify-email` | — |
-| `Fortify::confirmPasswordView()` | `auth/confirm-password` | — |
-| `Fortify::twoFactorChallengeView()` | `auth/two-factor-challenge` | — |
+## User control panel (UCP)
 
-The React components for these pages live under `resources/js/pages/auth/`. See the frontend section for their implementation.
+Authenticated users manage their account under `/ucp` (`routes/web.php`):
 
-## Actions
+| Route                        | Controller / page                         | Purpose                                         |
+| ---------------------------- | ----------------------------------------- | ----------------------------------------------- |
+| `GET /ucp/profile`           | Inertia `ucp/profile`                     | Name, email, avatar.                            |
+| `GET /ucp/password`          | Inertia `ucp/password`                    | Password change.                                |
+| `GET /ucp/security`          | `SecuritySettingsController@show`         | 2FA and passkeys (requires `password.confirm`). |
+| `GET /ucp/sessions`          | `BrowserSessionsController@index`         | Active sessions.                                |
+| `DELETE /ucp/sessions`       | `BrowserSessionsController@destroyOthers` | Log out other devices.                          |
+| `DELETE /ucp/account`        | `DeleteAccountController@destroy`         | Delete account.                                 |
+| `DELETE /user/profile-photo` | `ProfilePhotoController@destroy`          | Remove avatar.                                  |
 
-Fortify delegates the four mutating operations to swappable Action classes, bound in `app/Providers/FortifyServiceProvider.php`:
+The `/dashboard` and `/ucp` routes require the `auth` and `verified` middleware; `/ucp/security`
+additionally requires `password.confirm`.
 
-| Action class | Fortify binding | Purpose |
-| ------------ | --------------- | ------- |
-| `app/Actions/Fortify/CreateNewUser.php` | `Fortify::createUsersUsing()` | Validates name/email/password and creates a new `security_users` row |
-| `app/Actions/Fortify/UpdateUserProfileInformation.php` | `Fortify::updateUserProfileInformationUsing()` | Updates name/email; re-sends verification email if email changes |
-| `app/Actions/Fortify/UpdateUserPassword.php` | `Fortify::updateUserPasswordsUsing()` | Validates `current_password` then hashes and saves the new password |
-| `app/Actions/Fortify/ResetUserPassword.php` | `Fortify::resetUserPasswordsUsing()` | Validates and stores a new password after a password-reset token flow |
-
-All four classes use the `PasswordValidationRules` trait (`app/Actions/Fortify/PasswordValidationRules.php`) for consistent password validation rules.
-
-## Two-Factor Authentication
-
-2FA is enabled with the `confirm` and `confirmPassword` options (see `config/fortify.php` above). The `TwoFactorAuthenticatable` trait is mixed into `app/Models/Security/User.php`:
-
-```php
-// app/Models/Security/User.php
-use Laravel\Fortify\TwoFactorAuthenticatable;
-
-class User extends Authenticatable implements MustVerifyEmail
-{
-    use TwoFactorAuthenticatable;
-    // ...
-}
-```
-
-The migration `database/migrations/0001_01_01_000000_create_security_users_table.php` adds three 2FA columns to `security_users`:
-
-| Column | Type | Purpose |
-| ------ | ---- | ------- |
-| `two_factor_secret` | `text` (nullable) | Encrypted TOTP secret |
-| `two_factor_recovery_codes` | `text` (nullable) | JSON-encoded recovery codes |
-| `two_factor_confirmed_at` | `timestamp` (nullable) | Set when user confirms TOTP device; `null` means 2FA not yet confirmed |
-
-The `#[Hidden]` attribute on the model class suppresses `two_factor_secret` and `two_factor_recovery_codes` from serialization:
-
-```php
-#[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
-class User extends Authenticatable implements MustVerifyEmail
-```
-
-## Rate Limiting
-
-Two named rate limiters are registered in `app/Providers/FortifyServiceProvider.php` and referenced by `config/fortify.php` under `limiters`:
-
-```php
-// app/Providers/FortifyServiceProvider.php
-RateLimiter::for('login', function (Request $request) {
-    $usernameInput = $request->input(Fortify::username());
-    $throttleKey = Str::transliterate(
-        Str::lower(is_string($usernameInput) ? $usernameInput : '') . '|' . $request->ip()
-    );
-    return Limit::perMinute(5)->by($throttleKey);
-});
-
-RateLimiter::for('two-factor', function (Request $request) {
-    return Limit::perMinute(5)->by($request->session()->get('login.id'));
-});
-```
-
-- **`login`** — 5 attempts per minute, keyed by `lowercase(email)|ip`. Prevents brute-force per email-IP pair.
-- **`two-factor`** — 5 attempts per minute, keyed by the `login.id` session value set during the first authentication step.
-
-## User Model & Shared Props
-
-`app/Models/Security/User.php` is the Eloquent model that backs the `security_users` table:
-
-| Property | Value |
-| -------- | ----- |
-| `$table` | `security_users` |
-| Implements | `MustVerifyEmail` |
-| Traits | `HasFactory`, `Notifiable`, `TwoFactorAuthenticatable` |
-| Fillable | `name`, `email`, `password`, `notification_preferences` |
-| Hidden (serialization) | `password`, `remember_token`, `two_factor_secret`, `two_factor_recovery_codes` |
-
-`app/Http/Middleware/HandleInertiaRequests.php` exposes the authenticated user on every Inertia response via the `auth` shared prop:
-
-```php
-// app/Http/Middleware/HandleInertiaRequests.php
-'auth' => fn () => [
-    'user' => $user ? [
-        'id'                      => $user->id,
-        'name'                    => $user->name,
-        'email'                   => $user->email,
-        'avatar'                  => $user->avatar,
-        'email_verified_at'       => $user->email_verified_at?->toISOString(),
-        'two_factor_confirmed_at' => $user->two_factor_confirmed_at?->toISOString(),
-    ] : null,
-],
-```
-
-React pages read `usePage().props.auth.user` to determine login state, email verification status, and whether 2FA is confirmed.
-
-## Post-Login Account Management
-
-After login, three Settings controllers handle profile and security operations. All settings routes require the `auth` middleware; the `/dashboard` route additionally requires `verified` (`routes/web.php:12`):
-
-```php
-// routes/web.php
-Route::get('/dashboard', fn () => Inertia::render('dashboard'))
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-```
-
-| Controller | Key operations |
-| ---------- | -------------- |
-| `app/Http/Controllers/Settings/ProfileController.php` | Edit/update name and email; destroy account (calls `Auth::logout()`, deletes the user row, invalidates session) |
-| `app/Http/Controllers/Settings/PasswordController.php` | Edit/update password via `UpdateUserPassword` action; conditionally requires `password.confirm` middleware when 2FA `confirmPassword` is enabled |
-| `app/Http/Controllers/Settings/SessionController.php` | Lists active sessions from the `sessions` table (ordered by `last_activity`); revokes other devices via `Auth::logoutOtherDevices()` |
-
-Session records are stored in the `sessions` table created by the same migration as `security_users` (`database/migrations/0001_01_01_000000_create_security_users_table.php`).
-
-## Cross-links
-
-- [Testing](../testing/index.md) — authentication feature tests, including login, registration, and 2FA flows.
-- [Tooling — Static Analysis](../tooling/static-analysis.md) — PHPStan rules that enforce type safety on auth-related code.
-- [Database](../database/index.md) — `security_users` table schema and the migration inventory.
+> [!NOTE]
+> Authorization is minimal at the moment. There are no roles/permissions packages or policies in the
+> repository: access control comes from route middleware (`auth`, `verified`, `password.confirm`) and,
+> for the admin panel, the `FilamentUser::canAccessPanel()` gate on the `User` model
+> (see [../admin-panel/index.md](../admin-panel/index.md)).

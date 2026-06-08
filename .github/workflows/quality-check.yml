@@ -1,0 +1,85 @@
+name: CI Quality Check
+
+# Lightweight CI for feature branches: fast feedback on every push.
+# The full, blocking gate runs on pull requests to develop/master.
+on:
+  push:
+    branches-ignore:
+      - master
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-push-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Code quality checks (run in parallel)
+  frontend-lint:
+    name: Frontend Lint & Format
+    uses: ./.github/workflows/lint-format.yml
+    secrets: inherit
+
+  php-static-analysis:
+    name: PHP Static Analysis
+    uses: ./.github/workflows/static-analysis.yml
+    secrets: inherit
+
+  # Sharded test runner (blocking): runs the Unit+Feature suite ONCE, split across
+  # shards, and uploads per-shard coverage data for the coverage job to merge.
+  fast-tests:
+    name: Sharded Tests
+    uses: ./.github/workflows/test-fast.yml
+    secrets: inherit
+
+  # Architecture tests (lightweight, blocking)
+  arch-tests:
+    name: Arch Tests
+    uses: ./.github/workflows/test-arch.yml
+    secrets: inherit
+
+  # Coverage merge + report (informational on push): consumes the shard coverage
+  # data from `fast-tests` and reports the % WITHOUT a `min` gate. Runs after the
+  # runner so the .cov artifacts exist. If a test failed, `fast-tests` blocks and
+  # this job is skipped.
+  coverage-tests:
+    name: Coverage Report
+    needs: [fast-tests]
+    uses: ./.github/workflows/test-coverage.yml
+    secrets: inherit
+
+  # Summary job: blocks on lint / analysis / fast tests, NOT on coverage
+  quality-check-summary:
+    name: Quality Check Summary
+    runs-on: ubuntu-24.04
+    needs: [frontend-lint, php-static-analysis, fast-tests, arch-tests, coverage-tests]
+    if: always()
+    steps:
+      - name: Generate summary
+        run: |
+          {
+            echo "## 🚀 CI Quality Check Results"
+            echo ""
+            echo "**Branch:** ${{ github.ref_name }}"
+            echo "**Commit:** ${{ github.sha }}"
+            echo ""
+            echo "### Code Quality"
+            echo "- Frontend Lint & Format: ${{ needs.frontend-lint.result }}"
+            echo "- PHP Static Analysis: ${{ needs.php-static-analysis.result }}"
+            echo ""
+            echo "### Tests"
+            echo "- Sharded Tests: ${{ needs.fast-tests.result }}"
+            echo "- Arch Tests: ${{ needs.arch-tests.result }}"
+            echo "- Coverage Report (informational): ${{ needs.coverage-tests.result }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check required jobs
+        if: |
+          (needs.frontend-lint.result == 'failure') ||
+          (needs.php-static-analysis.result == 'failure') ||
+          (needs.fast-tests.result == 'failure') ||
+          (needs.arch-tests.result == 'failure')
+        run: |
+          echo "::error::Quality check failed. Check lint, static analysis, tests or arch above."
+          exit 1

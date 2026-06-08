@@ -1,45 +1,44 @@
-import type { LucideIcon } from 'lucide-react';
 import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react';
-import type { HTMLAttributes } from 'react';
-import type { Appearance } from '@/hooks/use-appearance';
+import type { ComponentType } from 'react';
+
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useAppearance } from '@/hooks/use-appearance';
+import type { Appearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
 
-export default function AppearanceToggleTab({
-    className = '',
-    ...props
-}: HTMLAttributes<HTMLDivElement>) {
+const options: { value: Appearance; label: string; icon: ComponentType }[] = [
+    { value: 'light', label: 'Light', icon: SunIcon },
+    { value: 'dark', label: 'Dark', icon: MoonIcon },
+    { value: 'system', label: 'System', icon: MonitorIcon },
+];
+
+export function AppearanceTabs({ className }: { className?: string }) {
     const { appearance, updateAppearance } = useAppearance();
 
-    const tabs: { value: Appearance; icon: LucideIcon; label: string }[] = [
-        { value: 'light', icon: SunIcon, label: 'Light' },
-        { value: 'dark', icon: MoonIcon, label: 'Dark' },
-        { value: 'system', icon: MonitorIcon, label: 'System' },
-    ];
-
     return (
-        <div
-            className={cn(
-                'inline-flex gap-1 rounded-lg bg-neutral-100 p-1 dark:bg-neutral-800',
-                className,
-            )}
-            {...props}
+        <ToggleGroup
+            value={[appearance]}
+            onValueChange={(value: string[]) => {
+                const next = value[0] as Appearance | undefined;
+
+                if (next) {
+                    updateAppearance(next);
+                }
+            }}
+            variant="outline"
+            className={cn('w-full', className)}
         >
-            {tabs.map(({ value, icon: Icon, label }) => (
-                <button
+            {options.map(({ value, label, icon: Icon }) => (
+                <ToggleGroupItem
                     key={value}
-                    onClick={() => updateAppearance(value)}
-                    className={cn(
-                        'flex items-center rounded-md px-3.5 py-1.5 transition-colors',
-                        appearance === value
-                            ? 'bg-white shadow-xs dark:bg-neutral-700 dark:text-neutral-100'
-                            : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-700/60',
-                    )}
+                    value={value}
+                    aria-label={label}
+                    className="h-auto flex-1 flex-col gap-1.5 py-2.5"
                 >
-                    <Icon className="-ml-1 h-4 w-4" />
-                    <span className="ml-1.5 text-sm">{label}</span>
-                </button>
+                    <Icon />
+                    {label}
+                </ToggleGroupItem>
             ))}
-        </div>
+        </ToggleGroup>
     );
 }

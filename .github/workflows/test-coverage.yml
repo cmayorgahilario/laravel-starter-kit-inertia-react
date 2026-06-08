@@ -1,0 +1,106 @@
+name: Coverage Merge & Gate
+
+# Consumes the per-shard coverage data (.cov) uploaded by the sharded test runner
+# (test-fast.yml) in the SAME caller run, merges them with phpcov (line-level, no
+# double counting) and enforces the `min` gate. The test suite is NOT run here.
+# The caller MUST order this after the runner: `needs: [fast-tests]`.
+on:
+  workflow_call:
+    inputs:
+      min:
+        description: 'Minimum coverage percentage. Empty = report only (no gate).'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  merge:
+    name: Merge coverage & gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, dom, xml
+          coverage: none
+
+      - name: Download all shard coverage data
+        uses: actions/download-artifact@v8
+        with:
+          pattern: coverage-cov-*
+          path: coverage
+          merge-multiple: true
+
+      - name: Download phpcov 12 (PHAR)
+        run: |
+          wget -q --tries=3 --timeout=30 -O phpcov.phar https://phar.phpunit.de/phpcov-12.phar
+          php phpcov.phar --version
+
+      - name: Merge coverage
+        run: |
+          shopt -s nullglob
+          covs=(coverage/*.cov)
+          if [ ${#covs[@]} -eq 0 ]; then
+            echo "::error::No .cov files found to merge (did the sharded runner upload artifacts before this job?)"
+            exit 1
+          fi
+          echo "Merging ${#covs[@]} .cov file(s)..."
+          # --do-not-require-matching-php-version does NOT exist in phpcov 12.0.0.
+          # Runner and this job both run php-version 8.5 via setup-php, so no mismatch.
+          php phpcov.phar merge \
+            --clover coverage/merged-clover.xml \
+            --html coverage/html \
+            --text coverage/merged.txt \
+            coverage/
+
+      - name: Publish coverage summary
+        if: always()
+        run: |
+          {
+            echo "## 🧪 Coverage Report (merged from shards)"
+            echo ""
+            echo '```'
+            tail -n 60 coverage/merged.txt 2>/dev/null || echo "No merged report produced."
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce coverage gate
+        # min empty (push CI)  -> report only, never blocks.
+        # min set (PR gate)    -> fails below threshold; min=100 requires every line covered.
+        env:
+          MIN: ${{ inputs.min }}
+        run: |
+          php -r '
+            $min = $argv[1] ?? "";
+            $f = "coverage/merged-clover.xml";
+            if (!is_file($f)) { fwrite(STDERR, "No merged clover found\n"); exit(1); }
+            $m = simplexml_load_file($f)->project->metrics;
+            $stmts = (int)$m["statements"]; $cov = (int)$m["coveredstatements"];
+            $pct = $stmts > 0 ? 100 * $cov / $stmts : 100.0;
+            printf("Line coverage: %.2f%% (%d/%d)\n", $pct, $cov, $stmts);
+            if ($min === "") exit(0);
+            $min = (float)$min;
+            $ok = $min >= 100.0 ? $cov >= $stmts : $pct + 1e-9 >= $min;
+            if (!$ok) { fwrite(STDERR, sprintf("Coverage %.2f%% < min %.2f%%\n", $pct, $min)); exit(1); }
+          ' -- "$MIN"
+
+      - name: Upload merged coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report-${{ github.run_id }}
+          path: |
+            coverage/merged-clover.xml
+            coverage/merged.txt
+            coverage/html
+          retention-days: 7
+          if-no-files-found: ignore
