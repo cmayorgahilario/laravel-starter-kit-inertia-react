@@ -49,7 +49,7 @@ jobs:
         # NOTE: a `schedule` trigger only fires if this workflow exists on the
         # repo's DEFAULT branch; if `develop` is protected against bot pushes,
         # add github-actions[bot] to the bypass list.
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: develop
 
